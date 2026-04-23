@@ -43,7 +43,7 @@ body {
   -webkit-text-fill-color: transparent;
   background-size: 200% 200%;
   animation: grad-shift 6s ease infinite;
-  font-style: italic;
+  /* font-style: italic; */
 }
 
 .text-gradient-cyan {
@@ -51,7 +51,7 @@ body {
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
-  font-style: italic;
+  /* font-style: italic; */
 }
 
 @keyframes grad-shift {
