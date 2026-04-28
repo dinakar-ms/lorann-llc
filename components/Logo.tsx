@@ -143,3 +143,17 @@ export default function Logo({ dark = false, size = "md" }: LogoProps) {
     </Link>
   );
 }
+
+// import Image from "next/image";
+
+// export default function Logo() {
+//   return (
+//     <Image
+//       src="/logo.jpg"
+//       alt="Lorann Logo"
+//       width={220}
+//       height={70}
+//       className="h-20 w-auto object-contain"
+//     />
+//   );
+// }
