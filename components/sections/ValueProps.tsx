@@ -108,17 +108,30 @@ const CARDS = [
 ];
 
 export default function ValueProps() {
+  // Tracks which cards are currently flipped to the back face.
+  // Used on every device — taps toggle, and on desktop the CSS :hover rule
+  // (scoped to hover-capable devices) still flips cards on cursor enter.
   const [flipped, setFlipped] = useState<Set<number>>(new Set());
 
+  // const toggle = (i: number) => {
+  //   setFlipped((prev) => {
+  //     const next = new Set(prev);
+  //     if (next.has(i)) next.delete(i);
+  //     else next.add(i);
+  //     return next;
+  //   });
+  // };
+
   const toggle = (i: number) => {
-    if (!window.matchMedia("(hover: none)").matches) return;
-    setFlipped((prev) => {
-      const next = new Set(prev);
-      if (next.has(i)) next.delete(i);
-      else next.add(i);
-      return next;
-    });
-  };
+  // Delete this line ↓
+  // if (!window.matchMedia("(hover: none)").matches) return;
+  setFlipped((prev) => {
+    const next = new Set(prev);
+    if (next.has(i)) next.delete(i);
+    else next.add(i);
+    return next;
+  });
+};
 
   return (
     <section id="value" className="py-24 lg:py-32">
@@ -132,24 +145,43 @@ export default function ValueProps() {
               drives <span className="text-gradient">real performance</span>
             </>
           }
-          description="Hover any card to explore. Purpose-built for teams that need more than a list — they need audiences that perform."
+          // Updated copy: works on touch (iPad, iPhone) where there is no hover.
+          description="Tap or hover any card to explore. Purpose-built for teams that need more than a list — they need audiences that perform."
         />
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
           {CARDS.map((card, i) => (
+            // <div
+            //   key={card.variant}
+            //   className={`flip-card reveal ${flipped.has(i) ? "flipped" : ""}`}
+            //   onClick={() => toggle(i)}
+            //   role="button"
+            //   tabIndex={0}
+            //   aria-pressed={flipped.has(i)}
+            //   onKeyDown={(e) => {
+            //     if (e.key === "Enter" || e.key === " ") {
+            //       e.preventDefault();
+            //       toggle(i);
+            //     }
+            //   }}
+            // >
             <div
-              key={card.variant}
-              className={`flip-card reveal ${flipped.has(i) ? "flipped" : ""}`}
-              onClick={() => toggle(i)}
-              role="button"
-              tabIndex={0}
-              onKeyDown={(e) => {
-                if (e.key === "Enter" || e.key === " ") {
-                  e.preventDefault();
-                  toggle(i);
-                }
-              }}
-            >
+  key={card.variant}
+  className={`flip-card reveal ${flipped.has(i) ? "flipped" : ""}`}
+  onClick={(e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    toggle(i);
+  }}
+  role="button"
+  tabIndex={0}
+  onKeyDown={(e) => {
+    if (e.key === "Enter" || e.key === " ") {
+      e.preventDefault();
+      toggle(i);
+    }
+  }}
+>
               <div className="flip-inner">
                 <div
                   className="flip-front bg-white shadow-md"
@@ -160,7 +192,7 @@ export default function ValueProps() {
                     style={{ background: card.accent }}
                   />
                   <div
-                    className="w-14 h-14 rounded-[14px] grid place-items-center mb-5 text-white shadow-[0_10px_24px_-8px_rgba(29,69,217,0.45)] relative"
+                    className="w-14 h-14 rounded-[14px] grid place-items-center mb-5 text-white shadow-[0_10px_24px_-8px_rgba(29,69,217,0.45)] relative flex-shrink-0"
                     style={{ background: card.accent }}
                   >
                     <card.icon className="w-6 h-6" />
@@ -176,14 +208,14 @@ export default function ValueProps() {
                     {card.desc}
                   </p>
                   <span className="mt-5 inline-flex items-center gap-1.5 font-mono text-[11px] text-blue-600 uppercase tracking-wider opacity-70">
-                    Hover to explore <RefreshCw className="w-3 h-3" />
+                    Tap to explore <RefreshCw className="w-3 h-3" />
                   </span>
                 </div>
                 <div
                   className="flip-back text-white"
                   style={{ background: card.accentBg }}
                 >
-                  <h4 className="font-display font-semibold text-lg mb-4 tracking-tight">
+                  <h4 className="font-display font-semibold text-lg mb-4 tracking-tight flex-shrink-0">
                     {card.backTitle}
                   </h4>
                   <ul className="list-none flex flex-col gap-2.5 mb-auto">
@@ -199,6 +231,7 @@ export default function ValueProps() {
                   </ul>
                   <Link
                     href={card.link}
+                    onClick={(e) => e.stopPropagation()}
                     className="mt-4 inline-flex items-center gap-1.5 text-[13.5px] font-semibold text-cyan-300 hover:gap-2.5 transition-all self-start"
                   >
                     Learn more <ArrowRight className="w-3.5 h-3.5" />

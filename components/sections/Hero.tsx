@@ -4,7 +4,7 @@ import HeroGlobe from "../HeroGlobe";
 
 export default function Hero() {
   return (
-    <section className="relative overflow-hidden pt-40 pb-20 lg:min-h-screen radial-hero dot-grid" id="top">
+    <section className="relative overflow-hidden pt-40 pb-20 xl:min-h-screen radial-hero dot-grid" id="top">
       {/* Floating orbs */}
       <div
         className="absolute top-[10%] -left-[5%] w-[500px] h-[500px] rounded-full pointer-events-none blur-[80px] animate-orb-float-1"

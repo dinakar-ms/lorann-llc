@@ -28,23 +28,59 @@ export default function IndustriesSection() {
               href={`mailto:info@lorannllc.com?subject=${title}%20Inquiry`}
               className="ind-card group relative bg-white border border-slate-150 rounded-2xl p-6 sm:p-8 min-h-[220px] overflow-hidden hover:-translate-y-1.5 hover:shadow-xl transition-all duration-500 reveal"
             >
+              {/* Dark blue gradient background — fades in on hover */}
               <div
                 className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 z-0"
                 style={{ background: "linear-gradient(135deg, #1736B3, #13256E)" }}
               />
+
+              {/* Soft cyan glow behind the icon on hover — adds depth without
+                  competing with the icon's own color. Pure decoration. */}
+              <div
+                className="absolute top-6 left-6 w-[52px] h-[52px] rounded-[14px] opacity-0 group-hover:opacity-100 transition-opacity duration-500 z-0"
+                style={{
+                  background: "radial-gradient(circle, rgba(34, 191, 255, 0.55), transparent 70%)",
+                  filter: "blur(14px)",
+                }}
+              />
+
               <div className="relative z-[1] transition-all duration-400">
-                <div className="w-13 h-13 w-[52px] h-[52px] bg-blue-50 text-blue-700 group-hover:bg-white/12 group-hover:text-white rounded-[14px] grid place-items-center mb-4.5 transition-all">
-                  <Icon className="w-6 h-6" />
+                {/* Icon container
+                    REST  : pale blue tile, brand-blue icon       (bg-blue-50 / text-blue-700)
+                    HOVER : bright cyan gradient tile, deep navy icon
+                            — high contrast against the dark card,
+                            matches the brand's blue→cyan signature
+                            used in the navbar feature panel and the
+                            "Get Started" CTA. */}
+                <div
+                  className="w-[52px] h-[52px] rounded-[14px] grid place-items-center mb-4 transition-all duration-400
+                             bg-blue-50 text-blue-700 ring-1 ring-transparent
+                             group-hover:bg-gradient-to-br group-hover:from-cyan-400 group-hover:to-cyan-300
+                             group-hover:text-blue-900 group-hover:ring-cyan-200/40
+                             group-hover:shadow-[0_8px_24px_-6px_rgba(34,191,255,0.55)]"
+                >
+                  <Icon className="w-6 h-6" strokeWidth={2.25} />
                 </div>
+
                 <h4 className="font-display font-semibold text-lg mb-2 tracking-tight text-slate-900 group-hover:text-white transition-colors">
                   {title}
                 </h4>
-                <p className="text-slate-600 text-[13.5px] leading-relaxed group-hover:text-white transition-colors">
+                <p className="text-slate-600 text-[13.5px] leading-relaxed group-hover:text-white/85 transition-colors">
                   {desc}
                 </p>
               </div>
-              <div className="absolute bottom-5 right-5 w-8 h-8 rounded-full bg-blue-50 group-hover:bg-white/15 grid place-items-center opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-400 z-[2]">
-                <ArrowRight className="w-3.5 h-3.5 text-blue-700 group-hover:text-white" />
+
+              {/* Arrow circle — also switches to cyan on hover so it visually
+                  rhymes with the icon container. */}
+              <div
+                className="absolute bottom-5 right-5 w-8 h-8 rounded-full grid place-items-center transition-all duration-400 z-[2]
+                           bg-blue-50 text-blue-700
+                           opacity-0 -translate-x-2
+                           group-hover:opacity-100 group-hover:translate-x-0
+                           group-hover:bg-cyan-400 group-hover:text-blue-900
+                           group-hover:shadow-[0_6px_16px_-4px_rgba(34,191,255,0.55)]"
+              >
+                <ArrowRight className="w-3.5 h-3.5" strokeWidth={2.5} />
               </div>
             </Link>
           ))}

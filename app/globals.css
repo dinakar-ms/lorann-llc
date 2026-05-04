@@ -142,7 +142,7 @@ body {
   mask-image: linear-gradient(90deg, transparent, #000 12%, #000 88%, transparent);
 }
 
-/* Flip card */
+/* 
 .flip-card { perspective: 1400px; min-height: 320px; cursor: pointer; }
 .flip-inner {
   position: relative;
@@ -156,6 +156,44 @@ body {
 .flip-card.flipped .flip-inner {
   transform: rotateY(180deg);
 }
+.flip-front, .flip-back {
+  position: absolute;
+  inset: 0;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  border-radius: 22px;
+  padding: 32px;
+  display: flex;
+  flex-direction: column;
+  border: 1px solid #D6E2F5;
+  overflow: hidden;
+}
+.flip-back { transform: rotateY(180deg); } */
+
+/* Flip card */
+.flip-card { perspective: 1400px; min-height: 340px; cursor: pointer; }
+.flip-inner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  min-height: 340px;
+  transition: transform 0.9s var(--ease);
+  transform-style: preserve-3d;
+}
+
+/* Class-driven flip — works on every device.
+   This is what fires when React adds `flipped` to the className on tap/click. */
+.flip-card.flipped .flip-inner {
+  transform: rotateY(180deg);
+}
+
+
+@media (hover: hover) and (pointer: fine) {
+  .flip-card:hover .flip-inner {
+    transform: rotateY(180deg);
+  }
+}
+
 .flip-front, .flip-back {
   position: absolute;
   inset: 0;
@@ -247,3 +285,4 @@ body {
     transition-duration: 0.01ms !important;
   }
 }
+
