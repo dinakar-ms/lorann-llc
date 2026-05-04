@@ -195,10 +195,10 @@ export default function SolutionsSection() {
           kicker="Core Service"
           title="Precision"
           titleAccent="audience targeting"
-          desc="Leverage high-quality B2B, healthcare, and consumer data to build precise audiences based on industry, role, behaviour, and intent signals — with lookalike modelling for scale."
+          desc="Leverage high-quality B2B, healthcare, and consumer data to build precise audiences based on industry, role, behavior, and intent signals — with lookalike modelling for scale."
           feats={[
             "Custom audience segmentation",
-            "Firmographic, technographic, behavioural filters",
+            "Firmographic, technographic, behavioral filters",
             "B2B, healthcare & consumer datasets",
             "Lookalike audience modelling",
           ]}
@@ -213,7 +213,7 @@ export default function SolutionsSection() {
           kicker="Enhancement"
           title="Data"
           titleAccent="enrichment"
-          desc="Enhance existing datasets with firmographic, technographic, and intent signals — then apply predictive modeling to prioritise the prospects most likely to convert."
+          desc="Enhance existing datasets with firmographic, technographic, and intent signals — then apply predictive modeling to prioritize the prospects most likely to convert."
           feats={[
             "Firmographic & technographic append",
             "Real-time intent signal integration",

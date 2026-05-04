@@ -58,7 +58,7 @@ export default function TravelDataListsPage() {
         headlineAccent: "travel.",
         paragraphs: [
           "The travel industry is a layered marketplace — agencies, OTAs, tour operators, and suppliers all target different buyers. Our Travel Industry data covers decision-makers at every tier with segmentation by traveller type focus and destination specialisation.",
-      "Used by GDS providers, travel technology platforms, hospitality and airline partners, destination marketing organisations, and B2B travel publications.",
+      "Used by GDS providers, travel technology platforms, hospitality and airline partners, destination marketing organizations, and B2B travel publications.",
         ],
       }}
       attributes={ATTRIBUTES}

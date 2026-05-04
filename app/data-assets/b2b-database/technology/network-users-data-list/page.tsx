@@ -57,7 +57,7 @@ export default function NetworkUsersDataListPage() {
         headlinePlain: "Reach Enterprise networking users",
         headlineAccent: "with installed-base precision.",
         paragraphs: [
-          "Network infrastructure marketing reaches a tight buying committee — network architects, network operations leads, security architects, and infrastructure VPs. Our Network Users list spans these roles across enterprise and large mid-market organisations.",
+          "Network infrastructure marketing reaches a tight buying committee — network architects, network operations leads, security architects, and infrastructure VPs. Our Network Users list spans these roles across enterprise and large mid-market organizations.",
       "Used by network equipment vendors, network security marketers, monitoring and observability platforms, SD-WAN providers, and network services consultants.",
         ],
       }}

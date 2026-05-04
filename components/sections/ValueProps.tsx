@@ -34,7 +34,7 @@ const CARDS = [
     backList: [
       "Firmographic filters",
       "Technographic signals",
-      "Intent & behavioural data",
+      "Intent & Behavioral data",
       "Lookalike audience modelling",
     ],
     link: "/solutions#audience-targeting",

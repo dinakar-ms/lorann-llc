@@ -64,7 +64,7 @@ export default function StatsSection() {
         <SectionHeader
           kicker="The Numbers"
           title={<>Built for <span className="text-gradient">real performance</span></>}
-          description="Every metric reflects data quality, process rigour, and a commitment to client outcomes."
+          description="Every metric reflects data quality, process rigor, and a commitment to client outcomes."
         />
 
         <div

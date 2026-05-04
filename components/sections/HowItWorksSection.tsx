@@ -8,7 +8,7 @@ const STEPS = [
   { icon: Crosshair, title: "Define", desc: "We align on your target audience, campaign goals, and performance metrics — establishing clear benchmarks." },
   { icon: Database, title: "Build", desc: "We construct and refine audience segments using high-quality sources and Signal eXchange™ enrichment." },
   { icon: GitMerge, title: "Activate", desc: "Audiences deploy across CRM, email, digital platforms, and lead programs — ensuring full marketing coverage." },
-  { icon: TrendingUp, title: "Optimise", desc: "Continuous monitoring, data refresh, and optimisation cycles ensure your audiences improve over time." },
+  { icon: TrendingUp, title: "Optimise", desc: "Continuous monitoring, data refresh, and optimization cycles ensure your audiences improve over time." },
 ];
 
 export default function HowItWorksSection() {

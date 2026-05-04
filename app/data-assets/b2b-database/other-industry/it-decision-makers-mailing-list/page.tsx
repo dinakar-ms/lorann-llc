@@ -5,7 +5,7 @@ import type { Metadata } from "next";
 export const metadata: Metadata = {
   title: "IT Decision Makers · B2B Database — Lorann LLC",
   description:
-    "CIOs, CISOs, IT Directors, and infrastructure decision-makers across US enterprise, mid-market, and SMB organisations.",
+    "CIOs, CISOs, IT Directors, and infrastructure decision-makers across US enterprise, mid-market, and SMB organizations.",
 };
 
 const CRUMBS = [
@@ -50,7 +50,7 @@ export default function ITDecisionMakersMailingListPage() {
       kicker="Industry List"
       titlePlain="IT Decision Makers —"
       titleAccent="across every vertical."
-      description="Verified IT decision-makers — CIOs, CISOs, IT Directors, and infrastructure leaders — across enterprise, mid-market, and SMB organisations."
+      description="Verified IT decision-makers — CIOs, CISOs, IT Directors, and infrastructure leaders — across enterprise, mid-market, and SMB organizations."
       stats={STATS}
       intro={{
         kicker: "Why this list",

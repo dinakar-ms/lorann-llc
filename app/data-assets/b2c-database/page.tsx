@@ -36,7 +36,7 @@ export default function B2CDatabasePage() {
         headlinePlain: "Two consumer verticals.",
         headlineAccent: "Built for direct response.",
         paragraphs: [
-          "Our B2C audiences are organised around the moments where consumer intent and marketing budget actually meet — homeownership, mortgage activity, vehicle purchase cycles, and lifestyle behaviours that drive response.",
+          "Our B2C audiences are organized around the moments where consumer intent and marketing budget actually meet — homeownership, mortgage activity, vehicle purchase cycles, and lifestyle behaviors that drive response.",
           "Every record is consumer-permissioned, multi-channel-ready, and built for the volume and segmentation that direct-response and CRM teams require.",
         ],
       }}
@@ -45,7 +45,7 @@ export default function B2CDatabasePage() {
         titlePlain: "Two consumer audiences,",
         titleAccent: "one performance file.",
         description:
-          "Each vertical is built around the segmentation, life-moment, and behavioural attributes marketers need to drive measurable response.",
+          "Each vertical is built around the segmentation, life-moment, and Behavioral attributes marketers need to drive measurable response.",
         columns: 2,
         items: [
           {
@@ -69,7 +69,7 @@ export default function B2CDatabasePage() {
         columns: 4,
         items: [
           { Icon: Users, title: "Demographics", desc: "Age, income, household composition, and life-stage indicators." },
-          { Icon: BarChart3, title: "Behavioural", desc: "Purchase activity, response history, and category affinity." },
+          { Icon: BarChart3, title: "Behavioral", desc: "Purchase activity, response history, and category affinity." },
           { Icon: Mail, title: "Multi-Channel", desc: "Verified email, postal address, and phone where consented." },
           { Icon: Target, title: "Life Moments", desc: "Triggers like new homeowner, recent mover, and in-market buyer." },
           { Icon: Globe, title: "National Coverage", desc: "Comprehensive US household coverage across all 50 states." },

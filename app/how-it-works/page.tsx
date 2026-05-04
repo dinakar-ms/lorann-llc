@@ -9,14 +9,14 @@ import type { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: "How It Works · Lorann LLC",
-  description: "A structured four-step process from data strategy to audience activation and continuous optimisation.",
+  description: "A structured four-step process from data strategy to audience activation and continuous optimization.",
 };
 
 const PROMISES = [
   { Icon: Clock, title: "Fast turnaround", desc: "Most engagements go from kickoff to first activation in 7–14 days." },
   { Icon: Users2, title: "Dedicated partnership", desc: "A named data strategist works directly with your team throughout." },
   { Icon: FileCheck, title: "Transparent reporting", desc: "Clear methodology, clear sourcing, clear outcomes — documented." },
-  { Icon: Headphones, title: "Ongoing support", desc: "Refresh cycles, optimisation reviews, and direct access to our team." },
+  { Icon: Headphones, title: "Ongoing support", desc: "Refresh cycles, optimization reviews, and direct access to our team." },
 ];
 
 export default function HowItWorksPage() {
@@ -26,7 +26,7 @@ export default function HowItWorksPage() {
       <PageHero
         kicker="The Process"
         title={<>From data to <span className="text-gradient">results</span></>}
-        description="A structured, transparent process that takes your audience from strategy to activation to continuous optimisation."
+        description="A structured, transparent process that takes your audience from strategy to activation to continuous optimization."
       />
 
       <HowItWorksSection />

@@ -57,7 +57,7 @@ export default function SportsIndustryEmailListsPage() {
         headlinePlain: "Reach the right buyer in",
         headlineAccent: "sports.",
         paragraphs: [
-          "The sports industry is a tight, relationship-driven market — the right contact at the right organisation matters enormously. Our Sports Industry Email Lists cover decision-makers at professional teams, leagues, college athletics departments, sports agencies, and vendors.",
+          "The sports industry is a tight, relationship-driven market — the right contact at the right organization matters enormously. Our Sports Industry Email Lists cover decision-makers at professional teams, leagues, college athletics departments, sports agencies, and vendors.",
       "Used by sports product manufacturers, ticketing and venue technology providers, sponsorship sales teams, sports media platforms, and athlete services firms.",
         ],
       }}

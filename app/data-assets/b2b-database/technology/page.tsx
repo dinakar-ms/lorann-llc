@@ -20,7 +20,7 @@ export default function TechnologyHubPage() {
       kicker="Technology Lists"
       titlePlain="Tech-stack targeting,"
       titleAccent="the way enterprise software marketers buy."
-      description="Forty-plus technology-specific email lists organised by platform and category — operating systems, ERP, CRM, DBMS, networking, and emerging business technology audiences."
+      description="Forty-plus technology-specific email lists organized by platform and category — operating systems, ERP, CRM, DBMS, networking, and emerging business technology audiences."
       primaryCta={{ label: "Request Counts", href: "/contact" }}
       secondaryCta={{ label: "All B2B Lists", href: "/data-assets/b2b-database" }}
       intro={{
