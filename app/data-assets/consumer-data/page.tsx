@@ -18,7 +18,7 @@ import type { Metadata } from "next";
 export const metadata: Metadata = {
   title: "Consumer Data · Lorann LLC",
   description:
-    "Behavioral, lifestyle, and demographic audience attributes designed to support direct and digital consumer outreach at scale.",
+    "Behavioral, lifestyle, and demographic audience attributes designed to support direct and Programmatic consumer outreach at scale.",
 };
 
 export default function ConsumerDataPage() {
@@ -38,7 +38,7 @@ export default function ConsumerDataPage() {
             <span className="text-gradient">the right signals.</span>
           </>
         }
-        description="Behavioral, lifestyle, and demographic audience attributes — designed to support direct, digital, and omnichannel consumer outreach at scale."
+        description="Behavioral, lifestyle, and demographic audience attributes — designed to support direct, Programmatic, and omnichannel consumer outreach at scale."
         primaryCta={{ label: "Request Counts", href: "/contact" }}
         secondaryCta={{ label: "View Data Cards", href: "/data-assets/data-cards" }}
       />
@@ -63,7 +63,7 @@ export default function ConsumerDataPage() {
                 and what they&rsquo;re ready to buy.
               </p>
               <p>
-                Use it for direct mail, email, SMS, digital targeting, or as a lookalike seed for
+                Use it for direct mail, email, SMS, Programmatic targeting, or as a lookalike seed for
                 your paid channels.
               </p>
             </div>

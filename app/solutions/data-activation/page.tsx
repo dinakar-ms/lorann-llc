@@ -18,7 +18,7 @@ import type { Metadata } from "next";
 export const metadata: Metadata = {
   title: "Data Activation & Channel Integration · Lorann LLC",
   description:
-    "Deploy audiences across digital, CRM, email, and traditional channels, ensuring data is activated effectively across the full marketing ecosystem.",
+    "Deploy audiences across Programmatic, CRM, email, and traditional channels, ensuring data is activated effectively across the full marketing ecosystem.",
 };
 
 export default function DataActivationPage() {
@@ -38,7 +38,7 @@ export default function DataActivationPage() {
             <span className="text-gradient">as good as where it runs.</span>
           </>
         }
-        description="Deploy audiences across digital, CRM, email, and traditional channels — ensuring your data is activated effectively across the full marketing ecosystem."
+        description="Deploy audiences across Programmatic, CRM, email, and traditional channels — ensuring your data is activated effectively across the full marketing ecosystem."
         primaryCta={{ label: "Plan an Activation", href: "/contact" }}
         secondaryCta={{ label: "Our Approach", href: "/about/our-approach" }}
       />
@@ -87,7 +87,7 @@ export default function DataActivationPage() {
             features={[
               { Icon: Mail, title: "Email / ESP", desc: "Deploy suppression-aware segments into your ESP with campaign-ready formats." },
               { Icon: Server, title: "CRM & CDP", desc: "Push enriched records and segments directly into Salesforce, HubSpot, and major CDPs." },
-              { Icon: Globe, title: "Digital / DSP", desc: "Sync audiences for programmatic, social, and display activation." },
+              { Icon: Globe, title: "Programmatic / DSP", desc: "Sync audiences for programmatic, social, and display activation." },
               { Icon: Phone, title: "Call Center", desc: "High-intent files routed for live-transfer and outbound dialing." },
               { Icon: Megaphone, title: "Direct Mail", desc: "Postal-ready files with verified addresses and appended attributes." },
               { Icon: Workflow, title: "Orchestration", desc: "Coordinate the same audience across multiple channels without duplication." },

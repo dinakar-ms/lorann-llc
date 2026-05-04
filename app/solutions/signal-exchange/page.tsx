@@ -114,12 +114,12 @@ export default function SolutionsSignalExchangePage() {
                 Use Cases
               </div>
               <h3 className="font-display font-bold text-2xl lg:text-[2rem] tracking-[-0.025em] leading-tight mb-3.5">
-                Lead generation, retargeting, lookalikes, and channel-level activation.
+                Lead generation, retargeting, Marketing Analytics Modeling, and channel-level activation.
               </h3>
               <p className="text-white/75 text-[15px] leading-relaxed max-w-2xl">
                 Marketers use Signal eXchange™ for in-market prospecting, retargeting engaged
-                audiences, building lookalike models, and pushing activation directly to call
-                centers and digital channels.
+                audiences, building Marketing Analytics Modeling, and pushing activation directly to call
+                centers and Programmatic channels.
               </p>
             </div>
           </div>

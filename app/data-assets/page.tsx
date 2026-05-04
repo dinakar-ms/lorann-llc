@@ -72,7 +72,7 @@ export default function DataAssetsPage() {
               {
                 Icon: Users,
                 title: "Consumer Data",
-                desc: "Behavioral, lifestyle, and demographic audience attributes designed to support direct and digital consumer outreach.",
+                desc: "Behavioral, lifestyle, and demographic audience attributes designed to support direct and Programmatic consumer outreach.",
                 href: "/data-assets/consumer-data",
               },
               {

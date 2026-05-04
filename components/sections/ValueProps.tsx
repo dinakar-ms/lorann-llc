@@ -35,7 +35,7 @@ const CARDS = [
       "Firmographic filters",
       "Technographic signals",
       "Intent & Behavioral data",
-      "Lookalike audience modelling",
+      "Marketing Analytics Modeling",
     ],
     link: "/solutions#audience-targeting",
     accent: "linear-gradient(135deg, #00A7EF, #22BFFF)",
@@ -45,7 +45,7 @@ const CARDS = [
     variant: "v-3",
     icon: Zap,
     title: "Built for activation",
-    desc: "Audiences deploy directly into CRM, email, digital, and omnichannel workflows — no reformatting, no friction.",
+    desc: "Audiences deploy directly into CRM, email, Programmatic, and omnichannel workflows — no reformatting, no friction.",
     backTitle: "Native integrations",
     backList: [
       "Salesforce, HubSpot, Marketo",

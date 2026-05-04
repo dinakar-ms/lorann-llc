@@ -192,7 +192,7 @@ const TEAM: TeamMember[] = [
   {
     name: "Paul Gerardi",
     title: "VP, Data Platforms & Product Development",
-    bio: "Paul Gerardi is a data and marketing strategy leader with experience across audience development, analytics, and performance-driven campaigns. He specializes in building and optimizing data systems that support targeting, activation, and measurable results across digital and traditional channels. His work spans B2B, financial services, and healthcare, with a focus on aligning data with real-world marketing outcomes.",
+    bio: "Paul Gerardi is a data and marketing strategy leader with experience across audience development, analytics, and performance-driven campaigns. He specializes in building and optimizing data systems that support targeting, activation, and measurable results across Programmatic and traditional channels. His work spans B2B, financial services, and healthcare, with a focus on aligning data with real-world marketing outcomes.",
     initials: "PG",
     // photo: "/team/paul-gerardi.jpg",
     linkedin: "https://www.linkedin.com/in/paulgerardi/",
@@ -204,7 +204,7 @@ const TEAM: TeamMember[] = [
     bio: "Fred Onemma is an acquisition intelligence leader focused on building data-driven systems that power scalable customer growth. He specializes in predictive modeling, audience development, and marketing infrastructure, helping organizations move beyond traditional targeting to precision-based acquisition. His work spans catalog, insurance, financial services, and direct response, with a focus on measurable performance and long-term value creation.",
     initials: "FO",
     // photo: "/team/fred-onemma.jpg",
-    linkedin: "https://www.linkedin.com/in/fred-onemma/",
+    linkedin: "https://www.linkedin.com/in/fredone/",
     email: "fred@lorannllc.com",
   },
   {
@@ -222,7 +222,7 @@ const TEAM: TeamMember[] = [
     bio: "Bill Woods is a seasoned expert in sales, business development, and strategic partnerships. He has helped organizations across industries — from healthcare and finance to education and manufacturing — achieve meaningful results through smart, data-driven marketing. Bill enjoys collaborating with both experienced professionals and forward-thinking companies looking to grow and innovate in a changing landscape.",
     initials: "BW",
     // photo: "/team/bill-woods.jpg",
-    linkedin: "https://www.linkedin.com/in/bill-woods/",
+    linkedin: "https://www.linkedin.com/in/bill-woods-9a50179/",
     email: "bill@lorannllc.com",
   },
   {
@@ -231,7 +231,7 @@ const TEAM: TeamMember[] = [
     bio: "Caryn Trazi is a trusted data professional specializing in the selection and fulfillment of targeted marketing lists. With extensive experience in medical and B2B markets, she helps mailers execute precise, data-driven marketing strategies. She also collaborates with list brokers, resellers, and advertising agencies — helping them grow their clients' businesses through informed list recommendations backed by industry expertise.",
     initials: "CT",
     // photo: "/team/caryn-trazi.jpg",
-    linkedin: "https://www.linkedin.com/in/caryn-trazi/",
+    linkedin: "https://www.linkedin.com/in/caryn-trazi-b6224bb/",
     email: "caryn@lorannllc.com",
   },
 ];

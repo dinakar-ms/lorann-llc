@@ -28,7 +28,7 @@ export default function OurApproachPage() {
             <span className="text-gradient">if it performs.</span>
           </>
         }
-        description="We focus on how audiences are built, how they're activated, and how they improve over time — integrating data across digital, CRM, and lead generation, and continuously refining it based on real campaign results."
+        description="We focus on how audiences are built, how they're activated, and how they improve over time — integrating data across Programmatic, CRM, and lead generation, and continuously refining it based on real campaign results."
         primaryCta={{ label: "See Solutions", href: "/solutions" }}
         secondaryCta={{ label: "Meet the Team", href: "/about/meet-the-team" }}
       />
@@ -76,7 +76,7 @@ export default function OurApproachPage() {
             columns={3}
             style="numbered"
             features={[
-              { title: "Understand the Brief", desc: "Align on audience, objectives, performance metrics, and channels." },
+              { title: "Understand the Brief", desc: "Align on audience, objectives, KPIs, and channels." },
               { title: "Build the Audience", desc: "Source, segment, and enrich from verified datasets and proprietary layers." },
               { title: "Activate Across Channels", desc: "Deliver campaign-ready audiences into your CRM, DSP, email, or call center." },
               { title: "Measure Performance", desc: "Track outcomes at the segment level — what lifts conversion, what doesn't." },

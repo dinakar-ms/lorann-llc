@@ -195,12 +195,12 @@ export default function SolutionsSection() {
           kicker="Core Service"
           title="Precision"
           titleAccent="audience targeting"
-          desc="Leverage high-quality B2B, healthcare, and consumer data to build precise audiences based on industry, role, behavior, and intent signals — with lookalike modelling for scale."
+          desc="Leverage high-quality B2B, healthcare, and consumer data to build precise audiences based on industry, role, behavior, and intent signals — with Marketing Analytics Modeling for scale."
           feats={[
             "Custom audience segmentation",
             "Firmographic, technographic, behavioral filters",
             "B2B, healthcare & consumer datasets",
-            "Lookalike audience modelling",
+            "Marketing Analytics Modeling",
           ]}
           cta="Learn More"
           ctaHref="mailto:info@lorannllc.com?subject=Audience%20Targeting"

@@ -138,7 +138,7 @@ export default function SignalExchangeSection() {
               <text x="250" y="262" fill="#fff" fontFamily="Space Grotesk" fontSize="15" fontWeight="700" textAnchor="middle">eXchange</text>
               <text x="250" y="280" fill="#6FD3FF" fontFamily="JetBrains Mono" fontSize="9" textAnchor="middle">ENGINE™</text>
 
-              {["CRM", "Email", "Digital", "Direct Mail"].map((label, i) => (
+              {["CRM", "Email", "Programmatic", "Direct Mail"].map((label, i) => (
                 <g key={label}>
                   <rect x="400" y={80 + i * 100} width="84" height="40" rx="10" fill="rgba(79,125,245,0.15)" stroke="#4F7DF5" strokeWidth="1" />
                   <text x="442" y={104 + i * 100} fill="#DBE7FE" fontFamily="Inter" fontSize="11" fontWeight="600" textAnchor="middle">

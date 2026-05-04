@@ -60,16 +60,16 @@ const CASES = [
   {
     industry: "Financial Services",
     client: "Regional lender",
-    title: "Scaling consumer lending acquisition with a lookalike model.",
+    title: "Scaling consumer lending acquisition with a Marketing Analytics Modeling.",
     challenge:
       "A regional consumer lender wanted to scale acquisition in new geographies with a tightly-performing lookalike of their best customers.",
     approach:
-      "We modeled lookalikes from their best-performing customer cohort using consumer attributes + intent signals, then deployed across digital and direct mail.",
-    outcome: "+41% higher conversion on lookalike segments vs. control audience.",
+      "We modeled Marketing Analytics Modeling from their best-performing customer cohort using consumer attributes + intent signals, then deployed across Programmatic and direct mail.",
+    outcome: "+41% higher conversion on modeled segmentsvs. control audience.",
     metrics: [
       { label: "Conversion Lift", value: "+41%" },
       { label: "Geographies", value: "7 new DMAs" },
-      { label: "Channel Mix", value: "Digital + DM" },
+      { label: "Channel Mix", value: "Programmatic + DM" },
     ],
   },
 ];

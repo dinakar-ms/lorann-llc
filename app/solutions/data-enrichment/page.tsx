@@ -77,14 +77,14 @@ export default function DataEnrichmentPage() {
                 <span className="text-gradient">in one pass.</span>
               </>
             }
-            description="Mix and match the enrichment layers that move your specific performance metric."
+            description="Mix and match the enrichment layers that move your specific KPI."
           />
           <FeatureCardGrid
             columns={3}
             features={[
               { Icon: Plus, title: "Attribute Appends", desc: "Firmographic, demographic, technographic, and contact-level appends to complete your records." },
               { Icon: Zap, title: "Intent Signal Overlay", desc: "Layer behavioral and buying signals onto your file to prioritize in-market accounts." },
-              { Icon: GitBranch, title: "Lookalike Modeling", desc: "Build predictive lookalikes from your best customers to find more of them." },
+              { Icon: GitBranch, title: "Marketing Analytics Modeling", desc: "Build predictive Marketing Analytics Modeling from your best customers to find more of them." },
               { Icon: Target, title: "Lead Scoring", desc: "Score records by conversion likelihood so sales works the highest-value accounts first." },
               { Icon: TrendingUp, title: "Match Rate Improvement", desc: "Clean, standardize, and match your file against our verified datasets to lift activation rates." },
               { Icon: CheckCircle2, title: "Validation & Hygiene", desc: "Monthly tele-verification and email validation keep your file accurate and deliverable." },

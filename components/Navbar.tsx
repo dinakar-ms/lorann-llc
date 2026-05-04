@@ -73,7 +73,7 @@ const NAV: NavItem[] = [
       {
         label: "Data Activation & Channel Integration",
         href: "/solutions/data-activation",
-        desc: "Deploy audiences across CRM, email, digital, and traditional.",
+        desc: "Deploy audiences across CRM, email, Programmatic, and traditional.",
         Icon: Share2,
       },
     ],

@@ -17,7 +17,7 @@ const CAPABILITIES = [
   { Icon: Radio, title: "Real-time intent signals", desc: "Live buyer-signal feeds reveal who's actively researching what — so you focus where demand exists right now." },
   { Icon: RefreshCw, title: "Continuous refresh", desc: "Profiles never stop improving. Verification, enrichment, and scoring run continuously in the background." },
   { Icon: Target, title: "Higher-intent segments", desc: "Intent + firmographic fusion produces audiences that convert measurably higher than traditional lists." },
-  { Icon: Zap, title: "Channel-ready output", desc: "Activate directly into CRM, email, digital ads, and direct mail with no reformatting friction." },
+  { Icon: Zap, title: "Channel-ready output", desc: "Activate directly into CRM, email, Programmatic ads, and direct mail with no reformatting friction." },
   { Icon: BarChart3, title: "Performance feedback loop", desc: "Campaign results feed back into the model — so your audiences get sharper with every activation." },
 ];
 
