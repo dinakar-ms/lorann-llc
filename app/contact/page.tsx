@@ -140,7 +140,7 @@ Thanks!`;
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                     <div>
                       <label className="block text-[13px] font-semibold text-slate-700 mb-2">
-                        Work Email *
+                        Email *
                       </label>
                       <input
                         type="email"
