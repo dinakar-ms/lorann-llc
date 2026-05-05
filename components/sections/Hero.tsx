@@ -1,10 +1,52 @@
-import { ArrowRight, Play } from "lucide-react";
+import { Play } from "lucide-react";
 import Button from "../ui/Button";
 import HeroGlobe from "../HeroGlobe";
 
-export default function Hero() {
+export type HeroContent = {
+  badgeLabel?: string;
+  badgeText?: string;
+  line1?: string;
+  line2Start?: string;
+  line2Highlight?: string;
+  line3Start?: string;
+  line3Highlight?: string;
+  description?: string;
+  primaryCta?: { label?: string; href?: string };
+  secondaryCta?: { label?: string; href?: string };
+};
+
+const DEFAULTS: Required<
+  Omit<HeroContent, "primaryCta" | "secondaryCta">
+> & {
+  primaryCta: { label: string; href: string };
+  secondaryCta: { label: string; href: string };
+} = {
+  badgeLabel: "Live",
+  badgeText: "95M+ verified contacts · real-time intent signals",
+  line1: "List smarter.",
+  line2Start: "Target",
+  line2Highlight: "sharper.",
+  line3Start: "Grow",
+  line3Highlight: "faster.",
+  description:
+    "Build, enrich, and activate high-performing audiences across B2B, consumer, and healthcare datasets — engineered to drive measurable marketing outcomes.",
+  primaryCta: { label: "Get Started Free", href: "/contact" },
+  secondaryCta: { label: "Watch Demo", href: "/how-it-works" },
+};
+
+export default function Hero({ content }: { content?: HeroContent }) {
+  const c = { ...DEFAULTS, ...(content || {}) };
+  const primaryCta = { ...DEFAULTS.primaryCta, ...(content?.primaryCta || {}) };
+  const secondaryCta = {
+    ...DEFAULTS.secondaryCta,
+    ...(content?.secondaryCta || {}),
+  };
+
   return (
-    <section className="relative overflow-hidden pt-40 pb-20 xl:min-h-screen radial-hero dot-grid" id="top">
+    <section
+      className="relative overflow-hidden pt-40 pb-20 xl:min-h-screen radial-hero dot-grid"
+      id="top"
+    >
       {/* Floating orbs */}
       <div
         className="absolute top-[10%] -left-[5%] w-[500px] h-[500px] rounded-full pointer-events-none blur-[80px] animate-orb-float-1"
@@ -31,23 +73,25 @@ export default function Hero() {
             >
               <span className="inline-flex items-center gap-1.5 bg-gradient-to-br from-blue-600 to-cyan-500 text-white px-2.5 py-1 rounded-full text-[11px] font-bold uppercase tracking-wider">
                 <span className="w-1.5 h-1.5 bg-white rounded-full shadow-[0_0_6px_rgba(255,255,255,0.9)] animate-pulse-dot" />
-                Live
+                {c.badgeLabel}
               </span>
-              95M+ verified contacts · real-time intent signals
+              {c.badgeText}
             </div>
 
             <h1 className="font-display font-bold text-[clamp(2.5rem,5.6vw,4.8rem)] leading-[1.02] tracking-[-0.035em] text-slate-900 mb-6">
               <span className="line-wrap">
-                <span style={{ animationDelay: "0.2s" }}>List smarter.</span>
+                <span style={{ animationDelay: "0.2s" }}>{c.line1}</span>
               </span>
               <span className="line-wrap">
                 <span style={{ animationDelay: "0.35s" }}>
-                  Target <span className="text-gradient">sharper.</span>
+                  {c.line2Start}{" "}
+                  <span className="text-gradient">{c.line2Highlight}</span>
                 </span>
               </span>
               <span className="line-wrap">
                 <span style={{ animationDelay: "0.5s" }}>
-                  Grow <span className="text-gradient">faster.</span>
+                  {c.line3Start}{" "}
+                  <span className="text-gradient">{c.line3Highlight}</span>
                 </span>
               </span>
             </h1>
@@ -58,7 +102,7 @@ export default function Hero() {
                 animation: "fade-slide 0.9s 1.3s var(--ease) forwards",
               }}
             >
-              Build, enrich, and activate high-performing audiences across B2B, consumer, and healthcare datasets — engineered to drive measurable marketing outcomes.
+              {c.description}
             </p>
 
             <div
@@ -67,15 +111,15 @@ export default function Hero() {
                 animation: "fade-slide 0.9s 1.5s var(--ease) forwards",
               }}
             >
-              <Button href="/contact" variant="primary" showArrow>
-                Get Started Free
+              <Button href={primaryCta.href} variant="primary" showArrow>
+                {primaryCta.label}
               </Button>
               <Button
-                href="/how-it-works"
+                href={secondaryCta.href}
                 variant="outline"
                 icon={<Play className="w-4 h-4" />}
               >
-                Watch Demo
+                {secondaryCta.label}
               </Button>
             </div>
           </div>
@@ -91,7 +135,6 @@ export default function Hero() {
                 }}
               />
 
-              {/* CSS pulse rings */}
               <div className="pulse-ring" />
               <div className="pulse-ring" />
               <div className="pulse-ring" />
@@ -99,7 +142,6 @@ export default function Hero() {
 
               <HeroGlobe />
 
-              {/* Rotating text rings */}
               <div
                 className="absolute inset-[8%] z-[3] pointer-events-none text-ring-svg"
                 style={{ animation: "spin 40s linear infinite" }}
