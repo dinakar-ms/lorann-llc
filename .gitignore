@@ -32,5 +32,10 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
-# Claude Code worktrees (separate branch checkouts, not part of main)
-.claude/worktrees/
+# sanity
+/dist
+/sanity/extract.json
+/sanity.types.ts
+
+# Claude Code worktrees + agent state
+.claude/

@@ -1,9 +1,10 @@
 import type { Metadata } from "next";
 import { Space_Grotesk, Inter, JetBrains_Mono } from "next/font/google";
+import { draftMode } from "next/headers";
+import { VisualEditing } from "next-sanity";
 import "./globals.css";
-import Navbar from "@/components/Navbar";
-import Footer from "@/components/Footer";
-import AnnouncementBar from "@/components/AnnouncementBar";
+import LayoutChrome from "@/components/LayoutChrome";
+import DisableDraftMode from "@/components/DisableDraftMode";
 
 const spaceGrotesk = Space_Grotesk({
   subsets: ["latin"],
@@ -62,10 +63,13 @@ export default function RootLayout({
       className={`${spaceGrotesk.variable} ${inter.variable} ${jetbrains.variable}`}
     >
       <body className="font-body text-slate-900 bg-bg-base">
-        <AnnouncementBar />
-        <Navbar />
-        <main>{children}</main>
-        <Footer />
+        <LayoutChrome>{children}</LayoutChrome>
+        {draftMode().isEnabled && (
+          <>
+            <DisableDraftMode />
+            <VisualEditing />
+          </>
+        )}
       </body>
     </html>
   );
