@@ -63,7 +63,7 @@ export default function VerifiedDataPage() {
               <span className="text-gradient">refreshed and ready to perform.</span>
             </h1>
             <p className="text-lg sm:text-xl text-slate-600 max-w-2xl leading-relaxed">
-              A bigger list isn't a better list. Lorann data is continuously verified, deduplicated, and refreshed across phone, email, and postal — so every campaign touch lands on a real, reachable contact.
+              A bigger list isn&apos;t a better list. Lorann data is continuously verified, deduplicated, and refreshed across phone, email, and postal — so every campaign touch lands on a real, reachable contact.
             </p>
             <div className="mt-9 flex flex-wrap gap-3">
               <Link

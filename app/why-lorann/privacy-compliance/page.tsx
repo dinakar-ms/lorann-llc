@@ -63,7 +63,7 @@ export default function PrivacyCompliancePage() {
               <span className="text-gradient">from source to delivery.</span>
             </h1>
             <p className="text-lg sm:text-xl text-slate-600 max-w-2xl leading-relaxed">
-              Privacy isn't a feature added at the end of the pipeline. It's the architecture every Lorann record passes through from collection through activation — GDPR, CCPA, and CAN-SPAM compliant by design, with HIPAA-conscious practices for healthcare audiences.
+              Privacy isn&apos;t a feature added at the end of the pipeline. It&apos;s the architecture every Lorann record passes through from collection through activation — GDPR, CCPA, and CAN-SPAM compliant by design, with HIPAA-conscious practices for healthcare audiences.
             </p>
             <div className="mt-9 flex flex-wrap gap-3">
               <a
@@ -99,7 +99,7 @@ export default function PrivacyCompliancePage() {
               </h2>
             </div>
             <div className="text-slate-700 text-[17px] leading-[1.75] space-y-4">
-              <p>Privacy regulation isn't a checklist exercise. GDPR, CCPA, CAN-SPAM, and HIPAA all impose obligations on how data is collected, stored, processed, and activated — and treating any one stage as an afterthought creates risk that compounds.</p>
+              <p>Privacy regulation isn&apos;t a checklist exercise. GDPR, CCPA, CAN-SPAM, and HIPAA all impose obligations on how data is collected, stored, processed, and activated — and treating any one stage as an afterthought creates risk that compounds.</p>
               <p>Lorann engineers governance into the data lifecycle itself. Every record carries documented basis for use, every storage layer is encrypted, every activation honors suppression. The compliance posture is the product, not a wrapper around it.</p>
             </div>
           </div>
@@ -170,7 +170,7 @@ export default function PrivacyCompliancePage() {
                 Permissioned acquisition. Encrypted storage. Suppression-aware activation.
               </h3>
               <p className="text-white/75 text-[15px] leading-relaxed max-w-2xl">
-                Compliance is enforced at every stage — from how a record is acquired (documented opt-in or legitimate interest), through how it's stored (encrypted, role-based access, audit-logged), to how it's activated (opt-outs honored on every send, every cycle).
+                Compliance is enforced at every stage — from how a record is acquired (documented opt-in or legitimate interest), through how it&apos;s stored (encrypted, role-based access, audit-logged), to how it&apos;s activated (opt-outs honored on every send, every cycle).
               </p>
             </div>
           </div>
