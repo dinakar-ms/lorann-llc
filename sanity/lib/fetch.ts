@@ -27,11 +27,8 @@ export async function sanityFetch<QueryResponse>({
       .withConfig({
         token: isDraftMode ? token : undefined,
         perspective: isDraftMode ? "previewDrafts" : "published",
-        useCdn: !isDraftMode,
-        // Keep stega enabled (inherited from base client config)
-        // so click-to-edit works in the Studio Presentation iframe.
-        // Stega injects invisible metadata into strings — it's a no-op
-        // for normal visitors; only VisualEditing reads it.
+        // Don't override useCdn — base client uses false for stega support.
+        // Don't override stega — base client has it enabled with studioUrl.
       })
       .fetch<QueryResponse>(query, params, {
         next: {
