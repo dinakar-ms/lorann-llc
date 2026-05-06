@@ -35,11 +35,23 @@ const DEFAULTS: Required<
 };
 
 export default function Hero({ content }: { content?: HeroContent }) {
-  const c = { ...DEFAULTS, ...(content || {}) };
-  const primaryCta = { ...DEFAULTS.primaryCta, ...(content?.primaryCta || {}) };
+  const c = {
+    badgeLabel: content?.badgeLabel || DEFAULTS.badgeLabel,
+    badgeText: content?.badgeText || DEFAULTS.badgeText,
+    line1: content?.line1 || DEFAULTS.line1,
+    line2Start: content?.line2Start || DEFAULTS.line2Start,
+    line2Highlight: content?.line2Highlight || DEFAULTS.line2Highlight,
+    line3Start: content?.line3Start || DEFAULTS.line3Start,
+    line3Highlight: content?.line3Highlight || DEFAULTS.line3Highlight,
+    description: content?.description || DEFAULTS.description,
+  };
+  const primaryCta = {
+    label: content?.primaryCta?.label || DEFAULTS.primaryCta.label,
+    href: content?.primaryCta?.href || DEFAULTS.primaryCta.href,
+  };
   const secondaryCta = {
-    ...DEFAULTS.secondaryCta,
-    ...(content?.secondaryCta || {}),
+    label: content?.secondaryCta?.label || DEFAULTS.secondaryCta.label,
+    href: content?.secondaryCta?.href || DEFAULTS.secondaryCta.href,
   };
 
   return (
