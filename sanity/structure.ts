@@ -1,6 +1,6 @@
 import type { StructureResolver } from "sanity/structure";
 
-const SINGLETONS = ["homepage", "industryTrendsPage"];
+const SINGLETONS = ["homepage", "industryTrendsPage", "contactPage"];
 
 // Groups all `page` documents whose slug starts with a given prefix.
 const pageGroup = (S: any, title: string, prefix: string) =>
@@ -40,6 +40,12 @@ export const structure: StructureResolver = (S) =>
           S.document()
             .schemaType("industryTrendsPage")
             .documentId("industryTrendsPage")
+        ),
+      S.listItem()
+        .title("Contact Page")
+        .id("contactPage")
+        .child(
+          S.document().schemaType("contactPage").documentId("contactPage")
         ),
       S.divider(),
 
