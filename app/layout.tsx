@@ -64,12 +64,8 @@ export default function RootLayout({
     >
       <body className="font-body text-slate-900 bg-bg-base">
         <LayoutChrome>{children}</LayoutChrome>
-        {draftMode().isEnabled && (
-          <>
-            <DisableDraftMode />
-            <VisualEditing />
-          </>
-        )}
+        <VisualEditing />
+        {draftMode().isEnabled && <DisableDraftMode />}
       </body>
     </html>
   );
