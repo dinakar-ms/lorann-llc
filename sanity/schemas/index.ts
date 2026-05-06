@@ -4,6 +4,7 @@ import { pageType } from "./documents/page";
 import { industryTrendsPageType } from "./documents/industryTrendsPage";
 import { homepageType } from "./documents/homepage";
 import { contactPageType } from "./documents/contactPage";
+import { dataAssetsPageType } from "./documents/dataAssetsPage";
 
 export const schema: { types: SchemaTypeDefinition[] } = {
   types: [
@@ -12,5 +13,6 @@ export const schema: { types: SchemaTypeDefinition[] } = {
     industryTrendsPageType,
     homepageType,
     contactPageType,
+    dataAssetsPageType,
   ],
 };
