@@ -21,10 +21,37 @@ type PageDoc = {
   noIndex?: boolean;
 };
 
+// Top-level segments that have their own dedicated app/ routes.
+// Sanity-driven pages with these slugs must never be served by this
+// catch-all, otherwise generateStaticParams pre-renders them and the
+// static output overrides the real dedicated page.
+const RESERVED_TOP_SEGMENTS = new Set([
+  "about",
+  "api",
+  "contact",
+  "data-assets",
+  "how-it-works",
+  "industries",
+  "insights",
+  "resources",
+  "signal-exchange",
+  "solutions",
+  "studio",
+  "why-lorann",
+]);
+
+function isReservedPath(parts: string[]): boolean {
+  const top = parts[0];
+  return !!top && RESERVED_TOP_SEGMENTS.has(top);
+}
+
 export async function generateStaticParams() {
   try {
     const slugs = await client.fetch<string[]>(allPageSlugsQuery);
-    return slugs.map((slug) => ({ slug: slug.split("/") }));
+    return slugs
+      .map((slug) => slug.split("/"))
+      .filter((parts) => !isReservedPath(parts))
+      .map((parts) => ({ slug: parts }));
   } catch {
     return [];
   }
@@ -94,6 +121,8 @@ export default async function Page({
 }: {
   params: { slug: string[] };
 }) {
+  if (isReservedPath(params.slug || [])) notFound();
+
   const path = paramsToPath(params.slug);
   const page = await sanityFetch<PageDoc | null>({
     query: pageBySlugQuery,
