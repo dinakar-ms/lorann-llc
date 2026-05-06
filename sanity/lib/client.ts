@@ -5,7 +5,13 @@ export const client = createClient({
   projectId,
   dataset,
   apiVersion,
-  useCdn: true,
+  // useCdn must be false for stega encoding to flow through. Next.js
+  // still caches at the route level via the `revalidate` option in
+  // sanityFetch, so this isn't a real performance hit.
+  useCdn: false,
   perspective: "published",
-  stega: { studioUrl: "/studio" },
+  stega: {
+    enabled: true,
+    studioUrl: "/studio",
+  },
 });

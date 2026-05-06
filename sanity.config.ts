@@ -23,10 +23,6 @@ export default defineConfig({
             ? "http://localhost:3000"
             : location.origin,
         preview: "/",
-        previewMode: {
-          enable: "/api/draft-mode/enable",
-          disable: "/api/draft-mode/disable",
-        },
       },
       resolve: {
         // Document → URL (Open Preview from a doc)
@@ -59,6 +55,18 @@ export default defineConfig({
               locations: [{ title: "Homepage", href: "/" }],
             }),
           },
+          contactPage: {
+            select: { titleStart: "heroTitleStart" },
+            resolve: () => ({
+              locations: [{ title: "Contact", href: "/contact" }],
+            }),
+          },
+          dataAssetsPage: {
+            select: { titleStart: "heroTitleStart" },
+            resolve: () => ({
+              locations: [{ title: "Data Assets", href: "/data-assets" }],
+            }),
+          },
         },
         // URL → document (right-side panel finds the doc for the current preview URL).
         // Multiple route patterns cover paths up to 5 segments deep, matching the seeded site routes.
@@ -70,6 +78,14 @@ export default defineConfig({
           {
             route: "/insights/industry-trends",
             filter: `_type == "industryTrendsPage" && _id == "industryTrendsPage"`,
+          },
+          {
+            route: "/contact",
+            filter: `_type == "contactPage" && _id == "contactPage"`,
+          },
+          {
+            route: "/data-assets",
+            filter: `_type == "dataAssetsPage" && _id == "dataAssetsPage"`,
           },
           {
             route: "/:s1",

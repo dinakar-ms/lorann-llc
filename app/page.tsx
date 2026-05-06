@@ -31,6 +31,8 @@ type HomepageDoc = {
   noIndex?: boolean;
 };
 
+export const dynamic = "force-dynamic";
+
 const homepageQuery = groq`*[_type == "homepage" && _id == "homepage"][0]`;
 
 export async function generateMetadata(): Promise<Metadata> {

@@ -38,6 +38,8 @@ type Doc = {
   noIndex?: boolean;
 };
 
+export const dynamic = "force-dynamic";
+
 const query = groq`*[_type == "industryTrendsPage" && _id == "industryTrendsPage"][0]`;
 
 export async function generateMetadata(): Promise<Metadata> {

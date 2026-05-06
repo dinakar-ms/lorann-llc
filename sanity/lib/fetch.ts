@@ -22,17 +22,22 @@ export async function sanityFetch<QueryResponse>({
     );
   }
 
-  return client
-    .withConfig({
-      token: isDraftMode ? token : undefined,
-      perspective: isDraftMode ? "previewDrafts" : "published",
-      useCdn: !isDraftMode,
-      stega: isDraftMode,
-    })
-    .fetch<QueryResponse>(query, params, {
-      next: {
-        revalidate: isDraftMode ? 0 : 60,
-        tags,
-      },
-    });
+  try {
+    return await client
+      .withConfig({
+        token: isDraftMode ? token : undefined,
+        perspective: isDraftMode ? "previewDrafts" : "published",
+        // Don't override useCdn — base client uses false for stega support.
+        // Don't override stega — base client has it enabled with studioUrl.
+      })
+      .fetch<QueryResponse>(query, params, {
+        next: {
+          revalidate: isDraftMode ? 0 : 60,
+          tags,
+        },
+      });
+  } catch (err) {
+    console.error("[sanityFetch] failed", { query, params, err });
+    return null as QueryResponse;
+  }
 }
