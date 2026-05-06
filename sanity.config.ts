@@ -55,6 +55,12 @@ export default defineConfig({
               locations: [{ title: "Homepage", href: "/" }],
             }),
           },
+          contactPage: {
+            select: { titleStart: "heroTitleStart" },
+            resolve: () => ({
+              locations: [{ title: "Contact", href: "/contact" }],
+            }),
+          },
         },
         // URL → document (right-side panel finds the doc for the current preview URL).
         // Multiple route patterns cover paths up to 5 segments deep, matching the seeded site routes.
@@ -66,6 +72,10 @@ export default defineConfig({
           {
             route: "/insights/industry-trends",
             filter: `_type == "industryTrendsPage" && _id == "industryTrendsPage"`,
+          },
+          {
+            route: "/contact",
+            filter: `_type == "contactPage" && _id == "contactPage"`,
           },
           {
             route: "/:s1",
