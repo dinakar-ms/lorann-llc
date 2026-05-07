@@ -57,6 +57,7 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
+  const isDraft = draftMode().isEnabled;
   return (
     <html
       lang="en"
@@ -64,8 +65,12 @@ export default function RootLayout({
     >
       <body className="font-body text-slate-900 bg-bg-base">
         <LayoutChrome>{children}</LayoutChrome>
-        <VisualEditing />
-        {draftMode().isEnabled && <DisableDraftMode />}
+        {/* Visual Editing overlay must only render inside Sanity
+            Presentation (i.e. when Next.js draft mode is on). Rendering
+            it on the public site exposes the "Open in Studio" tooltip
+            to every visitor. */}
+        {isDraft && <VisualEditing />}
+        {isDraft && <DisableDraftMode />}
       </body>
     </html>
   );
