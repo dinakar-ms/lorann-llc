@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { ArrowRight, Clock, Tag } from "lucide-react";
+import { ArrowRight, Clock, Tag, TrendingUp, Sparkles } from "lucide-react";
 import { groq } from "next-sanity";
 import SubPageHero from "@/components/ui/SubPageHero";
 import SectionHeader from "@/components/ui/SectionHeader";
@@ -41,6 +41,29 @@ type Doc = {
 export const dynamic = "force-dynamic";
 
 const query = groq`*[_type == "industryTrendsPage" && _id == "industryTrendsPage"][0]`;
+
+// Map known post titles → inner-page slugs so the Read links work even
+// when the Sanity `slug` field is left at its default "#".
+const TITLE_TO_SLUG: { match: RegExp; slug: string }[] = [
+  { match: /first-?party.*third-?party/i, slug: "first-party-vs-third-party-data" },
+  { match: /data activation/i, slug: "data-activation-bottleneck" },
+  { match: /healthcare.*audience/i, slug: "healthcare-audience-patterns" },
+  { match: /generic consumer/i, slug: "generic-consumer-data" },
+  { match: /abm data/i, slug: "abm-data-quality" },
+  { match: /(auto and insurance|intent data changes)/i, slug: "auto-insurance-intent-roi" },
+];
+
+function resolveHref(p: { title?: string; slug?: string }): string {
+  const raw = (p.slug || "").trim();
+  if (raw && raw !== "#" && raw !== "/") {
+    if (raw.startsWith("/") || raw.startsWith("http")) return raw;
+    return `/insights/industry-trends/${raw.replace(/^\/+/, "")}`;
+  }
+  const title = p.title || "";
+  const found = TITLE_TO_SLUG.find((m) => m.match.test(title));
+  if (found) return `/insights/industry-trends/${found.slug}`;
+  return "#";
+}
 
 export async function generateMetadata(): Promise<Metadata> {
   const doc = await sanityFetch<Doc | null>({
@@ -122,7 +145,7 @@ export default async function IndustryTrendsPage() {
         <section className="py-16 lg:py-20 bg-white">
           <div className="container-custom">
             <Link
-              href={featured.slug || "#"}
+              href={resolveHref(featured)}
               className="reveal block bg-white border border-slate-150 rounded-[28px] overflow-hidden hover:shadow-xl hover:border-blue-200 transition-all duration-500 group"
             >
               <div className="grid lg:grid-cols-[1.2fr_1fr] gap-0 min-h-[320px]">
@@ -145,8 +168,58 @@ export default async function IndustryTrendsPage() {
                         "radial-gradient(ellipse 80% 60% at center, #000 20%, transparent 80%)",
                     }}
                   />
-                  <div className="absolute top-7 left-7 px-3 py-1.5 rounded-full bg-cyan-400/15 border border-cyan-400/30 text-cyan-300 font-mono text-[10.5px] font-bold uppercase tracking-[0.12em]">
+
+                  {/* Concentric rings */}
+                  <div
+                    className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[260px] h-[260px] border border-cyan-300/15 rounded-full pointer-events-none"
+                    style={{ animation: "spin 28s linear infinite" }}
+                  >
+                    <div className="absolute -top-1 left-1/2 -translate-x-1/2 w-1.5 h-1.5 rounded-full bg-cyan-300 shadow-[0_0_12px_#22BFFF]" />
+                  </div>
+                  <div
+                    className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[380px] h-[380px] border border-blue-400/10 rounded-full pointer-events-none"
+                    style={{ animation: "spin 44s linear infinite reverse" }}
+                  >
+                    <div className="absolute top-1/2 -right-1 -translate-y-1/2 w-1.5 h-1.5 rounded-full bg-blue-300 shadow-[0_0_12px_#4F7DF5]" />
+                  </div>
+                  <div
+                    className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] border border-white/[0.06] rounded-full pointer-events-none"
+                    style={{ animation: "spin 60s linear infinite" }}
+                  />
+
+                  {/* Floating signal nodes */}
+                  <span
+                    className="absolute top-[22%] left-[18%] w-2 h-2 rounded-full bg-cyan-300/80 shadow-[0_0_14px_#22BFFF] animate-pulse-dot"
+                    style={{ animationDelay: "0s" }}
+                  />
+                  <span
+                    className="absolute bottom-[28%] left-[28%] w-1.5 h-1.5 rounded-full bg-blue-300/80 shadow-[0_0_12px_#4F7DF5] animate-pulse-dot"
+                    style={{ animationDelay: "0.5s" }}
+                  />
+                  <span
+                    className="absolute top-[30%] right-[20%] w-1.5 h-1.5 rounded-full bg-cyan-300/70 shadow-[0_0_10px_#22BFFF] animate-pulse-dot"
+                    style={{ animationDelay: "1s" }}
+                  />
+                  <span
+                    className="absolute bottom-[20%] right-[24%] w-2 h-2 rounded-full bg-blue-300/70 shadow-[0_0_14px_#4F7DF5] animate-pulse-dot"
+                    style={{ animationDelay: "0.3s" }}
+                  />
+
+                  {/* Center glyph */}
+                  <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-24 h-24 rounded-3xl bg-gradient-to-br from-blue-500/20 to-cyan-400/15 border border-cyan-300/30 backdrop-blur-md grid place-items-center shadow-[0_20px_60px_-15px_rgba(34,191,255,0.5)]">
+                    <TrendingUp className="w-10 h-10 text-cyan-200" strokeWidth={1.6} />
+                  </div>
+
+                  <div className="absolute top-7 left-7 px-3 py-1.5 rounded-full bg-cyan-400/15 border border-cyan-400/30 text-cyan-300 font-mono text-[10.5px] font-bold uppercase tracking-[0.12em] inline-flex items-center gap-1.5">
+                    <Sparkles className="w-3 h-3" />
                     Featured
+                  </div>
+                  <div className="absolute bottom-7 left-7 right-7 flex items-center justify-between text-[10.5px] font-mono uppercase tracking-[0.14em] text-cyan-200/70">
+                    <span className="inline-flex items-center gap-1.5">
+                      <span className="w-1 h-1 rounded-full bg-cyan-300 shadow-[0_0_8px_#22BFFF] animate-pulse-dot" />
+                      Signal eXchange
+                    </span>
+                    <span>Live · 2026</span>
                   </div>
                 </div>
                 <div className="p-8 lg:p-10 flex flex-col justify-center">
@@ -199,7 +272,7 @@ export default async function IndustryTrendsPage() {
               {rest.map((p, i) => (
                 <Link
                   key={`${p.title}-${i}`}
-                  href={p.slug || "#"}
+                  href={resolveHref(p)}
                   className="reveal bg-white border border-slate-150 rounded-2xl p-7 hover:-translate-y-1 hover:shadow-lg hover:border-blue-200 transition-all duration-500 flex flex-col group"
                 >
                   <div className="flex items-center gap-3 font-mono text-[10.5px] font-semibold uppercase tracking-[0.12em] text-blue-700 mb-4">
