@@ -27,11 +27,14 @@ export async function sanityFetch<QueryResponse>({
       .withConfig({
         token: isDraftMode ? token : undefined,
         perspective: isDraftMode ? "previewDrafts" : "published",
-        // Stega encoding makes strings clickable in Sanity Presentation
-        // by injecting invisible Unicode markers. We only want this
-        // INSIDE Studio (draft mode). On the public site it would cause
-        // the "Open in Studio" tooltip to leak to every visitor.
-        stega: isDraftMode,
+        // Stega encoding makes strings clickable in Sanity Presentation.
+        // Inside Studio we need the FULL stega config (with studioUrl),
+        // otherwise VisualEditing can't construct the jump-to-field
+        // target on click. On the public site we turn stega off so the
+        // "Open in Studio" tooltip doesn't leak to visitors.
+        stega: isDraftMode
+          ? { enabled: true, studioUrl: "/studio" }
+          : false,
       })
       .fetch<QueryResponse>(query, params, {
         next: {
