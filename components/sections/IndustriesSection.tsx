@@ -1,31 +1,68 @@
-import { Heart, BarChart3, Building2, Shield, Car, ArrowRight } from "lucide-react";
+import { Heart, BarChart3, Building2, Shield, Car, ArrowRight, type LucideIcon } from "lucide-react";
 import Link from "next/link";
 import SectionHeader from "../ui/SectionHeader";
+import { getIconComponent } from "../ui/IconByName";
 
-const INDUSTRIES = [
-  { id: "healthcare", Icon: Heart, title: "Healthcare", desc: "Physicians, hospitals, and allied health with HIPAA-conscious practices." },
-  { id: "financial", Icon: BarChart3, title: "Financial", desc: "Banks, credit unions, wealth management, and insurance with intent signals." },
-  { id: "b2b", Icon: Building2, title: "B2B", desc: "Decision-makers, department heads, and procurement teams everywhere." },
-  { id: "insurance", Icon: Shield, title: "Insurance", desc: "Auto, life, health, and property buyers from high-intent lead programs." },
-  { id: "automotive", Icon: Car, title: "Automotive", desc: "In-market buyers, dealerships, fleet operators, and aftermarket networks." },
+type Industry = { id: string; Icon: LucideIcon; title: string; desc: string; href: string };
+
+export type IndustriesContent = {
+  kicker?: string;
+  titleStart?: string;
+  titleHighlight?: string;
+  description?: string;
+  items?: { id?: string; iconName?: string; title?: string; desc?: string; href?: string }[];
+};
+
+const DEFAULT_INDUSTRIES: Industry[] = [
+  { id: "healthcare", Icon: Heart, title: "Healthcare", desc: "Physicians, hospitals, and allied health with HIPAA-conscious practices.", href: "mailto:info@lorannllc.com?subject=Healthcare%20Inquiry" },
+  { id: "financial", Icon: BarChart3, title: "Financial", desc: "Banks, credit unions, wealth management, and insurance with intent signals.", href: "mailto:info@lorannllc.com?subject=Financial%20Inquiry" },
+  { id: "b2b", Icon: Building2, title: "B2B", desc: "Decision-makers, department heads, and procurement teams everywhere.", href: "mailto:info@lorannllc.com?subject=B2B%20Inquiry" },
+  { id: "insurance", Icon: Shield, title: "Insurance", desc: "Auto, life, health, and property buyers from high-intent lead programs.", href: "mailto:info@lorannllc.com?subject=Insurance%20Inquiry" },
+  { id: "automotive", Icon: Car, title: "Automotive", desc: "In-market buyers, dealerships, fleet operators, and aftermarket networks.", href: "mailto:info@lorannllc.com?subject=Automotive%20Inquiry" },
 ];
 
-export default function IndustriesSection() {
+export default function IndustriesSection({ content }: { content?: IndustriesContent }) {
+  const INDUSTRIES: Industry[] =
+    content?.items && content.items.length > 0
+      ? content.items.map((it, i) => {
+          const fallback = DEFAULT_INDUSTRIES[i % DEFAULT_INDUSTRIES.length];
+          return {
+            id: it.id || fallback.id,
+            Icon: getIconComponent(it.iconName) || fallback.Icon,
+            title: it.title || fallback.title,
+            desc: it.desc || fallback.desc,
+            href: it.href || fallback.href,
+          };
+        })
+      : DEFAULT_INDUSTRIES;
+
+  const kicker = content?.kicker || "Verticals";
+  const titleStart = content?.titleStart || "Deep expertise across";
+  const titleHighlight = content?.titleHighlight || "every industry";
+  const description =
+    content?.description ||
+    "Vertical knowledge where data precision, targeting accuracy, and performance matter most.";
   return (
     <section id="industries" className="py-24 lg:py-32 radial-industries">
       <div className="container-custom">
         <SectionHeader
-          kicker="Verticals"
-          title={<>Deep expertise across<br /><span className="text-gradient">every industry</span></>}
-          description="Vertical knowledge where data precision, targeting accuracy, and performance matter most."
+          kicker={kicker}
+          title={
+            <>
+              {titleStart}
+              <br />
+              <span className="text-gradient">{titleHighlight}</span>
+            </>
+          }
+          description={description}
         />
 
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
-          {INDUSTRIES.map(({ id, Icon, title, desc }) => (
+          {INDUSTRIES.map(({ id, Icon, title, desc, href }) => (
             <Link
               key={id}
               id={id}
-              href={`mailto:info@lorannllc.com?subject=${title}%20Inquiry`}
+              href={href}
               className="ind-card group relative bg-white border border-slate-150 rounded-2xl p-6 sm:p-8 min-h-[220px] overflow-hidden hover:-translate-y-1.5 hover:shadow-xl transition-all duration-500 reveal"
             >
               {/* Dark blue gradient background — fades in on hover */}

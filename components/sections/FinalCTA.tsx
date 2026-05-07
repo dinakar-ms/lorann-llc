@@ -4,7 +4,43 @@ import { useEffect, useRef } from "react";
 import { ArrowRight, Check } from "lucide-react";
 import Link from "next/link";
 
-export default function FinalCTA() {
+export type FinalCTAContent = {
+  kicker?: string;
+  titleStart?: string;
+  titleHighlight?: string;
+  description?: string;
+  primaryCta?: { label?: string; href?: string };
+  secondaryCta?: { label?: string; href?: string };
+  trust?: string[];
+};
+
+const DEFAULT_TRUST = ["No long-term contracts", "GDPR & CCPA compliant", "Free consultation"];
+
+// Render `\n` in titleStart as a line break.
+function renderLines(text: string) {
+  return text.split("\n").map((line, i, arr) => (
+    <span key={i}>
+      {line}
+      {i < arr.length - 1 && <br />}
+    </span>
+  ));
+}
+
+export default function FinalCTA({ content }: { content?: FinalCTAContent }) {
+  const kicker = content?.kicker || "Let's Build Together";
+  const titleStart = content?.titleStart || "Build the right audience\nfor your";
+  const titleHighlight = content?.titleHighlight || "business.";
+  const description =
+    content?.description ||
+    "Tell us your goals — we'll develop a data strategy aligned to your targeting, activation, and performance needs.";
+  const primaryLabel = content?.primaryCta?.label || "Get Started";
+  const primaryHref = content?.primaryCta?.href || "/contact";
+  const secondaryLabel = content?.secondaryCta?.label || "Talk to an Expert";
+  const secondaryHref =
+    content?.secondaryCta?.href || "mailto:info@lorannllc.com?subject=Talk%20to%20an%20Expert";
+  const trust =
+    content?.trust && content.trust.length > 0 ? content.trust : DEFAULT_TRUST;
+
   const particlesRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -56,38 +92,36 @@ export default function FinalCTA() {
           <div className="relative z-[2]">
             <span className="inline-flex items-center gap-2 font-mono text-[11.5px] font-medium uppercase tracking-[0.15em] text-cyan-300 px-3.5 py-1.5 bg-cyan-400/15 border border-cyan-400/30 rounded-full mb-5">
               <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 shadow-[0_0_8px_#22BFFF] animate-pulse-dot" />
-              Let&apos;s Build Together
+              {kicker}
             </span>
             <h2 className="font-display font-bold text-4xl sm:text-5xl lg:text-[4rem] leading-[1.05] tracking-[-0.025em] mb-5 max-w-[720px] mx-auto">
-              Build the right audience
-              <br />
-              for your <span className="text-gradient-cyan">business.</span>
+              {renderLines(titleStart)}{" "}
+              <span className="text-gradient-cyan">{titleHighlight}</span>
             </h2>
             <p className="text-[17px] opacity-85 max-w-[560px] mx-auto mb-9 leading-relaxed">
-              Tell us your goals — we&apos;ll develop a data strategy aligned to
-              your targeting, activation, and performance needs.
+              {description}
             </p>
             <div className="flex justify-center gap-3 flex-wrap mb-8">
               <Link
-                href="/contact"
+                href={primaryHref}
                 className="group/btn relative inline-flex items-center gap-2 px-6 py-3.5 bg-white text-slate-900 font-semibold text-[14.5px] rounded-xl hover:-translate-y-0.5 hover:shadow-[0_20px_40px_-10px_rgba(111,211,255,0.5)] transition-all overflow-hidden"
               >
                 <span
                   className="absolute inset-0 opacity-0 group-hover/btn:opacity-100 transition-opacity"
                   style={{ background: "linear-gradient(135deg, #6FD3FF, #A9C2FD)" }}
                 />
-                <span className="relative">Get Started</span>
+                <span className="relative">{primaryLabel}</span>
                 <ArrowRight className="w-4 h-4 relative" />
               </Link>
               <Link
-                href="mailto:info@lorannllc.com?subject=Talk%20to%20an%20Expert"
+                href={secondaryHref}
                 className="inline-flex items-center gap-2 px-6 py-3.5 bg-white/10 border border-white/20 text-white font-semibold text-[14.5px] rounded-xl backdrop-blur-md hover:bg-white/18 hover:-translate-y-0.5 transition-all"
               >
-                Talk to an Expert
+                {secondaryLabel}
               </Link>
             </div>
             <div className="flex justify-center gap-6 flex-wrap text-[13.5px] opacity-80">
-              {["No long-term contracts", "GDPR & CCPA compliant", "Free consultation"].map((t) => (
+              {trust.map((t) => (
                 <span key={t} className="flex items-center gap-2">
                   <Check className="w-4 h-4 text-cyan-400" strokeWidth={2.5} />
                   {t}
