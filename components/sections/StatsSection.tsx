@@ -1,17 +1,49 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import { Users, CheckCircle, Briefcase, TrendingUp } from "lucide-react";
+import { Users, CheckCircle, Briefcase, TrendingUp, type LucideIcon } from "lucide-react";
 import SectionHeader from "../ui/SectionHeader";
+import { getIconComponent } from "../ui/IconByName";
 
-const STATS = [
-  { icon: Users, count: 95, suffix: "M+", label: "Verified B2B & B2C Contacts", offset: 40 },
-  { icon: CheckCircle, count: 98, suffix: "%", label: "Data Accuracy Rate", offset: 10 },
-  { icon: Briefcase, count: 500, suffix: "+", label: "Industries & Verticals", offset: 120 },
-  { icon: TrendingUp, count: 10, suffix: "K+", label: "Campaigns Powered", offset: 80 },
+type Stat = { Icon: LucideIcon; count: number; suffix: string; label: string; offset: number };
+
+export type StatsSectionContent = {
+  kicker?: string;
+  titleStart?: string;
+  titleHighlight?: string;
+  description?: string;
+  stats?: { iconName?: string; count?: number; suffix?: string; label?: string; offset?: number }[];
+};
+
+const DEFAULT_STATS: Stat[] = [
+  { Icon: Users, count: 95, suffix: "M+", label: "Verified B2B & B2C Contacts", offset: 40 },
+  { Icon: CheckCircle, count: 98, suffix: "%", label: "Data Accuracy Rate", offset: 10 },
+  { Icon: Briefcase, count: 500, suffix: "+", label: "Industries & Verticals", offset: 120 },
+  { Icon: TrendingUp, count: 10, suffix: "K+", label: "Campaigns Powered", offset: 80 },
 ];
 
-export default function StatsSection() {
+export default function StatsSection({ content }: { content?: StatsSectionContent }) {
+  const STATS: Stat[] =
+    content?.stats && content.stats.length > 0
+      ? content.stats.map((s, i) => {
+          const fallback = DEFAULT_STATS[i % DEFAULT_STATS.length];
+          return {
+            Icon: getIconComponent(s.iconName) || fallback.Icon,
+            count: typeof s.count === "number" ? s.count : fallback.count,
+            suffix: s.suffix ?? fallback.suffix,
+            label: s.label ?? fallback.label,
+            offset: typeof s.offset === "number" ? s.offset : fallback.offset,
+          };
+        })
+      : DEFAULT_STATS;
+
+  const kicker = content?.kicker || "The Numbers";
+  const titleStart = content?.titleStart || "Built for";
+  const titleHighlight = content?.titleHighlight || "real performance";
+  const description =
+    content?.description ||
+    "Every metric reflects data quality, process rigor, and a commitment to client outcomes.";
+
   const gridRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -62,9 +94,13 @@ export default function StatsSection() {
     <section className="py-24 lg:py-32 radial-stats">
       <div className="container-custom">
         <SectionHeader
-          kicker="The Numbers"
-          title={<>Built for <span className="text-gradient">real performance</span></>}
-          description="Every metric reflects data quality, process rigor, and a commitment to client outcomes."
+          kicker={kicker}
+          title={
+            <>
+              {titleStart} <span className="text-gradient">{titleHighlight}</span>
+            </>
+          }
+          description={description}
         />
 
         <div
@@ -129,7 +165,7 @@ export default function StatsSection() {
                     }}
                   />
                 </svg>
-                <stat.icon
+                <stat.Icon
                   className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-10 h-10 text-blue-600"
                   strokeWidth={2}
                 />

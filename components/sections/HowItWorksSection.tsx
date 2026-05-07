@@ -1,17 +1,48 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { Crosshair, Database, GitMerge, TrendingUp } from "lucide-react";
+import { Crosshair, Database, GitMerge, TrendingUp, type LucideIcon } from "lucide-react";
 import SectionHeader from "../ui/SectionHeader";
+import { getIconComponent } from "../ui/IconByName";
 
-const STEPS = [
-  { icon: Crosshair, title: "Define", desc: "We align on your target audience, campaign goals, and KPIs — establishing clear benchmarks." },
-  { icon: Database, title: "Build", desc: "We construct and refine audience segments using high-quality sources and Signal eXchange™ enrichment." },
-  { icon: GitMerge, title: "Activate", desc: "Audiences deploy across CRM, email, Programmatic platforms, and lead programs — ensuring full marketing coverage." },
-  { icon: TrendingUp, title: "Optimize", desc: "Continuous monitoring, data refresh, and optimization cycles ensure your audiences improve over time." },
+type Step = { Icon: LucideIcon; title: string; desc: string };
+
+export type HowItWorksContent = {
+  kicker?: string;
+  titleStart?: string;
+  titleHighlight?: string;
+  titleEnd?: string;
+  description?: string;
+  steps?: { iconName?: string; title?: string; desc?: string }[];
+};
+
+const DEFAULT_STEPS: Step[] = [
+  { Icon: Crosshair, title: "Define", desc: "We align on your target audience, campaign goals, and KPIs — establishing clear benchmarks." },
+  { Icon: Database, title: "Build", desc: "We construct and refine audience segments using high-quality sources and Signal eXchange™ enrichment." },
+  { Icon: GitMerge, title: "Activate", desc: "Audiences deploy across CRM, email, Programmatic platforms, and lead programs — ensuring full marketing coverage." },
+  { Icon: TrendingUp, title: "Optimize", desc: "Continuous monitoring, data refresh, and optimization cycles ensure your audiences improve over time." },
 ];
 
-export default function HowItWorksSection() {
+export default function HowItWorksSection({ content }: { content?: HowItWorksContent }) {
+  const STEPS: Step[] =
+    content?.steps && content.steps.length > 0
+      ? content.steps.map((s, i) => {
+          const fallback = DEFAULT_STEPS[i % DEFAULT_STEPS.length];
+          return {
+            Icon: getIconComponent(s.iconName) || fallback.Icon,
+            title: s.title || fallback.title,
+            desc: s.desc || fallback.desc,
+          };
+        })
+      : DEFAULT_STEPS;
+
+  const kicker = content?.kicker || "The Process";
+  const titleStart = content?.titleStart || "A simple,";
+  const titleHighlight = content?.titleHighlight || "four-step";
+  const titleEnd = content?.titleEnd || "path from data to results";
+  const description =
+    content?.description ||
+    "Structured delivery that gets your audiences live, performing, and improving — fast.";
   const gridRef = useRef<HTMLDivElement>(null);
   const [progress, setProgress] = useState(0);
   const [highlight, setHighlight] = useState(0);
@@ -40,9 +71,14 @@ export default function HowItWorksSection() {
     <section id="how" className="py-24 lg:py-32" style={{ background: "linear-gradient(180deg, #FFFFFF 0%, #F0F5FF 100%)" }}>
       <div className="container-custom">
         <SectionHeader
-          kicker="The Process"
-          title={<>A simple, <span className="text-gradient">four-step</span> path<br />from data to results</>}
-          description="Structured delivery that gets your audiences live, performing, and improving — fast."
+          kicker={kicker}
+          title={
+            <>
+              {titleStart} <span className="text-gradient">{titleHighlight}</span>{" "}
+              {titleEnd}
+            </>
+          }
+          description={description}
         />
 
         <div className="relative">
@@ -122,7 +158,7 @@ export default function HowItWorksSection() {
                       }`}
                       style={{ animation: "spin 30s linear infinite reverse" }}
                     />
-                    <step.icon
+                    <step.Icon
                       className={`w-[52px] h-[52px] transition-all ${
                         isHighlight ? "text-blue-700 scale-110" : "text-blue-600"
                       }`}

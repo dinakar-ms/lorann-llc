@@ -180,50 +180,119 @@ function VizB() {
   );
 }
 
-export default function SolutionsSection() {
+export type SolutionsSectionContent = {
+  kicker?: string;
+  titleStart?: string;
+  titleHighlight?: string;
+  description?: string;
+  rows?: {
+    id?: string;
+    kicker?: string;
+    title?: string;
+    titleAccent?: string;
+    desc?: string;
+    feats?: string[];
+    cta?: string;
+    ctaHref?: string;
+    vizVariant?: string;
+    reverse?: boolean;
+  }[];
+};
+
+const DEFAULT_ROWS = [
+  {
+    id: "audience-targeting",
+    kicker: "Core Service",
+    title: "Precision",
+    titleAccent: "audience targeting",
+    desc: "Leverage high-quality B2B, healthcare, and consumer data to build precise audiences based on industry, role, behavior, and intent signals — with Marketing Analytics Modeling for scale.",
+    feats: [
+      "Custom audience segmentation",
+      "Firmographic, technographic, behavioral filters",
+      "B2B, healthcare & consumer datasets",
+      "Marketing Analytics Modeling",
+    ],
+    cta: "Learn More",
+    ctaHref: "mailto:info@lorannllc.com?subject=Audience%20Targeting",
+    vizVariant: "A",
+    reverse: false,
+  },
+  {
+    id: "data-enrichment",
+    kicker: "Enhancement",
+    title: "Data",
+    titleAccent: "enrichment",
+    desc: "Enhance existing datasets with firmographic, technographic, and intent signals — then apply predictive modeling to prioritize the prospects most likely to convert.",
+    feats: [
+      "Firmographic & technographic append",
+      "Real-time intent signal integration",
+      "Predictive lead scoring models",
+      "CRM-ready delivery formats",
+    ],
+    cta: "Learn More",
+    ctaHref: "mailto:info@lorannllc.com?subject=Data%20Enrichment",
+    vizVariant: "B",
+    reverse: true,
+  },
+];
+
+export default function SolutionsSection({ content }: { content?: SolutionsSectionContent }) {
+  const kicker = content?.kicker || "Solutions";
+  const titleStart = content?.titleStart || "Flexible solutions for";
+  const titleHighlight = content?.titleHighlight || "every campaign";
+  const description =
+    content?.description ||
+    "Focused services that adapt to your marketing stack and operational workflow.";
+
+  const rows =
+    content?.rows && content.rows.length > 0
+      ? content.rows.map((r, i) => {
+          const fallback = DEFAULT_ROWS[i % DEFAULT_ROWS.length];
+          return {
+            id: r.id || fallback.id,
+            kicker: r.kicker || fallback.kicker,
+            title: r.title || fallback.title,
+            titleAccent: r.titleAccent || fallback.titleAccent,
+            desc: r.desc || fallback.desc,
+            feats: r.feats && r.feats.length > 0 ? r.feats : fallback.feats,
+            cta: r.cta || fallback.cta,
+            ctaHref: r.ctaHref || fallback.ctaHref,
+            vizVariant: r.vizVariant || fallback.vizVariant,
+            reverse: typeof r.reverse === "boolean" ? r.reverse : fallback.reverse,
+          };
+        })
+      : DEFAULT_ROWS;
+
   return (
     <section className="py-24 lg:py-32 bg-white overflow-hidden">
       <div className="container-custom">
         <SectionHeader
-          kicker="Solutions"
-          title={<>Flexible solutions for<br /><span className="text-gradient">every campaign</span></>}
-          description="Focused services that adapt to your marketing stack and operational workflow."
+          kicker={kicker}
+          title={
+            <>
+              {titleStart}
+              <br />
+              <span className="text-gradient">{titleHighlight}</span>
+            </>
+          }
+          description={description}
         />
 
-        <SolutionRow
-          id="audience-targeting"
-          kicker="Core Service"
-          title="Precision"
-          titleAccent="audience targeting"
-          desc="Leverage high-quality B2B, healthcare, and consumer data to build precise audiences based on industry, role, behavior, and intent signals — with Marketing Analytics Modeling for scale."
-          feats={[
-            "Custom audience segmentation",
-            "Firmographic, technographic, behavioral filters",
-            "B2B, healthcare & consumer datasets",
-            "Marketing Analytics Modeling",
-          ]}
-          cta="Learn More"
-          ctaHref="mailto:info@lorannllc.com?subject=Audience%20Targeting"
-          viz={<VizA />}
-        />
-
-        <SolutionRow
-          id="data-enrichment"
-          reverse
-          kicker="Enhancement"
-          title="Data"
-          titleAccent="enrichment"
-          desc="Enhance existing datasets with firmographic, technographic, and intent signals — then apply predictive modeling to prioritize the prospects most likely to convert."
-          feats={[
-            "Firmographic & technographic append",
-            "Real-time intent signal integration",
-            "Predictive lead scoring models",
-            "CRM-ready delivery formats",
-          ]}
-          cta="Learn More"
-          ctaHref="mailto:info@lorannllc.com?subject=Data%20Enrichment"
-          viz={<VizB />}
-        />
+        {rows.map((r) => (
+          <SolutionRow
+            key={r.id}
+            id={r.id}
+            reverse={r.reverse}
+            kicker={r.kicker}
+            title={r.title}
+            titleAccent={r.titleAccent}
+            desc={r.desc}
+            feats={r.feats}
+            cta={r.cta}
+            ctaHref={r.ctaHref}
+            viz={r.vizVariant === "B" ? <VizB /> : <VizA />}
+          />
+        ))}
       </div>
     </section>
   );

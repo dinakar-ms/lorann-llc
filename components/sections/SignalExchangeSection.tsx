@@ -3,7 +3,63 @@
 import { Check, ArrowRight } from "lucide-react";
 import Link from "next/link";
 
-export default function SignalExchangeSection() {
+export type SignalExchangeContent = {
+  kicker?: string;
+  title?: string;
+  description?: string;
+  features?: string[];
+  cta?: { label?: string; href?: string };
+};
+
+const DEFAULT_FEATURES = [
+  "First-party + intent fusion",
+  "Continuously refreshed",
+  "Higher conversion rates",
+  "Ready for every channel",
+];
+
+// Renders a multi-line title where lines break on `\n` and the
+// substring "Signal eXchange™" gets the cyan gradient treatment.
+function renderTitle(title: string) {
+  const ACCENT = "Signal eXchange™";
+  return title.split("\n").map((line, i) => {
+    const idx = line.indexOf(ACCENT);
+    return (
+      <span key={i} className="block">
+        {idx === -1 ? (
+          line
+        ) : (
+          <>
+            {line.slice(0, idx)}
+            <span className="text-gradient-cyan">{ACCENT}</span>
+            {line.slice(idx + ACCENT.length)}
+          </>
+        )}
+      </span>
+    );
+  });
+}
+
+export default function SignalExchangeSection({
+  content,
+}: {
+  content?: SignalExchangeContent;
+}) {
+  const kicker = content?.kicker || "Proprietary Intelligence";
+  const title =
+    content?.title ||
+    "Meet Signal eXchange™—\nwhere lead data meets\nlive intent.";
+  const description =
+    content?.description ||
+    "The industry's first continuously evolving dataset that fuses first-party lead data with real-time intent signals — delivering audiences that don't just reach the right people, they reach ready buyers.";
+  const features =
+    content?.features && content.features.length > 0
+      ? content.features
+      : DEFAULT_FEATURES;
+  const ctaLabel = content?.cta?.label || "Request Demo";
+  const ctaHref =
+    content?.cta?.href || "mailto:info@lorannllc.com?subject=Signal%20eXchange%20Demo";
+
   return (
     <section id="signal" className="py-16">
       <div
@@ -31,29 +87,17 @@ export default function SignalExchangeSection() {
           <div>
             <span className="inline-flex items-center gap-2 font-mono text-[11.5px] uppercase tracking-[0.15em] text-cyan-400 px-3.5 py-1.5 border border-cyan-400/30 rounded-full bg-cyan-400/8 mb-5">
               <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 shadow-[0_0_10px_#22BFFF] animate-pulse-dot" />
-              Proprietary Intelligence
+              {kicker}
             </span>
             <h2 className="font-display font-bold text-4xl sm:text-5xl lg:text-[3.5rem] leading-[1.05] tracking-[-0.025em] mb-6">
-              Meet <span className="text-gradient-cyan">Signal eXchange™</span>—
-              <br />
-              where lead data meets
-              <br />
-              live intent.
+              {renderTitle(title)}
             </h2>
             <p className="text-white/72 text-[17px] leading-relaxed mb-8 max-w-[520px]">
-              The industry&apos;s first continuously evolving dataset that fuses
-              first-party lead data with real-time intent signals — delivering
-              audiences that don&apos;t just reach the right people, they reach{" "}
-              <em>ready buyers</em>.
+              {description}
             </p>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-8">
-              {[
-                "First-party + intent fusion",
-                "Continuously refreshed",
-                "Higher conversion rates",
-                "Ready for every channel",
-              ].map((feat) => (
+              {features.map((feat) => (
                 <div
                   key={feat}
                   className="flex items-center gap-2.5 p-3 bg-white/5 border border-white/10 rounded-[10px] text-[13.5px] text-white/92 backdrop-blur-md hover:bg-cyan-400/8 hover:border-cyan-400/30 hover:translate-x-1 transition-all relative overflow-hidden group"
@@ -65,10 +109,10 @@ export default function SignalExchangeSection() {
             </div>
 
             <Link
-              href="mailto:info@lorannllc.com?subject=Signal%20eXchange%20Demo"
+              href={ctaHref}
               className="inline-flex items-center gap-2 px-6 py-3.5 bg-gradient-to-br from-cyan-500 to-blue-600 text-white font-semibold text-[14.5px] rounded-xl shadow-[0_12px_30px_-8px_rgba(0,167,239,0.55)] hover:-translate-y-0.5 hover:shadow-[0_24px_50px_-10px_rgba(0,167,239,0.75)] transition-all"
             >
-              Request Demo
+              {ctaLabel}
               <ArrowRight className="w-4 h-4" />
             </Link>
           </div>
