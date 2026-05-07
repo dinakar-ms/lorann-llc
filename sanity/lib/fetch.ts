@@ -27,8 +27,11 @@ export async function sanityFetch<QueryResponse>({
       .withConfig({
         token: isDraftMode ? token : undefined,
         perspective: isDraftMode ? "previewDrafts" : "published",
-        // Don't override useCdn — base client uses false for stega support.
-        // Don't override stega — base client has it enabled with studioUrl.
+        // Stega encoding makes strings clickable in Sanity Presentation
+        // by injecting invisible Unicode markers. We only want this
+        // INSIDE Studio (draft mode). On the public site it would cause
+        // the "Open in Studio" tooltip to leak to every visitor.
+        stega: isDraftMode,
       })
       .fetch<QueryResponse>(query, params, {
         next: {

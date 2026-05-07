@@ -23,14 +23,6 @@ export default defineConfig({
             ? "http://localhost:3000"
             : location.origin,
         preview: "/",
-        // Tell Presentation how to enable / disable Next.js draft mode in
-        // the preview iframe. Without these, the iframe loads without
-        // draft mode, <VisualEditing /> never mounts, and the parent ↔
-        // iframe handshake fails with "Unable to connect".
-        draftMode: {
-          enable: "/api/draft-mode/enable",
-          disable: "/api/draft-mode/disable",
-        },
       },
       resolve: {
         // Document → URL (Open Preview from a doc)
