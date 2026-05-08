@@ -4,6 +4,8 @@ import { usePathname } from "next/navigation";
 import AnnouncementBar from "@/components/AnnouncementBar";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import SocialRail from "@/components/SocialRail";
+import ContactDial from "@/components/ContactDial";
 
 export default function LayoutChrome({
   children,
@@ -21,6 +23,8 @@ export default function LayoutChrome({
       <Navbar />
       <main>{children}</main>
       <Footer />
+      <SocialRail />
+      <ContactDial />
     </>
   );
 }
