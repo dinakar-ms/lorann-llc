@@ -236,7 +236,7 @@ const HOMEPAGE = {
         "Marketing Analytics Modeling",
       ],
       cta: "Learn More",
-      ctaHref: "mailto:info@lorannllc.com?subject=Audience%20Targeting",
+      ctaHref: "/solutions/audience-targeting",
       vizVariant: "A",
       reverse: false,
     },
@@ -253,7 +253,7 @@ const HOMEPAGE = {
         "CRM-ready delivery formats",
       ],
       cta: "Learn More",
-      ctaHref: "mailto:info@lorannllc.com?subject=Data%20Enrichment",
+      ctaHref: "/solutions/data-enrichment",
       vizVariant: "B",
       reverse: true,
     },
@@ -266,11 +266,11 @@ const HOMEPAGE = {
   industriesDescription:
     "Vertical knowledge where data precision, targeting accuracy, and performance matter most.",
   industriesItems: [
-    { id: "healthcare", iconName: "Heart", title: "Healthcare", desc: "Physicians, hospitals, and allied health with HIPAA-conscious practices.", href: "mailto:info@lorannllc.com?subject=Healthcare%20Inquiry" },
-    { id: "financial", iconName: "BarChart3", title: "Financial", desc: "Banks, credit unions, wealth management, and insurance with intent signals.", href: "mailto:info@lorannllc.com?subject=Financial%20Inquiry" },
-    { id: "b2b", iconName: "Building2", title: "B2B", desc: "Decision-makers, department heads, and procurement teams everywhere.", href: "mailto:info@lorannllc.com?subject=B2B%20Inquiry" },
-    { id: "insurance", iconName: "Shield", title: "Insurance", desc: "Auto, life, health, and property buyers from high-intent lead programs.", href: "mailto:info@lorannllc.com?subject=Insurance%20Inquiry" },
-    { id: "automotive", iconName: "Car", title: "Automotive", desc: "In-market buyers, dealerships, fleet operators, and aftermarket networks.", href: "mailto:info@lorannllc.com?subject=Automotive%20Inquiry" },
+    { id: "healthcare", iconName: "Heart", title: "Healthcare", desc: "Physicians, hospitals, and allied health with HIPAA-conscious practices.", href: "/industries/healthcare" },
+    { id: "financial", iconName: "BarChart3", title: "Financial", desc: "Banks, credit unions, wealth management, and insurance with intent signals.", href: "/industries/financial" },
+    { id: "b2b", iconName: "Building2", title: "B2B", desc: "Decision-makers, department heads, and procurement teams everywhere.", href: "/industries/b2b" },
+    { id: "insurance", iconName: "Shield", title: "Insurance", desc: "Auto, life, health, and property buyers from high-intent lead programs.", href: "/industries/insurance" },
+    { id: "automotive", iconName: "Car", title: "Automotive", desc: "In-market buyers, dealerships, fleet operators, and aftermarket networks.", href: "/industries/automotive" },
   ],
 
   // ---------- Final CTA ----------
