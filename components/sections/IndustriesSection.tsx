@@ -14,11 +14,11 @@ export type IndustriesContent = {
 };
 
 const DEFAULT_INDUSTRIES: Industry[] = [
-  { id: "healthcare", Icon: Heart, title: "Healthcare", desc: "Physicians, hospitals, and allied health with HIPAA-conscious practices.", href: "mailto:info@lorannllc.com?subject=Healthcare%20Inquiry" },
-  { id: "financial", Icon: BarChart3, title: "Financial", desc: "Banks, credit unions, wealth management, and insurance with intent signals.", href: "mailto:info@lorannllc.com?subject=Financial%20Inquiry" },
-  { id: "b2b", Icon: Building2, title: "B2B", desc: "Decision-makers, department heads, and procurement teams everywhere.", href: "mailto:info@lorannllc.com?subject=B2B%20Inquiry" },
-  { id: "insurance", Icon: Shield, title: "Insurance", desc: "Auto, life, health, and property buyers from high-intent lead programs.", href: "mailto:info@lorannllc.com?subject=Insurance%20Inquiry" },
-  { id: "automotive", Icon: Car, title: "Automotive", desc: "In-market buyers, dealerships, fleet operators, and aftermarket networks.", href: "mailto:info@lorannllc.com?subject=Automotive%20Inquiry" },
+  { id: "healthcare", Icon: Heart, title: "Healthcare", desc: "Physicians, hospitals, and allied health with HIPAA-conscious practices.", href: "/industries/healthcare" },
+  { id: "financial", Icon: BarChart3, title: "Financial", desc: "Banks, credit unions, wealth management, and insurance with intent signals.", href: "/industries/financial" },
+  { id: "b2b", Icon: Building2, title: "B2B", desc: "Decision-makers, department heads, and procurement teams everywhere.", href: "/industries/b2b" },
+  { id: "insurance", Icon: Shield, title: "Insurance", desc: "Auto, life, health, and property buyers from high-intent lead programs.", href: "/industries/insurance" },
+  { id: "automotive", Icon: Car, title: "Automotive", desc: "In-market buyers, dealerships, fleet operators, and aftermarket networks.", href: "/industries/automotive" },
 ];
 
 export default function IndustriesSection({ content }: { content?: IndustriesContent }) {
