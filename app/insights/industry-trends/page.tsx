@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowRight, Clock, Tag, TrendingUp, Sparkles } from "lucide-react";
 import { groq } from "next-sanity";
+import RichText from "@/components/RichText";
 import SubPageHero from "@/components/ui/SubPageHero";
 import SectionHeader from "@/components/ui/SectionHeader";
 import FinalCTA from "@/components/sections/FinalCTA";
@@ -240,7 +241,7 @@ export default async function IndustryTrendsPage() {
                     {featured.title}
                   </h2>
                   <p className="text-slate-600 text-[15px] lg:text-base leading-relaxed mb-5">
-                    {featured.excerpt}
+                    <RichText value={featured.excerpt} />
                   </p>
                   <span className="inline-flex items-center gap-1.5 text-blue-700 font-semibold text-[14px]">
                     Read the piece{" "}
@@ -285,7 +286,7 @@ export default async function IndustryTrendsPage() {
                     {p.title}
                   </h3>
                   <p className="text-slate-600 text-[14px] leading-relaxed flex-1 mb-4">
-                    {p.excerpt}
+                    <RichText value={p.excerpt} />
                   </p>
                   <div className="flex items-center justify-between pt-4 border-t border-slate-150">
                     {p.readingTime && (

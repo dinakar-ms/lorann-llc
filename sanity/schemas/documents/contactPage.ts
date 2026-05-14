@@ -19,11 +19,11 @@ export const contactPageType = defineType({
     defineField({ name: "heroKicker", title: "Hero kicker", type: "string", fieldset: "hero" }),
     defineField({ name: "heroTitleStart", title: "Hero title — start", type: "string", fieldset: "hero" }),
     defineField({ name: "heroTitleHighlight", title: "Hero title — gradient highlight", type: "string", fieldset: "hero" }),
-    defineField({ name: "heroDescription", title: "Hero description", type: "text", rows: 3, fieldset: "hero" }),
+    defineField({ name: "heroDescription", title: "Hero description", type: "richText", fieldset: "hero" }),
 
     // ----- Reach us directly -----
     defineField({ name: "infoTitle", title: "Section title", type: "string", fieldset: "info" }),
-    defineField({ name: "infoDescription", title: "Section description", type: "text", rows: 3, fieldset: "info" }),
+    defineField({ name: "infoDescription", title: "Section description", type: "richText", fieldset: "info" }),
     defineField({ name: "infoEmailLabel", title: "Email label", type: "string", fieldset: "info" }),
     defineField({ name: "infoEmailValue", title: "Email address", type: "string", fieldset: "info" }),
     defineField({ name: "infoPhoneLabel", title: "Phone label", type: "string", fieldset: "info" }),
@@ -35,7 +35,7 @@ export const contactPageType = defineType({
 
     // ----- Response time card -----
     defineField({ name: "responseTitle", title: "Card title", type: "string", fieldset: "responseCard" }),
-    defineField({ name: "responseBody", title: "Card body", type: "text", rows: 2, fieldset: "responseCard" }),
+    defineField({ name: "responseBody", title: "Card body", type: "richText", fieldset: "responseCard" }),
 
     // ----- Form labels -----
     defineField({ name: "formNameLabel", title: "Name label", type: "string", fieldset: "form" }),

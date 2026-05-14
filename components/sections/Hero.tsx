@@ -1,6 +1,7 @@
 import { Play } from "lucide-react";
 import Button from "../ui/Button";
 import HeroGlobe from "../HeroGlobe";
+import RichText from "../RichText";
 
 export type HeroContent = {
   badgeLabel?: string;
@@ -10,7 +11,7 @@ export type HeroContent = {
   line2Highlight?: string;
   line3Start?: string;
   line3Highlight?: string;
-  description?: string;
+  description?: any; // richText (Portable Text) or legacy string
   primaryCta?: { label?: string; href?: string };
   secondaryCta?: { label?: string; href?: string };
 };
@@ -114,7 +115,7 @@ export default function Hero({ content }: { content?: HeroContent }) {
                 animation: "fade-slide 0.9s 1.3s var(--ease) forwards",
               }}
             >
-              {c.description}
+              <RichText value={c.description} />
             </p>
 
             <div

@@ -49,7 +49,7 @@ export const homepageType = defineType({
     defineField({ name: "heroLine2Highlight", title: "Hero H1 — line 2 (gradient highlight)", type: "string", fieldset: "hero" }),
     defineField({ name: "heroLine3Start", title: "Hero H1 — line 3 (start)", type: "string", fieldset: "hero" }),
     defineField({ name: "heroLine3Highlight", title: "Hero H1 — line 3 (gradient highlight)", type: "string", fieldset: "hero" }),
-    defineField({ name: "heroDescription", title: "Hero description", type: "text", rows: 3, fieldset: "hero" }),
+    defineField({ name: "heroDescription", title: "Hero description", type: "richText", fieldset: "hero" }),
     defineField({ name: "heroPrimaryCta", title: "Primary CTA", type: "object", fieldset: "hero", fields: ctaFields }),
     defineField({ name: "heroSecondaryCta", title: "Secondary CTA", type: "object", fieldset: "hero", fields: ctaFields }),
 
@@ -89,7 +89,7 @@ export const homepageType = defineType({
     defineField({ name: "valueKicker", title: "Kicker", type: "string", fieldset: "value" }),
     defineField({ name: "valueTitleStart", title: "Title (start)", type: "string", fieldset: "value" }),
     defineField({ name: "valueTitleHighlight", title: "Title (gradient highlight)", type: "string", fieldset: "value" }),
-    defineField({ name: "valueDescription", title: "Description", type: "text", rows: 2, fieldset: "value" }),
+    defineField({ name: "valueDescription", title: "Description", type: "richText", fieldset: "value" }),
     defineField({
       name: "valueCards",
       title: "Cards (6 recommended)",
@@ -101,7 +101,7 @@ export const homepageType = defineType({
           fields: [
             iconNameField,
             defineField({ name: "title", title: "Title", type: "string" }),
-            defineField({ name: "desc", title: "Description", type: "text", rows: 2 }),
+            defineField({ name: "desc", title: "Description", type: "richText" }),
             defineField({ name: "backTitle", title: "Back face title", type: "string" }),
             defineField({
               name: "backList",
@@ -121,7 +121,7 @@ export const homepageType = defineType({
     // ----- 4. Signal eXchange -----
     defineField({ name: "signalKicker", title: "Kicker", type: "string", fieldset: "signal" }),
     defineField({ name: "signalTitle", title: "Title (plain text, line breaks allowed)", type: "text", rows: 3, fieldset: "signal" }),
-    defineField({ name: "signalDescription", title: "Description", type: "text", rows: 4, fieldset: "signal" }),
+    defineField({ name: "signalDescription", title: "Description", type: "richText", fieldset: "signal" }),
     defineField({
       name: "signalFeatures",
       title: "Feature chips",
@@ -136,7 +136,7 @@ export const homepageType = defineType({
     defineField({ name: "howTitleStart", title: "Title (start)", type: "string", fieldset: "how" }),
     defineField({ name: "howTitleHighlight", title: "Title (gradient highlight)", type: "string", fieldset: "how" }),
     defineField({ name: "howTitleEnd", title: "Title (end after highlight)", type: "string", fieldset: "how" }),
-    defineField({ name: "howDescription", title: "Description", type: "text", rows: 2, fieldset: "how" }),
+    defineField({ name: "howDescription", title: "Description", type: "richText", fieldset: "how" }),
     defineField({
       name: "howSteps",
       title: "Steps (4 recommended)",
@@ -148,7 +148,7 @@ export const homepageType = defineType({
           fields: [
             iconNameField,
             defineField({ name: "title", title: "Title", type: "string" }),
-            defineField({ name: "desc", title: "Description", type: "text", rows: 2 }),
+            defineField({ name: "desc", title: "Description", type: "richText" }),
           ],
           preview: { select: { title: "title", subtitle: "desc" } },
         },
@@ -159,7 +159,7 @@ export const homepageType = defineType({
     defineField({ name: "numbersKicker", title: "Kicker", type: "string", fieldset: "stats2" }),
     defineField({ name: "numbersTitleStart", title: "Title (start)", type: "string", fieldset: "stats2" }),
     defineField({ name: "numbersTitleHighlight", title: "Title (gradient highlight)", type: "string", fieldset: "stats2" }),
-    defineField({ name: "numbersDescription", title: "Description", type: "text", rows: 2, fieldset: "stats2" }),
+    defineField({ name: "numbersDescription", title: "Description", type: "richText", fieldset: "stats2" }),
     defineField({
       name: "numbersStats",
       title: "Stats (4 recommended)",
@@ -189,7 +189,7 @@ export const homepageType = defineType({
     defineField({ name: "solutionsKicker", title: "Kicker", type: "string", fieldset: "solutions" }),
     defineField({ name: "solutionsTitleStart", title: "Title (start)", type: "string", fieldset: "solutions" }),
     defineField({ name: "solutionsTitleHighlight", title: "Title (gradient highlight)", type: "string", fieldset: "solutions" }),
-    defineField({ name: "solutionsDescription", title: "Description", type: "text", rows: 2, fieldset: "solutions" }),
+    defineField({ name: "solutionsDescription", title: "Description", type: "richText", fieldset: "solutions" }),
     defineField({
       name: "solutionsRows",
       title: "Solution rows",
@@ -203,7 +203,7 @@ export const homepageType = defineType({
             defineField({ name: "kicker", title: "Kicker", type: "string" }),
             defineField({ name: "title", title: "Title (start)", type: "string" }),
             defineField({ name: "titleAccent", title: "Title (gradient highlight)", type: "string" }),
-            defineField({ name: "desc", title: "Description", type: "text", rows: 3 }),
+            defineField({ name: "desc", title: "Description", type: "richText" }),
             defineField({
               name: "feats",
               title: "Feature bullets",
@@ -234,7 +234,7 @@ export const homepageType = defineType({
     defineField({ name: "industriesKicker", title: "Kicker", type: "string", fieldset: "industries" }),
     defineField({ name: "industriesTitleStart", title: "Title (start)", type: "string", fieldset: "industries" }),
     defineField({ name: "industriesTitleHighlight", title: "Title (gradient highlight)", type: "string", fieldset: "industries" }),
-    defineField({ name: "industriesDescription", title: "Description", type: "text", rows: 2, fieldset: "industries" }),
+    defineField({ name: "industriesDescription", title: "Description", type: "richText", fieldset: "industries" }),
     defineField({
       name: "industriesItems",
       title: "Industries",
@@ -247,7 +247,7 @@ export const homepageType = defineType({
             defineField({ name: "id", title: "Anchor ID", type: "string" }),
             iconNameField,
             defineField({ name: "title", title: "Title", type: "string" }),
-            defineField({ name: "desc", title: "Description", type: "text", rows: 2 }),
+            defineField({ name: "desc", title: "Description", type: "richText" }),
             defineField({ name: "href", title: "Link URL", type: "string" }),
           ],
           preview: { select: { title: "title", subtitle: "desc" } },
@@ -259,7 +259,7 @@ export const homepageType = defineType({
     defineField({ name: "finalCtaKicker", title: "Kicker", type: "string", fieldset: "finalCta" }),
     defineField({ name: "finalCtaTitleStart", title: "Title (start, line breaks allowed)", type: "text", rows: 2, fieldset: "finalCta" }),
     defineField({ name: "finalCtaTitleHighlight", title: "Title (gradient highlight)", type: "string", fieldset: "finalCta" }),
-    defineField({ name: "finalCtaDescription", title: "Description", type: "text", rows: 3, fieldset: "finalCta" }),
+    defineField({ name: "finalCtaDescription", title: "Description", type: "richText", fieldset: "finalCta" }),
     defineField({ name: "finalCtaPrimary", title: "Primary CTA", type: "object", fieldset: "finalCta", fields: ctaFields }),
     defineField({ name: "finalCtaSecondary", title: "Secondary CTA", type: "object", fieldset: "finalCta", fields: ctaFields }),
     defineField({

@@ -11,7 +11,7 @@ export type StatsSectionContent = {
   kicker?: string;
   titleStart?: string;
   titleHighlight?: string;
-  description?: string;
+  description?: any; // richText Portable Text
   stats?: { iconName?: string; count?: number; suffix?: string; label?: string; offset?: number }[];
 };
 

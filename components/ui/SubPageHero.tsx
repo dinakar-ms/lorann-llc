@@ -2,6 +2,7 @@ import { ReactNode } from "react";
 import Link from "next/link";
 import { ArrowRight, ChevronRight } from "lucide-react";
 import Kicker from "./Kicker";
+import RichText from "../RichText";
 
 export type Crumb = { label: string; href?: string };
 
@@ -9,7 +10,7 @@ interface SubPageHeroProps {
   crumbs?: Crumb[];
   kicker: string;
   title: ReactNode;
-  description: string;
+  description: any; // richText (Portable Text) or legacy string
   primaryCta?: { label: string; href: string };
   secondaryCta?: { label: string; href: string };
 }
@@ -67,7 +68,7 @@ export default function SubPageHero({
             {title}
           </h1>
           <p className="text-lg sm:text-xl text-slate-600 max-w-2xl leading-relaxed">
-            {description}
+            <RichText value={description} />
           </p>
 
           {(primaryCta || secondaryCta) && (

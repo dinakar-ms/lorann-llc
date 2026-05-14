@@ -295,11 +295,13 @@ const HOMEPAGE = {
 };
 
 // Idempotent seed:
-// 1. Make sure the doc exists.
+// 1. Make sure both published and draft docs exist.
 // 2. Patch with `setIfMissing` so any field already edited in Studio is preserved.
-await client.createIfNotExists({ _id: "homepage", _type: "homepage" });
-await client.patch("homepage").setIfMissing(HOMEPAGE).commit();
+for (const id of ["homepage", "drafts.homepage"]) {
+  await client.createIfNotExists({ _id: id, _type: "homepage" });
+  await client.patch(id).setIfMissing(HOMEPAGE).commit();
+}
 
 console.log(
-  "Seeded Homepage singleton (existing fields preserved, missing fields filled)."
+  "Seeded Homepage singleton (published + draft, existing fields preserved)."
 );

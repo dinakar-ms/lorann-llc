@@ -2,14 +2,15 @@ import { Heart, BarChart3, Building2, Shield, Car, ArrowRight, type LucideIcon }
 import Link from "next/link";
 import SectionHeader from "../ui/SectionHeader";
 import { getIconComponent } from "../ui/IconByName";
+import RichText from "../RichText";
 
-type Industry = { id: string; Icon: LucideIcon; title: string; desc: string; href: string };
+type Industry = { id: string; Icon: LucideIcon; title: string; desc: any; href: string };
 
 export type IndustriesContent = {
   kicker?: string;
   titleStart?: string;
   titleHighlight?: string;
-  description?: string;
+  description?: any; // richText Portable Text
   items?: { id?: string; iconName?: string; title?: string; desc?: string; href?: string }[];
 };
 
@@ -103,7 +104,7 @@ export default function IndustriesSection({ content }: { content?: IndustriesCon
                   {title}
                 </h4>
                 <p className="text-slate-600 text-[13.5px] leading-relaxed group-hover:text-white/85 transition-colors">
-                  {desc}
+                  <RichText value={desc} />
                 </p>
               </div>
 

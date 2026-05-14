@@ -8,6 +8,34 @@ export const pageType = defineType({
   icon: DocumentTextIcon,
   fieldsets: [
     {
+      name: "hero",
+      title: "Hero Section",
+      options: { collapsible: true, collapsed: false },
+    },
+    {
+      name: "intro",
+      title: "Intro Section",
+      options: { collapsible: true, collapsed: true },
+    },
+    {
+      name: "leaf",
+      title: "Leaf Page Fields",
+      description: "Only used when Template Type = leaf",
+      options: { collapsible: true, collapsed: true },
+    },
+    {
+      name: "hub",
+      title: "Hub Page Fields",
+      description: "Only used when Template Type = hub",
+      options: { collapsible: true, collapsed: true },
+    },
+    {
+      name: "custom",
+      title: "Custom Page Fields",
+      description: "Only used when Template Type = custom",
+      options: { collapsible: true, collapsed: true },
+    },
+    {
       name: "seo",
       title: "SEO",
       description:
@@ -16,6 +44,7 @@ export const pageType = defineType({
     },
   ],
   fields: [
+    // ─── Core ────────────────────────────────────────────
     defineField({
       name: "h1",
       title: "H1 Tag (Main Heading)",
@@ -43,12 +72,26 @@ export const pageType = defineType({
       validation: (Rule) => Rule.required(),
     }),
     defineField({
+      name: "templateType",
+      title: "Template Type",
+      type: "string",
+      description: "Which template to render this page with.",
+      options: {
+        list: [
+          { title: "Leaf Page (product/list pages)", value: "leaf" },
+          { title: "Hub Page (category landings)", value: "hub" },
+          { title: "Custom (section-based)", value: "custom" },
+        ],
+        layout: "radio",
+      },
+    }),
+    defineField({
       name: "originalRoute",
       title: "Original site route",
       type: "string",
       readOnly: true,
       description:
-        "The path of this page on the static site (informational — preview lives at /p/{slug}).",
+        "The path of this page on the static site (informational).",
     }),
     defineField({
       name: "heroImage",
@@ -67,14 +110,291 @@ export const pageType = defineType({
     }),
     defineField({
       name: "content",
-      title: "Content (Core Section)",
+      title: "Content (Portable Text)",
       type: "contentBlock",
       description:
-        "Main body. Use H2/H3 styles for subheadings. Insert images with alt text inline.",
+        "Rich text body — used when no template is selected.",
     }),
 
-    // SEO fields surfaced inline (each in the SEO fieldset) so they're visible
-    // alongside content rather than hidden behind a tab.
+    // ─── Hero Section ────────────────────────────────────
+    defineField({
+      name: "kicker",
+      title: "Kicker",
+      type: "string",
+      fieldset: "hero",
+      description: "Small uppercase label above the hero title.",
+    }),
+    defineField({
+      name: "titlePlain",
+      title: "Title (plain part)",
+      type: "string",
+      fieldset: "hero",
+    }),
+    defineField({
+      name: "titleAccent",
+      title: "Title (gradient part)",
+      type: "string",
+      fieldset: "hero",
+    }),
+    defineField({
+      name: "heroDescription",
+      title: "Hero Description",
+      type: "richText",
+      fieldset: "hero",
+    }),
+    defineField({
+      name: "primaryCta",
+      title: "Primary CTA",
+      type: "ctaLink",
+      fieldset: "hero",
+    }),
+    defineField({
+      name: "secondaryCta",
+      title: "Secondary CTA",
+      type: "ctaLink",
+      fieldset: "hero",
+    }),
+
+    // ─── Intro Section ───────────────────────────────────
+    defineField({
+      name: "introKicker",
+      title: "Intro Kicker",
+      type: "string",
+      fieldset: "intro",
+    }),
+    defineField({
+      name: "introHeadlinePlain",
+      title: "Intro Headline (plain)",
+      type: "string",
+      fieldset: "intro",
+    }),
+    defineField({
+      name: "introHeadlineAccent",
+      title: "Intro Headline (gradient)",
+      type: "string",
+      fieldset: "intro",
+    }),
+    defineField({
+      name: "introParagraphs",
+      title: "Intro Paragraphs",
+      type: "array",
+      of: [{ type: "text" }],
+      fieldset: "intro",
+    }),
+
+    // ─── Leaf Page Fields ────────────────────────────────
+    defineField({
+      name: "stats",
+      title: "Stats Strip",
+      type: "array",
+      of: [{ type: "stat" }],
+      fieldset: "leaf",
+      hidden: ({ document }) => document?.templateType !== "leaf",
+    }),
+    defineField({
+      name: "attributes",
+      title: "Attributes (What's Included)",
+      type: "array",
+      of: [{ type: "featureItem" }],
+      fieldset: "leaf",
+      hidden: ({ document }) => document?.templateType !== "leaf",
+    }),
+    defineField({
+      name: "useCases",
+      title: "Use Cases",
+      type: "array",
+      of: [
+        {
+          type: "object",
+          fields: [
+            defineField({ name: "title", title: "Title", type: "string" }),
+            defineField({ name: "desc", title: "Description", type: "richText" }),
+          ],
+          preview: {
+            select: { title: "title", subtitle: "desc" },
+          },
+        },
+      ],
+      fieldset: "leaf",
+      hidden: ({ document }) => document?.templateType !== "leaf",
+    }),
+    defineField({
+      name: "complianceHeadline",
+      title: "Compliance Headline",
+      type: "string",
+      fieldset: "leaf",
+      hidden: ({ document }) => document?.templateType !== "leaf",
+    }),
+    defineField({
+      name: "complianceBody",
+      title: "Compliance Body",
+      type: "richText",
+      fieldset: "leaf",
+      hidden: ({ document }) => document?.templateType !== "leaf",
+    }),
+    defineField({
+      name: "backLink",
+      title: "Back Link",
+      type: "ctaLink",
+      fieldset: "leaf",
+      hidden: ({ document }) => document?.templateType !== "leaf",
+    }),
+
+    // ─── Hub Page Fields ─────────────────────────────────
+    defineField({
+      name: "childrenSectionKicker",
+      title: "Children Section Kicker",
+      type: "string",
+      fieldset: "hub",
+      hidden: ({ document }) => document?.templateType !== "hub",
+    }),
+    defineField({
+      name: "childrenSectionTitlePlain",
+      title: "Children Section Title (plain)",
+      type: "string",
+      fieldset: "hub",
+      hidden: ({ document }) => document?.templateType !== "hub",
+    }),
+    defineField({
+      name: "childrenSectionTitleAccent",
+      title: "Children Section Title (gradient)",
+      type: "string",
+      fieldset: "hub",
+      hidden: ({ document }) => document?.templateType !== "hub",
+    }),
+    defineField({
+      name: "childrenSectionDescription",
+      title: "Children Section Description",
+      type: "richText",
+      fieldset: "hub",
+      hidden: ({ document }) => document?.templateType !== "hub",
+    }),
+    defineField({
+      name: "childrenSectionColumns",
+      title: "Children Section Columns",
+      type: "number",
+      options: { list: [2, 3, 4] },
+      initialValue: 3,
+      fieldset: "hub",
+      hidden: ({ document }) => document?.templateType !== "hub",
+    }),
+    defineField({
+      name: "childrenItems",
+      title: "Children Items",
+      type: "array",
+      of: [{ type: "featureItem" }],
+      fieldset: "hub",
+      hidden: ({ document }) => document?.templateType !== "hub",
+    }),
+    defineField({
+      name: "hubAttributesSectionKicker",
+      title: "Attributes Section Kicker",
+      type: "string",
+      fieldset: "hub",
+      hidden: ({ document }) => document?.templateType !== "hub",
+    }),
+    defineField({
+      name: "hubAttributesSectionTitlePlain",
+      title: "Attributes Section Title (plain)",
+      type: "string",
+      fieldset: "hub",
+      hidden: ({ document }) => document?.templateType !== "hub",
+    }),
+    defineField({
+      name: "hubAttributesSectionTitleAccent",
+      title: "Attributes Section Title (gradient)",
+      type: "string",
+      fieldset: "hub",
+      hidden: ({ document }) => document?.templateType !== "hub",
+    }),
+    defineField({
+      name: "hubAttributesSectionDescription",
+      title: "Attributes Section Description",
+      type: "richText",
+      fieldset: "hub",
+      hidden: ({ document }) => document?.templateType !== "hub",
+    }),
+    defineField({
+      name: "hubAttributesSectionColumns",
+      title: "Attributes Section Columns",
+      type: "number",
+      options: { list: [2, 3, 4] },
+      initialValue: 4,
+      fieldset: "hub",
+      hidden: ({ document }) => document?.templateType !== "hub",
+    }),
+    defineField({
+      name: "hubAttributesItems",
+      title: "Attributes Items",
+      type: "array",
+      of: [{ type: "featureItem" }],
+      fieldset: "hub",
+      hidden: ({ document }) => document?.templateType !== "hub",
+    }),
+
+    // ─── Custom Page Fields ──────────────────────────────
+    defineField({
+      name: "featureGridSections",
+      title: "Feature Grid Sections",
+      type: "array",
+      of: [{ type: "featureGridSection" }],
+      fieldset: "custom",
+      hidden: ({ document }) => document?.templateType !== "custom",
+    }),
+    defineField({
+      name: "ctaBannerData",
+      title: "CTA Banner",
+      type: "ctaBanner",
+      fieldset: "custom",
+      hidden: ({ document }) => document?.templateType !== "custom",
+    }),
+    defineField({
+      name: "teamMembers",
+      title: "Team Members",
+      type: "array",
+      of: [{ type: "teamMember" }],
+      fieldset: "custom",
+      hidden: ({ document }) => document?.templateType !== "custom",
+    }),
+    defineField({
+      name: "caseStudies",
+      title: "Case Studies",
+      type: "array",
+      of: [{ type: "caseStudy" }],
+      fieldset: "custom",
+      hidden: ({ document }) => document?.templateType !== "custom",
+    }),
+    defineField({
+      name: "newsletterHeadlinePlain",
+      title: "Newsletter Headline (plain)",
+      type: "string",
+      fieldset: "custom",
+      hidden: ({ document }) => document?.templateType !== "custom",
+    }),
+    defineField({
+      name: "newsletterHeadlineAccent",
+      title: "Newsletter Headline (gradient)",
+      type: "string",
+      fieldset: "custom",
+      hidden: ({ document }) => document?.templateType !== "custom",
+    }),
+    defineField({
+      name: "newsletterBody",
+      title: "Newsletter Body",
+      type: "richText",
+      fieldset: "custom",
+      hidden: ({ document }) => document?.templateType !== "custom",
+    }),
+    defineField({
+      name: "newsletterBullets",
+      title: "Newsletter Bullets",
+      type: "array",
+      of: [{ type: "string" }],
+      fieldset: "custom",
+      hidden: ({ document }) => document?.templateType !== "custom",
+    }),
+
+    // ─── SEO ─────────────────────────────────────────────
     defineField({
       name: "focusKeyphrase",
       title: "Focus Keyphrase",
@@ -152,7 +472,7 @@ export const pageType = defineType({
     prepare({ title, subtitle, media }) {
       return {
         title: title || "Untitled page",
-        subtitle: subtitle ? `/p/${subtitle}` : "No slug",
+        subtitle: subtitle ? `/${subtitle}` : "No slug",
         media,
       };
     },

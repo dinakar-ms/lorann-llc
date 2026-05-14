@@ -1,11 +1,12 @@
 import { ReactNode } from "react";
 import Link from "next/link";
 import { ArrowUpRight, Check } from "lucide-react";
+import RichText from "../RichText";
 
 export type Feature = {
   Icon?: React.ElementType;
   title: string;
-  desc: string;
+  desc: any;
   href?: string;
   badge?: string;
 };
@@ -45,7 +46,7 @@ export default function FeatureCardGrid({
               </h3>
               {f.desc && (
                 <p className="text-[14px] text-slate-600 leading-relaxed">
-                  {f.desc}
+                  <RichText value={f.desc} />
                 </p>
               )}
             </div>
@@ -72,7 +73,7 @@ export default function FeatureCardGrid({
               {f.title}
             </h3>
             <p className="text-slate-600 text-[14.5px] leading-relaxed">
-              {f.desc}
+              <RichText value={f.desc} />
             </p>
           </div>
         ))}
@@ -100,7 +101,7 @@ export default function FeatureCardGrid({
               )}
             </h3>
             <p className="text-slate-600 text-[14.5px] leading-relaxed flex-1">
-              {f.desc}
+              <RichText value={f.desc} />
             </p>
             {f.href && (
               <span className="inline-flex items-center gap-1.5 text-[13.5px] font-semibold text-blue-700 mt-4 group-hover:gap-2.5 transition-all">

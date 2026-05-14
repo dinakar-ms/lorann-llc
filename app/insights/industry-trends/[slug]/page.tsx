@@ -18,6 +18,7 @@ import {
 } from "lucide-react";
 import SubPageHero from "@/components/ui/SubPageHero";
 import FinalCTA from "@/components/sections/FinalCTA";
+import RichText from "@/components/RichText";
 import ScrollReveal from "@/components/ScrollReveal";
 
 type Section = { heading: string; body: string };
@@ -505,7 +506,7 @@ export default async function IndustryTrendArticle({
                     {r.title} {r.titleHighlight}
                   </h3>
                   <p className="text-slate-600 text-[14px] leading-relaxed flex-1 mb-4">
-                    {r.excerpt}
+                    <RichText value={r.excerpt} />
                   </p>
                   <div className="flex items-center justify-between pt-4 border-t border-slate-150">
                     <span className="flex items-center gap-1.5 text-[12.5px] text-slate-500">

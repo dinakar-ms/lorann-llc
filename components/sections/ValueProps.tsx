@@ -8,6 +8,7 @@ import {
 import Link from "next/link";
 import SectionHeader from "../ui/SectionHeader";
 import { getIconComponent } from "../ui/IconByName";
+import RichText from "../RichText";
 
 type ValueCard = {
   iconName?: string;
@@ -24,14 +25,14 @@ export type ValuePropsContent = {
   kicker?: string;
   titleStart?: string;
   titleHighlight?: string;
-  description?: string;
+  description?: any; // richText Portable Text
   cards?: ValueCard[];
 };
 
 type Card = {
   Icon: LucideIcon;
   title: string;
-  desc: string;
+  desc: any;
   backTitle: string;
   backList: string[];
   link: string;
@@ -226,7 +227,7 @@ export default function ValueProps({ content }: { content?: ValuePropsContent })
                       {card.title}
                     </h3>
                     <p className="text-slate-600 text-[14.5px] leading-relaxed flex-1">
-                      {card.desc}
+                      <RichText value={card.desc} />
                     </p>
                     <span className="mt-5 inline-flex items-center gap-1.5 font-mono text-[11px] text-blue-600 uppercase tracking-wider opacity-70">
                       Tap to explore <RefreshCw className="w-3 h-3" />

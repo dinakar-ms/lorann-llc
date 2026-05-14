@@ -23,7 +23,7 @@ type HomepageDoc = {
   heroLine2Highlight?: string;
   heroLine3Start?: string;
   heroLine3Highlight?: string;
-  heroDescription?: string;
+  heroDescription?: any; // richText Portable Text
   heroPrimaryCta?: Cta;
   heroSecondaryCta?: Cta;
 
@@ -36,7 +36,7 @@ type HomepageDoc = {
   valueKicker?: string;
   valueTitleStart?: string;
   valueTitleHighlight?: string;
-  valueDescription?: string;
+  valueDescription?: any; // richText Portable Text
   valueCards?: {
     iconName?: string;
     title?: string;
@@ -51,7 +51,7 @@ type HomepageDoc = {
   // Signal eXchange
   signalKicker?: string;
   signalTitle?: string;
-  signalDescription?: string;
+  signalDescription?: any; // richText Portable Text
   signalFeatures?: string[];
   signalCta?: Cta;
 
@@ -60,14 +60,14 @@ type HomepageDoc = {
   howTitleStart?: string;
   howTitleHighlight?: string;
   howTitleEnd?: string;
-  howDescription?: string;
+  howDescription?: any; // richText Portable Text
   howSteps?: { iconName?: string; title?: string; desc?: string }[];
 
   // Numbers
   numbersKicker?: string;
   numbersTitleStart?: string;
   numbersTitleHighlight?: string;
-  numbersDescription?: string;
+  numbersDescription?: any; // richText Portable Text
   numbersStats?: {
     iconName?: string;
     count?: number;
@@ -80,7 +80,7 @@ type HomepageDoc = {
   solutionsKicker?: string;
   solutionsTitleStart?: string;
   solutionsTitleHighlight?: string;
-  solutionsDescription?: string;
+  solutionsDescription?: any; // richText Portable Text
   solutionsRows?: {
     id?: string;
     kicker?: string;
@@ -98,7 +98,7 @@ type HomepageDoc = {
   industriesKicker?: string;
   industriesTitleStart?: string;
   industriesTitleHighlight?: string;
-  industriesDescription?: string;
+  industriesDescription?: any; // richText Portable Text
   industriesItems?: {
     id?: string;
     iconName?: string;
@@ -111,7 +111,7 @@ type HomepageDoc = {
   finalCtaKicker?: string;
   finalCtaTitleStart?: string;
   finalCtaTitleHighlight?: string;
-  finalCtaDescription?: string;
+  finalCtaDescription?: any; // richText Portable Text
   finalCtaPrimary?: Cta;
   finalCtaSecondary?: Cta;
   finalCtaTrust?: string[];

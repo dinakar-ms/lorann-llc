@@ -67,6 +67,48 @@ export default defineConfig({
               locations: [{ title: "Data Assets", href: "/data-assets" }],
             }),
           },
+          aboutPage: {
+            select: { titleStart: "heroTitleStart" },
+            resolve: () => ({
+              locations: [{ title: "About", href: "/about" }],
+            }),
+          },
+          howItWorksPage: {
+            select: { titleStart: "heroTitleStart" },
+            resolve: () => ({
+              locations: [{ title: "How It Works", href: "/how-it-works" }],
+            }),
+          },
+          industriesPage: {
+            select: { titleStart: "heroTitleStart" },
+            resolve: () => ({
+              locations: [{ title: "Industries", href: "/industries" }],
+            }),
+          },
+          solutionsPage: {
+            select: { titleStart: "heroTitleStart" },
+            resolve: () => ({
+              locations: [{ title: "Solutions", href: "/solutions" }],
+            }),
+          },
+          insightsPage: {
+            select: { titleStart: "heroTitleStart" },
+            resolve: () => ({
+              locations: [{ title: "Insights", href: "/insights" }],
+            }),
+          },
+          signalExchangePage: {
+            select: { titleStart: "heroTitleStart" },
+            resolve: () => ({
+              locations: [{ title: "Signal eXchange™", href: "/signal-exchange" }],
+            }),
+          },
+          resourcesPage: {
+            select: { titleStart: "heroTitleStart" },
+            resolve: () => ({
+              locations: [{ title: "Resources", href: "/resources" }],
+            }),
+          },
         },
         // URL → document (right-side panel finds the doc for the current preview URL).
         // Multiple route patterns cover paths up to 5 segments deep, matching the seeded site routes.
@@ -88,8 +130,36 @@ export default defineConfig({
             filter: `_type == "dataAssetsPage" && _id == "dataAssetsPage"`,
           },
           {
+            route: "/about",
+            filter: `_type == "aboutPage" && _id == "aboutPage"`,
+          },
+          {
+            route: "/how-it-works",
+            filter: `_type == "howItWorksPage" && _id == "howItWorksPage"`,
+          },
+          {
+            route: "/industries",
+            filter: `_type == "industriesPage" && _id == "industriesPage"`,
+          },
+          {
+            route: "/solutions",
+            filter: `_type == "solutionsPage" && _id == "solutionsPage"`,
+          },
+          {
+            route: "/insights",
+            filter: `_type == "insightsPage" && _id == "insightsPage"`,
+          },
+          {
+            route: "/signal-exchange",
+            filter: `_type == "signalExchangePage" && _id == "signalExchangePage"`,
+          },
+          {
+            route: "/resources",
+            filter: `_type == "resourcesPage" && _id == "resourcesPage"`,
+          },
+          {
             route: "/:s1",
-            filter: `_type == "page" && slug.current == $s1`,
+            filter: `_type == "page" && slug.current == $s1 && !($s1 in ["contact", "about", "how-it-works", "industries", "solutions", "insights", "signal-exchange", "resources", "data-assets"])`,
           },
           {
             route: "/:s1/:s2",

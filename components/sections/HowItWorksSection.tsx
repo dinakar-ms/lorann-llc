@@ -4,15 +4,16 @@ import { useEffect, useRef, useState } from "react";
 import { Crosshair, Database, GitMerge, TrendingUp, type LucideIcon } from "lucide-react";
 import SectionHeader from "../ui/SectionHeader";
 import { getIconComponent } from "../ui/IconByName";
+import RichText from "../RichText";
 
-type Step = { Icon: LucideIcon; title: string; desc: string };
+type Step = { Icon: LucideIcon; title: string; desc: any };
 
 export type HowItWorksContent = {
   kicker?: string;
   titleStart?: string;
   titleHighlight?: string;
   titleEnd?: string;
-  description?: string;
+  description?: any; // richText Portable Text
   steps?: { iconName?: string; title?: string; desc?: string }[];
 };
 
@@ -172,7 +173,7 @@ export default function HowItWorksSection({ content }: { content?: HowItWorksCon
                     {step.title}
                   </h4>
                   <p className="text-slate-600 text-[14.5px] leading-relaxed max-w-[260px] mx-auto">
-                    {step.desc}
+                    <RichText value={step.desc} />
                   </p>
                 </div>
               );

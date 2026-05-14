@@ -1,6 +1,6 @@
 import "server-only";
 
-import { draftMode } from "next/headers";
+import { draftMode, headers } from "next/headers";
 import type { QueryParams } from "next-sanity";
 import { client } from "./client";
 import { token } from "../env";
@@ -15,6 +15,8 @@ export async function sanityFetch<QueryResponse>({
   tags?: string[];
 }): Promise<QueryResponse> {
   const isDraftMode = draftMode().isEnabled;
+  const isPresentation = headers().get("x-sanity-preview") === "true";
+  const needsPreview = isDraftMode || isPresentation;
 
   if (isDraftMode && !token) {
     throw new Error(
@@ -25,20 +27,15 @@ export async function sanityFetch<QueryResponse>({
   try {
     return await client
       .withConfig({
-        token: isDraftMode ? token : undefined,
+        token: needsPreview ? token : undefined,
         perspective: isDraftMode ? "previewDrafts" : "published",
-        // Stega encoding makes strings clickable in Sanity Presentation.
-        // Inside Studio we need the FULL stega config (with studioUrl),
-        // otherwise VisualEditing can't construct the jump-to-field
-        // target on click. On the public site we turn stega off so the
-        // "Open in Studio" tooltip doesn't leak to visitors.
-        stega: isDraftMode
+        stega: needsPreview
           ? { enabled: true, studioUrl: "/studio" }
           : false,
       })
       .fetch<QueryResponse>(query, params, {
         next: {
-          revalidate: isDraftMode ? 0 : 60,
+          revalidate: needsPreview ? 0 : 60,
           tags,
         },
       });

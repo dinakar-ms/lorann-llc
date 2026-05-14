@@ -3,6 +3,7 @@
 import { Check, ArrowRight } from "lucide-react";
 import Link from "next/link";
 import SectionHeader from "../ui/SectionHeader";
+import RichText from "../RichText";
 
 function SolutionRow({
   reverse,
@@ -41,7 +42,7 @@ function SolutionRow({
         <h3 className="font-display font-bold text-3xl sm:text-4xl lg:text-[2.5rem] leading-[1.1] tracking-tight my-4 text-slate-900">
           {title} <span className="text-gradient">{titleAccent}</span>
         </h3>
-        <p className="text-slate-600 text-[16.5px] leading-relaxed mb-6">{desc}</p>
+        <p className="text-slate-600 text-[16.5px] leading-relaxed mb-6"><RichText value={desc} /></p>
         <ul className="flex flex-col gap-3 mb-7 sol-feats">
           {feats.map((feat) => (
             <li key={feat} className="flex items-center gap-3 text-slate-700 text-[14.5px]">
@@ -184,7 +185,7 @@ export type SolutionsSectionContent = {
   kicker?: string;
   titleStart?: string;
   titleHighlight?: string;
-  description?: string;
+  description?: any; // richText Portable Text
   rows?: {
     id?: string;
     kicker?: string;

@@ -3,12 +3,13 @@
 import { useEffect, useRef } from "react";
 import { ArrowRight, Check } from "lucide-react";
 import Link from "next/link";
+import RichText from "../RichText";
 
 export type FinalCTAContent = {
   kicker?: string;
   titleStart?: string;
   titleHighlight?: string;
-  description?: string;
+  description?: any; // richText (Portable Text) or legacy string
   primaryCta?: { label?: string; href?: string };
   secondaryCta?: { label?: string; href?: string };
   trust?: string[];
@@ -99,7 +100,7 @@ export default function FinalCTA({ content }: { content?: FinalCTAContent }) {
               <span className="text-gradient-cyan">{titleHighlight}</span>
             </h2>
             <p className="text-[17px] opacity-85 max-w-[560px] mx-auto mb-9 leading-relaxed">
-              {description}
+              <RichText value={description} />
             </p>
             <div className="flex justify-center gap-3 flex-wrap mb-8">
               <Link

@@ -15,7 +15,7 @@ const featureFields = [
       "Icon name from lucide-react (e.g. Briefcase, Activity, Sparkles, Users, CreditCard).",
   }),
   defineField({ name: "title", type: "string" }),
-  defineField({ name: "desc", title: "Description", type: "text", rows: 3 }),
+  defineField({ name: "desc", title: "Description", type: "richText" }),
   defineField({ name: "href", type: "string" }),
   defineField({
     name: "badge",
@@ -39,7 +39,7 @@ export const dataAssetsPageType = defineType({
     defineField({ name: "heroKicker", title: "Hero kicker", type: "string", fieldset: "hero" }),
     defineField({ name: "heroTitleStart", title: "Hero title — start", type: "string", fieldset: "hero" }),
     defineField({ name: "heroTitleHighlight", title: "Hero title — gradient highlight", type: "string", fieldset: "hero" }),
-    defineField({ name: "heroDescription", title: "Hero description", type: "text", rows: 3, fieldset: "hero" }),
+    defineField({ name: "heroDescription", title: "Hero description", type: "richText", fieldset: "hero" }),
     defineField({ name: "heroPrimaryCta", title: "Primary CTA", type: "object", fields: ctaFields, fieldset: "hero" }),
     defineField({ name: "heroSecondaryCta", title: "Secondary CTA", type: "object", fields: ctaFields, fieldset: "hero" }),
 
@@ -47,7 +47,7 @@ export const dataAssetsPageType = defineType({
     defineField({ name: "sectionKicker", title: "Section kicker", type: "string", fieldset: "section" }),
     defineField({ name: "sectionTitleStart", title: "Section title — start", type: "string", fieldset: "section" }),
     defineField({ name: "sectionTitleHighlight", title: "Section title — gradient highlight", type: "string", fieldset: "section" }),
-    defineField({ name: "sectionDescription", title: "Section description", type: "text", rows: 3, fieldset: "section" }),
+    defineField({ name: "sectionDescription", title: "Section description", type: "richText", fieldset: "section" }),
     defineField({
       name: "features",
       title: "Asset cards",

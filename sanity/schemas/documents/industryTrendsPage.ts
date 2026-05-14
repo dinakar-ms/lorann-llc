@@ -54,8 +54,7 @@ export const industryTrendsPageType = defineType({
     defineField({
       name: "description",
       title: "Description (sub-headline)",
-      type: "text",
-      rows: 3,
+      type: "richText",
       fieldset: "hero",
       validation: (Rule) => Rule.required(),
     }),
@@ -82,7 +81,7 @@ export const industryTrendsPageType = defineType({
       fieldset: "featured",
       fields: [
         defineField({ name: "title", type: "string", validation: (Rule) => Rule.required() }),
-        defineField({ name: "excerpt", type: "text", rows: 3, validation: (Rule) => Rule.required() }),
+        defineField({ name: "excerpt", type: "richText", validation: (Rule) => Rule.required() }),
         defineField({ name: "category", type: "string", validation: (Rule) => Rule.required() }),
         defineField({ name: "readingTime", title: "Reading time", type: "string" }),
         defineField({ name: "date", type: "string" }),
@@ -112,8 +111,7 @@ export const industryTrendsPageType = defineType({
     defineField({
       name: "sectionDescription",
       title: "Section description",
-      type: "text",
-      rows: 2,
+      type: "richText",
       fieldset: "section",
     }),
 
@@ -128,7 +126,7 @@ export const industryTrendsPageType = defineType({
           type: "object",
           fields: [
             defineField({ name: "title", type: "string", validation: (Rule) => Rule.required() }),
-            defineField({ name: "excerpt", type: "text", rows: 3, validation: (Rule) => Rule.required() }),
+            defineField({ name: "excerpt", type: "richText", validation: (Rule) => Rule.required() }),
             defineField({ name: "category", type: "string", validation: (Rule) => Rule.required() }),
             defineField({ name: "readingTime", title: "Reading time", type: "string" }),
             defineField({ name: "date", type: "string" }),

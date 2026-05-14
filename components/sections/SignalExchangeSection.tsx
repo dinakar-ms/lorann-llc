@@ -2,11 +2,12 @@
 
 import { Check, ArrowRight } from "lucide-react";
 import Link from "next/link";
+import RichText from "../RichText";
 
 export type SignalExchangeContent = {
   kicker?: string;
   title?: string;
-  description?: string;
+  description?: any; // richText (Portable Text) or legacy string
   features?: string[];
   cta?: { label?: string; href?: string };
 };
@@ -93,7 +94,7 @@ export default function SignalExchangeSection({
               {renderTitle(title)}
             </h2>
             <p className="text-white/72 text-[17px] leading-relaxed mb-8 max-w-[520px]">
-              {description}
+              <RichText value={description} />
             </p>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-8">

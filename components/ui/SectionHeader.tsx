@@ -1,10 +1,11 @@
 import { ReactNode } from "react";
 import Kicker from "./Kicker";
+import RichText from "../RichText";
 
 interface SectionHeaderProps {
   kicker: string;
   title: ReactNode;
-  description?: string;
+  description?: any; // richText (Portable Text) or legacy string
   center?: boolean;
   className?: string;
 }
@@ -26,7 +27,7 @@ export default function SectionHeader({
       </h2>
       {description && (
         <p className="text-slate-600 text-[17px] max-w-[580px] mx-auto leading-relaxed">
-          {description}
+          <RichText value={description} />
         </p>
       )}
     </div>

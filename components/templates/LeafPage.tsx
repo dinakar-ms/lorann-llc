@@ -3,14 +3,15 @@ import SectionHeader from "@/components/ui/SectionHeader";
 import FeatureCardGrid from "@/components/sections/FeatureCardGrid";
 import FinalCTA from "@/components/sections/FinalCTA";
 import ScrollReveal from "@/components/ScrollReveal";
+import RichText from "@/components/RichText";
 import Link from "next/link";
 import { ShieldCheck, ArrowRight, CheckCircle2 } from "lucide-react";
 import type { ReactNode } from "react";
 import type { Crumb } from "@/components/ui/SubPageHero";
 
 export type Stat = { label: string; value: string };
-export type Attribute = { Icon: React.ElementType; title: string; desc: string };
-export type UseCase = { title: string; desc: string };
+export type Attribute = { Icon: React.ElementType; title: string; desc: any };
+export type UseCase = { title: string; desc: any };
 
 export interface LeafPageProps {
   /** Breadcrumb trail leading to this page */
@@ -170,7 +171,7 @@ export default function LeafPage({
                 <h3 className="font-display font-semibold text-lg mb-2 tracking-tight text-slate-900">
                   {u.title}
                 </h3>
-                <p className="text-slate-600 text-[14.5px] leading-relaxed">{u.desc}</p>
+                <p className="text-slate-600 text-[14.5px] leading-relaxed"><RichText value={u.desc} /></p>
               </div>
             ))}
           </div>
@@ -204,7 +205,7 @@ export default function LeafPage({
                   {compliance.headline}
                 </h3>
                 <p className="text-white/75 text-[15px] leading-relaxed max-w-2xl">
-                  {compliance.body}
+                  <RichText value={compliance.body} />
                 </p>
               </div>
               <Link
