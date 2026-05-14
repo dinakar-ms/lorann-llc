@@ -1,10 +1,11 @@
 import { ReactNode } from "react";
 import Kicker from "./Kicker";
+import RichText from "../RichText";
 
 interface PageHeroProps {
   kicker: string;
   title: ReactNode;
-  description: string;
+  description: any; // richText (Portable Text) or legacy string
   children?: ReactNode;
 }
 
@@ -26,7 +27,7 @@ export default function PageHero({ kicker, title, description, children }: PageH
             {title}
           </h1>
           <p className="text-lg sm:text-xl text-slate-600 max-w-2xl mx-auto leading-relaxed">
-            {description}
+            <RichText value={description} />
           </p>
           {children && <div className="mt-10">{children}</div>}
         </div>

@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { groq } from "next-sanity";
 import { Mail, Phone, MapPin } from "lucide-react";
 import PageHero from "@/components/ui/PageHero";
+import RichText from "@/components/RichText";
 import ScrollReveal from "@/components/ScrollReveal";
 import ContactForm, { type ContactFormCopy } from "./ContactForm";
 import { sanityFetch } from "@/sanity/lib/fetch";
@@ -12,10 +13,10 @@ type ContactDoc = {
   heroKicker?: string;
   heroTitleStart?: string;
   heroTitleHighlight?: string;
-  heroDescription?: string;
+  heroDescription?: any;
 
   infoTitle?: string;
-  infoDescription?: string;
+  infoDescription?: any;
   infoEmailLabel?: string;
   infoEmailValue?: string;
   infoPhoneLabel?: string;
@@ -26,7 +27,7 @@ type ContactDoc = {
   infoAddressLine2?: string;
 
   responseTitle?: string;
-  responseBody?: string;
+  responseBody?: any;
 
   formNameLabel?: string;
   formCompanyLabel?: string;
@@ -188,7 +189,7 @@ export default async function ContactPage() {
                 {c.infoTitle}
               </h2>
               <p className="text-slate-600 mb-8 leading-relaxed">
-                {c.infoDescription}
+                <RichText value={c.infoDescription} />
               </p>
               <div className="space-y-5">
                 <a
@@ -250,7 +251,7 @@ export default async function ContactPage() {
                 <h3 className="font-display font-semibold text-slate-900 mb-2">
                   {c.responseTitle}
                 </h3>
-                <p className="text-slate-600 text-sm">{c.responseBody}</p>
+                <p className="text-slate-600 text-sm"><RichText value={c.responseBody} /></p>
               </div>
             </div>
 
