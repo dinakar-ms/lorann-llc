@@ -5,13 +5,14 @@ export const client = createClient({
   projectId,
   dataset,
   apiVersion,
-  // useCdn must be false for stega encoding to flow through. Next.js
-  // still caches at the route level via the `revalidate` option in
-  // sanityFetch, so this isn't a real performance hit.
   useCdn: false,
   perspective: "published",
+  // Stega is OFF by default — only enabled in sanityFetch when in
+  // preview / presentation mode.  Keeping it on here caused every
+  // production query to request resultSourceMap, which requires a
+  // token and fails with 401 on public/tokenless requests.
   stega: {
-    enabled: true,
+    enabled: false,
     studioUrl: "/studio",
   },
 });

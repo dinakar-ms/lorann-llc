@@ -173,9 +173,14 @@ function isReservedPath(parts: string[]): boolean {
 }
 
 // ─── Static params ───────────────────────────────────────
+// Use a stega-free client so slugs don't contain invisible encoding characters
+const plainClient = client.withConfig({ stega: false });
+
+export const dynamicParams = true; // allow on-demand ISR for pages not pre-rendered
+
 export async function generateStaticParams() {
   try {
-    const slugs = await client.fetch<string[]>(allPageSlugsQuery);
+    const slugs = await plainClient.fetch<string[]>(allPageSlugsQuery);
     return slugs
       .map((slug) => slug.split("/"))
       .filter((parts) => !isReservedPath(parts))

@@ -31,7 +31,7 @@ export async function sanityFetch<QueryResponse>({
         perspective: isDraftMode ? "previewDrafts" : "published",
         stega: needsPreview
           ? { enabled: true, studioUrl: "/studio" }
-          : false,
+          : { enabled: false },
       })
       .fetch<QueryResponse>(query, params, {
         next: {
