@@ -1,7 +1,6 @@
 "use client";
 
 import { usePathname } from "next/navigation";
-import AnnouncementBar from "@/components/AnnouncementBar";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import SocialRail from "@/components/SocialRail";
@@ -19,7 +18,6 @@ export default function LayoutChrome({
 
   return (
     <>
-      <AnnouncementBar />
       <Navbar />
       <main>{children}</main>
       <Footer />

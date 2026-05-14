@@ -562,7 +562,7 @@ export default function Navbar() {
     <>
       <nav
         className="fixed left-0 right-0 z-[100] transition-all duration-400"
-        style={{ top: "var(--announce-height, 36px)" }}
+        style={{ top: 0 }}
       >
         <div
           className={`transition-all duration-400 border-b ${
