@@ -14,8 +14,16 @@ export async function sanityFetch<QueryResponse>({
   params?: QueryParams;
   tags?: string[];
 }): Promise<QueryResponse> {
-  const isDraftMode = draftMode().isEnabled;
-  const isPresentation = headers().get("x-sanity-preview") === "true";
+  // Wrap dynamic API calls in try-catch — they throw
+  // DYNAMIC_SERVER_USAGE during ISR revalidation of static pages.
+  let isDraftMode = false;
+  let isPresentation = false;
+  try {
+    isDraftMode = draftMode().isEnabled;
+    isPresentation = headers().get("x-sanity-preview") === "true";
+  } catch {
+    // Static rendering or ISR context — safe to default to published
+  }
   const needsPreview = isDraftMode || isPresentation;
 
   if (isDraftMode && !token) {
