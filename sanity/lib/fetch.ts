@@ -27,7 +27,9 @@ export async function sanityFetch<QueryResponse>({
   try {
     return await client
       .withConfig({
-        token: needsPreview ? token : undefined,
+        // Always pass the token — the dataset is private and requires
+        // authentication even for published reads.
+        token: token || undefined,
         perspective: isDraftMode ? "previewDrafts" : "published",
         stega: needsPreview
           ? { enabled: true, studioUrl: "/studio" }

@@ -5,6 +5,7 @@ import Link from "next/link";
 import { groq } from "next-sanity";
 import { sanityFetch } from "@/sanity/lib/fetch";
 import { client } from "@/sanity/lib/client";
+import { token } from "@/sanity/env";
 import { urlForImage } from "@/sanity/lib/image";
 import { allPageSlugsQuery } from "@/sanity/lib/queries";
 import PortableContent from "@/components/PortableContent";
@@ -173,8 +174,9 @@ function isReservedPath(parts: string[]): boolean {
 }
 
 // ─── Static params ───────────────────────────────────────
-// Use a stega-free client so slugs don't contain invisible encoding characters
-const plainClient = client.withConfig({ stega: false });
+// Use a stega-free, token-authenticated client for build-time slug fetching
+// (dataset is private and requires a token for all reads)
+const plainClient = client.withConfig({ stega: false, token: token || undefined });
 
 export const dynamicParams = true; // allow on-demand ISR for pages not pre-rendered
 
