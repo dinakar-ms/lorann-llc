@@ -421,17 +421,6 @@ function renderCustom(page: PageDoc, slugParts: string[]) {
         secondaryCta={page.secondaryCta?.label ? (page.secondaryCta as { label: string; href: string }) : undefined}
       />
 
-      {/* Portable Text content body (used by legal/policy pages and other long-form custom pages) */}
-      {page.content && Array.isArray(page.content) && page.content.length > 0 && (
-        <section className="py-16 lg:py-24 bg-white">
-          <div className="container-custom">
-            <article className="mx-auto max-w-3xl prose-slate">
-              <PortableContent value={page.content} />
-            </article>
-          </div>
-        </section>
-      )}
-
       {/* Intro section (skip if newsletter section will render — it includes its own headline) */}
       {page.introKicker && !(page.newsletterBullets && page.newsletterBullets.length > 0) && (
         <section className="py-20 lg:py-24 bg-white">
