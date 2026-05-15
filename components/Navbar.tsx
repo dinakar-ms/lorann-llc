@@ -14,6 +14,7 @@ import {
   Layers,
   Radio,
   Share2,
+  DollarSign,
   Building2,
   Lightbulb,
   Handshake,
@@ -75,6 +76,13 @@ const NAV: NavItem[] = [
         href: "/solutions/data-activation",
         desc: "Deploy audiences across CRM, email, Programmatic, and traditional.",
         Icon: Share2,
+      },
+      {
+        label: "Cost Per Lead Optimization",
+        href: "/solutions/cost-per-lead",
+        desc: "Reduce CPL by 40–60% with verified data and precision targeting.",
+        Icon: DollarSign,
+        badge: "New",
       },
     ],
     featured: {

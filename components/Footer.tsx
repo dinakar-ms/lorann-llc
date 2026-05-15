@@ -11,6 +11,7 @@ const FOOTER_COLS = [
       { label: "Data Enrichment", href: "/solutions/data-enrichment" },
       { label: "Signal eXchange™", href: "/solutions/signal-exchange" },
       { label: "Data Activation", href: "/solutions/data-activation" },
+      { label: "Cost Per Lead", href: "/solutions/cost-per-lead" },
     ],
   },
   {
