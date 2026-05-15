@@ -40,6 +40,15 @@ import {
   ShieldCheck,
   Plane,
   Building,
+  // B2C categories
+  GraduationCap,
+  HeartHandshake,
+  Landmark,
+  ShoppingCart,
+  Package,
+  Globe,
+  Wifi,
+  Wrench,
 } from "lucide-react";
 
 export type DataAssetNode = {
@@ -205,7 +214,7 @@ const B2C_DATABASE: DataAssetNode = {
   label: "B2C Database",
   href: "/data-assets/b2c-database",
   Icon: Users,
-  desc: "Consumer audiences across Real Estate and Automotive.",
+  desc: "Consumer audiences across 10 key verticals.",
   children: [
     {
       label: "Real Estate",
@@ -218,6 +227,54 @@ const B2C_DATABASE: DataAssetNode = {
       href: "/data-assets/b2c-database/automotive",
       Icon: Car,
       desc: "Vehicle owners & in-market buyers.",
+    },
+    {
+      label: "Education & EdTech",
+      href: "/data-assets/b2c-database/education-edtech",
+      Icon: GraduationCap,
+      desc: "Students, educators & lifelong learners.",
+    },
+    {
+      label: "Healthcare & Wellness",
+      href: "/data-assets/b2c-database/healthcare-wellness",
+      Icon: HeartHandshake,
+      desc: "Health-conscious consumers & patients.",
+    },
+    {
+      label: "Financial Services",
+      href: "/data-assets/b2c-database/financial-services",
+      Icon: Landmark,
+      desc: "Banking, insurance & investment consumers.",
+    },
+    {
+      label: "Retail & Ecommerce",
+      href: "/data-assets/b2c-database/retail-ecommerce",
+      Icon: ShoppingCart,
+      desc: "Online shoppers & retail loyalty audiences.",
+    },
+    {
+      label: "DTC & CPG",
+      href: "/data-assets/b2c-database/dtc-cpg",
+      Icon: Package,
+      desc: "Direct-to-consumer & packaged goods buyers.",
+    },
+    {
+      label: "Travel",
+      href: "/data-assets/b2c-database/travel",
+      Icon: Globe,
+      desc: "Frequent travelers & vacation planners.",
+    },
+    {
+      label: "Telecommunications",
+      href: "/data-assets/b2c-database/telecommunications",
+      Icon: Wifi,
+      desc: "Mobile, broadband & streaming subscribers.",
+    },
+    {
+      label: "Home Services",
+      href: "/data-assets/b2c-database/home-services",
+      Icon: Wrench,
+      desc: "Homeowners seeking services & improvement.",
     },
   ],
 };
