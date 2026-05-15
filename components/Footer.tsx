@@ -139,6 +139,33 @@ export default function Footer() {
           ))}
         </div>
 
+        {/* ── Legal / Policy Links ── */}
+        <div className="border-t border-slate-200 pt-6 pb-6">
+          <div className="flex flex-wrap justify-center gap-x-1.5 gap-y-2 text-[12.5px]">
+            {[
+              { label: "Privacy Policy", href: "/privacy-policy" },
+              { label: "Data Security", href: "/data-security-policy" },
+              { label: "CCPA Privacy Policy", href: "/ccpa-privacy-policy" },
+              { label: "Cookie Policy", href: "/cookie-policy" },
+              { label: "Do Not Sell My Data", href: "/do-not-sell-my-data" },
+              { label: "Do Not Call Compliance Policy", href: "/do-not-call-compliance" },
+            ].map((item, i, arr) => (
+              <span key={item.href} className="flex items-center gap-1.5">
+                <Link
+                  href={item.href}
+                  className="text-slate-500 hover:text-blue-700 transition-colors underline-offset-2 hover:underline"
+                >
+                  {item.label}
+                </Link>
+                {i < arr.length - 1 && (
+                  <span className="text-slate-300 select-none" aria-hidden>·</span>
+                )}
+              </span>
+            ))}
+          </div>
+        </div>
+
+        {/* ── Bottom bar: copyright + socials ── */}
         <div className="border-t border-slate-200 pt-7 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 text-[13px] text-slate-500">
           <p>
             © {new Date().getFullYear()} Lorann LLC · Signal eXchange™ is a
@@ -153,8 +180,8 @@ export default function Footer() {
               <a
                 key={label}
                 href={href}
-                target="_blank" 
-                rel="noopener noreferrr"
+                target="_blank"
+                rel="noopener noreferrer"
                 aria-label={label}
                 className="w-9 h-9 rounded-[10px] border border-slate-200 grid place-items-center text-slate-500 hover:border-blue-500 hover:text-blue-700 hover:bg-blue-50 hover:-translate-y-0.5 transition-all"
               >
