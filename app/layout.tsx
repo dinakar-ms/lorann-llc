@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { GoogleAnalytics } from "@next/third-parties/google";
 import { Space_Grotesk, Inter, JetBrains_Mono } from "next/font/google";
 import { draftMode } from "next/headers";
 import { VisualEditing } from "next-sanity";
@@ -28,9 +29,9 @@ const jetbrains = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Lorann — List Smarter · Data-Driven Audience Intelligence",
+  title: "Mailing List | B2B Data | Email Marketing List | LorannLLC",
   description:
-    "Build, enrich, and activate high-performing audiences across B2B, consumer, and healthcare datasets. Powered by Signal eXchange™.",
+    "Enhance your B2B Email Marketing Lists with Lorann LLC's targeted solutions for better lead generation and customer engagement.",
   icons: {
     icon: [
       { url: "/favicon.ico", sizes: "32x32" },
@@ -40,8 +41,14 @@ export const metadata: Metadata = {
     ],
     apple: [{ url: "/apple-icon.png", sizes: "180x180", type: "image/png" }],
   },
+  metadataBase: new URL("https://www.lorannllc.com"),
+  alternates: {
+    canonical: "https://www.lorannllc.com/",
+  },
   keywords: [
+    "mailing list",
     "B2B data",
+    "email marketing list",
     "audience intelligence",
     "Signal eXchange",
     "data enrichment",
@@ -51,13 +58,27 @@ export const metadata: Metadata = {
     "Lorann",
   ],
   authors: [{ name: "Lorann LLC" }],
+  robots: {
+    index: true,
+    follow: true,
+    "max-image-preview": "large" as any,
+    "max-snippet": -1,
+    "max-video-preview": -1,
+  },
+  verification: {
+    google: "emGsSyokNXarO2PjBA5pFtPhPktAEmPSMp-Ha5OkmNo",
+  },
   openGraph: {
-    title: "Lorann — List Smarter",
+    title: "Mailing List | B2B Data | Email Marketing List | LorannLLC",
     description:
-      "Build, enrich, and activate high-performing audiences. Powered by Signal eXchange™.",
-    url: "https://lorannllc.com",
-    siteName: "Lorann LLC",
+      "Enhance your B2B Email Marketing Lists with Lorann LLC's targeted solutions for better lead generation and customer engagement.",
+    url: "https://www.lorannllc.com/",
+    siteName: "lorannllc",
     type: "website",
+    locale: "en_US",
+  },
+  twitter: {
+    card: "summary_large_image",
   },
 };
 
@@ -80,6 +101,7 @@ export default function RootLayout({
             sanity/lib/fetch.ts). */}
         <VisualEditing />
         {draftMode().isEnabled && <DisableDraftMode />}
+        <GoogleAnalytics gaId="G-SD98EK2RQ4" />
       </body>
     </html>
   );
