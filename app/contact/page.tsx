@@ -92,11 +92,11 @@ const DEFAULTS = {
   formMessagePlaceholder: "Share your audience goals, channels, timelines…",
   formSubmitLabel: "Send Message",
   formPrivacyNote:
-    "Your email client will open with a pre-filled message. We respect your privacy — submissions are not stored on our servers.",
+    "Protected by reCAPTCHA. We respect your privacy — your information will only be used to respond to this inquiry.",
 
-  successTitle: "Message ready to send",
+  successTitle: "Message received",
   successBody:
-    "Your email client has been opened with the message pre-filled. If nothing happened, email us directly at",
+    "Thank you — we'll get back to you within one business day. If you need to reach us sooner, email",
 };
 
 const query = groq`*[_type == "contactPage" && _id == "contactPage"][0]`;

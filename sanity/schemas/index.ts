@@ -22,6 +22,7 @@ import { solutionsPageType } from "./documents/solutionsPage";
 import { insightsPageType } from "./documents/insightsPage";
 import { signalExchangePageType } from "./documents/signalExchangePage";
 import { resourcesPageType } from "./documents/resourcesPage";
+import { contactSubmissionType } from "./documents/contactSubmission";
 
 export const schema: { types: SchemaTypeDefinition[] } = {
   types: [
@@ -46,5 +47,6 @@ export const schema: { types: SchemaTypeDefinition[] } = {
     insightsPageType,
     signalExchangePageType,
     resourcesPageType,
+    contactSubmissionType,
   ],
 };
