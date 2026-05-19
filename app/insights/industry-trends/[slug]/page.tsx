@@ -296,6 +296,7 @@ export async function generateMetadata({
   return {
     title: `${a.title} ${a.titleHighlight} · Lorann LLC`,
     description: a.excerpt,
+    alternates: { canonical: `/insights/industry-trends/${slug}` },
   };
 }
 

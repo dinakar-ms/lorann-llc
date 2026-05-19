@@ -219,7 +219,7 @@ export async function generateMetadata({
     title,
     description,
     keywords: page.focusKeyphrase ? [page.focusKeyphrase] : undefined,
-    alternates: page.canonicalUrl ? { canonical: page.canonicalUrl } : undefined,
+    alternates: { canonical: page.canonicalUrl || `/${path}` },
     robots: page.noIndex
       ? { index: false, follow: false }
       : { index: true, follow: true },
@@ -227,7 +227,7 @@ export async function generateMetadata({
       title,
       description: description || undefined,
       type: "article",
-      url: page.canonicalUrl,
+      url: page.canonicalUrl || `/${path}`,
     },
   };
 }

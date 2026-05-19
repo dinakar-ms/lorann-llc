@@ -8,6 +8,7 @@ import type { Metadata } from "next";
 export const metadata: Metadata = {
   title: "Solutions · Lorann LLC",
   description: "Precision audience targeting, data enrichment, lead generation, and data activation — built for B2B, healthcare, and consumer campaigns.",
+  alternates: { canonical: "/solutions" },
 };
 
 export default function SolutionsPage() {

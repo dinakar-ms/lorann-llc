@@ -42,9 +42,6 @@ export const metadata: Metadata = {
     apple: [{ url: "/apple-icon.png", sizes: "180x180", type: "image/png" }],
   },
   metadataBase: new URL("https://www.lorannllc.com"),
-  alternates: {
-    canonical: "https://www.lorannllc.com/",
-  },
   keywords: [
     "mailing list",
     "B2B data",

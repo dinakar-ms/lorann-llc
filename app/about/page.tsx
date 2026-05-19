@@ -9,6 +9,7 @@ import type { Metadata } from "next";
 export const metadata: Metadata = {
   title: "About · Lorann LLC",
   description: "Lorann builds audiences that perform. Learn about our mission, team, and commitment to data quality.",
+  alternates: { canonical: "/about" },
 };
 
 const VALUES = [

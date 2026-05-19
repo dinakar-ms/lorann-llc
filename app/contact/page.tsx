@@ -7,7 +7,7 @@ import ScrollReveal from "@/components/ScrollReveal";
 import ContactForm, { type ContactFormCopy } from "./ContactForm";
 import { sanityFetch } from "@/sanity/lib/fetch";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 60;
 
 type ContactDoc = {
   heroKicker?: string;
@@ -107,7 +107,7 @@ export async function generateMetadata(): Promise<Metadata> {
     title: doc?.metaTitle || "Contact · Lorann LLC",
     description: doc?.metaDescription || DEFAULTS.heroDescription,
     keywords: doc?.focusKeyphrase ? [doc.focusKeyphrase] : undefined,
-    alternates: doc?.canonicalUrl ? { canonical: doc.canonicalUrl } : undefined,
+    alternates: { canonical: doc?.canonicalUrl || "/contact" },
     robots: doc?.noIndex ? { index: false, follow: false } : { index: true, follow: true },
   };
 }

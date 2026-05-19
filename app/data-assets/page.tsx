@@ -8,7 +8,7 @@ import ScrollReveal from "@/components/ScrollReveal";
 import { sanityFetch } from "@/sanity/lib/fetch";
 import { getIconComponent } from "@/components/ui/IconByName";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 60;
 
 type Cta = { label?: string; href?: string };
 type FeatureDoc = {
@@ -107,7 +107,7 @@ export async function generateMetadata(): Promise<Metadata> {
     title: doc?.metaTitle || "Data Assets · Built on Better Data — Lorann LLC",
     description: doc?.metaDescription || DEFAULTS.heroDescription,
     keywords: doc?.focusKeyphrase ? [doc.focusKeyphrase] : undefined,
-    alternates: doc?.canonicalUrl ? { canonical: doc.canonicalUrl } : undefined,
+    alternates: { canonical: doc?.canonicalUrl || "/data-assets" },
     robots: doc?.noIndex ? { index: false, follow: false } : { index: true, follow: true },
   };
 }

@@ -43,6 +43,7 @@ export const metadata: Metadata = {
     "lead generation cost",
     "B2B cost per lead",
   ],
+  alternates: { canonical: "/solutions/cost-per-lead" },
 };
 
 /* ─── Data ─────────────────────────────────────────────── */

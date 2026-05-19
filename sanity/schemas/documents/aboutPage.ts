@@ -78,6 +78,7 @@ export const aboutPageType = defineType({
     // SEO
     defineField({ name: "metaTitle", title: "Meta Title", type: "string", fieldset: "seo" }),
     defineField({ name: "metaDescription", title: "Meta Description", type: "text", rows: 3, fieldset: "seo" }),
+    defineField({ name: "canonicalUrl", title: "Canonical Link", type: "url", fieldset: "seo", description: "Absolute URL of the canonical version (leave blank to default to this page's URL).", validation: (Rule) => Rule.uri({ scheme: ["http", "https"], allowRelative: false }) }),
     defineField({ name: "noIndex", title: "Hide from Search Engines", type: "boolean", fieldset: "seo", initialValue: false }),
   ],
   preview: { prepare: () => ({ title: "About Page" }) },

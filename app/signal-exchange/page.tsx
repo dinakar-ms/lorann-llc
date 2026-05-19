@@ -63,7 +63,7 @@ type HomepageShared = {
   finalCtaTrust?: string[];
 };
 
-export const dynamic = "force-dynamic";
+export const revalidate = 60;
 
 const query = groq`*[_type == "signalExchangePage" && _id == "signalExchangePage"][0]`;
 const homepageQuery = groq`*[_type == "homepage" && _id == "homepage"][0]{
@@ -76,6 +76,7 @@ export async function generateMetadata(): Promise<Metadata> {
   return {
     title: doc?.metaTitle || "Signal eXchange™ · Lorann LLC",
     description: doc?.metaDescription || "Our proprietary intelligence layer fuses first-party lead data with real-time intent signals — producing higher-converting audiences.",
+    alternates: { canonical: "/signal-exchange" },
   };
 }
 
@@ -158,7 +159,7 @@ export default async function SignalExchangePage() {
                     {doc?.resultsTitleStart ?? "Audiences that"} <span className="text-gradient">{doc?.resultsTitleHighlight ?? "perform"}</span>
                   </h3>
                   <p className="text-slate-600 mb-6 leading-relaxed">
-                    {doc?.resultsDescription ?? "Signal eXchange™ audiences consistently outperform traditional list pulls across the metrics that matter — opens, engagement, meetings, and pipeline."}
+                    <RichText value={doc?.resultsDescription ?? "Signal eXchange™ audiences consistently outperform traditional list pulls across the metrics that matter — opens, engagement, meetings, and pipeline."} />
                   </p>
                   <Button href={doc?.resultsCta?.href ?? "mailto:info@lorannllc.com?subject=Signal%20eXchange%20Demo"} variant="glow" showArrow>
                     {doc?.resultsCta?.label ?? "Request a Demo"}

@@ -53,7 +53,7 @@ type HomepageShared = {
   finalCtaTrust?: string[];
 };
 
-export const dynamic = "force-dynamic";
+export const revalidate = 60;
 
 const query = groq`*[_type == "howItWorksPage" && _id == "howItWorksPage"][0]`;
 const homepageQuery = groq`*[_type == "homepage" && _id == "homepage"][0]{
@@ -67,6 +67,7 @@ export async function generateMetadata(): Promise<Metadata> {
   return {
     title: doc?.metaTitle || "How It Works · Lorann LLC",
     description: doc?.metaDescription || "A structured four-step process from data strategy to audience activation and continuous optimization.",
+    alternates: { canonical: "/how-it-works" },
   };
 }
 

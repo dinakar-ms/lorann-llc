@@ -33,7 +33,7 @@ type InsightsDoc = {
   metaDescription?: string;
 };
 
-export const dynamic = "force-dynamic";
+export const revalidate = 60;
 
 const query = groq`*[_type == "insightsPage" && _id == "insightsPage"][0]`;
 const homepageCtaQuery = groq`*[_type == "homepage" && _id == "homepage"][0]{
@@ -45,6 +45,7 @@ export async function generateMetadata(): Promise<Metadata> {
   return {
     title: doc?.metaTitle || "Insights · Lorann LLC",
     description: doc?.metaDescription || "POV, commentary, case studies, and newsletters on data, audience strategy, and performance-driven marketing.",
+    alternates: { canonical: "/insights" },
   };
 }
 

@@ -125,7 +125,7 @@ type HomepageDoc = {
   noIndex?: boolean;
 };
 
-export const dynamic = "force-dynamic";
+export const revalidate = 60; // ISR — re-generate at most every 60 s
 
 const homepageQuery = groq`*[_type == "homepage" && _id == "homepage"][0]`;
 
@@ -140,7 +140,7 @@ export async function generateMetadata(): Promise<Metadata> {
       doc?.metaDescription ||
       "Build, enrich, and activate high-performing audiences across B2B, consumer, and healthcare datasets. Powered by Signal eXchange™.",
     keywords: doc?.focusKeyphrase ? [doc.focusKeyphrase] : undefined,
-    alternates: doc?.canonicalUrl ? { canonical: doc.canonicalUrl } : undefined,
+    alternates: { canonical: doc?.canonicalUrl || "/" },
     robots: doc?.noIndex
       ? { index: false, follow: false }
       : { index: true, follow: true },

@@ -39,7 +39,7 @@ type Doc = {
   noIndex?: boolean;
 };
 
-export const dynamic = "force-dynamic";
+export const revalidate = 60;
 
 const query = groq`*[_type == "industryTrendsPage" && _id == "industryTrendsPage"][0]`;
 
@@ -76,7 +76,7 @@ export async function generateMetadata(): Promise<Metadata> {
     title: doc.metaTitle || `${doc.titleStart} ${doc.titleHighlight}`.trim(),
     description: doc.metaDescription || doc.description,
     keywords: doc.focusKeyphrase ? [doc.focusKeyphrase] : undefined,
-    alternates: doc.canonicalUrl ? { canonical: doc.canonicalUrl } : undefined,
+    alternates: { canonical: doc.canonicalUrl || "/insights/industry-trends" },
     robots: doc.noIndex
       ? { index: false, follow: false }
       : { index: true, follow: true },
