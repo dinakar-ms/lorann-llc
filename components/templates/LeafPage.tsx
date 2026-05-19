@@ -143,7 +143,7 @@ export default function LeafPage({
                 <span className="text-gradient">data points marketers need.</span>
               </>
             }
-            description="Built so your team can segment, personalise, and activate without going back to enrich."
+            description="Built so your team can segment, personalize, and activate without going back to enrich."
           />
           <FeatureCardGrid columns={4} features={attributes} />
         </div>

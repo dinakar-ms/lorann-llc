@@ -238,12 +238,12 @@ const DEFAULT_ROWS = [
 ];
 
 export default function SolutionsSection({ content }: { content?: SolutionsSectionContent }) {
-  const kicker = content?.kicker || "Solutions";
-  const titleStart = content?.titleStart || "Flexible solutions for";
-  const titleHighlight = content?.titleHighlight || "every campaign";
+  const kicker = content?.kicker || "What We Offer";
+  const titleStart = content?.titleStart || "Services built for";
+  const titleHighlight = content?.titleHighlight || "measurable impact";
   const description =
     content?.description ||
-    "Focused services that adapt to your marketing stack and operational workflow.";
+    "From audience discovery to activation, each solution is designed to integrate with your marketing stack and drive real campaign performance.";
 
   const rows =
     content?.rows && content.rows.length > 0
