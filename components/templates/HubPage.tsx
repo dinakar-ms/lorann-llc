@@ -3,6 +3,7 @@ import SectionHeader from "@/components/ui/SectionHeader";
 import FeatureCardGrid from "@/components/sections/FeatureCardGrid";
 import FinalCTA from "@/components/sections/FinalCTA";
 import ScrollReveal from "@/components/ScrollReveal";
+import RichText from "@/components/RichText";
 import type { ReactNode } from "react";
 import type { Crumb } from "@/components/ui/SubPageHero";
 
@@ -108,8 +109,10 @@ export default function HubPage({
               </h2>
             </div>
             <div className="text-slate-700 text-[17px] leading-[1.75] space-y-4">
-              {intro.paragraphs.map((p, i) => (
-                <p key={i}>{p}</p>
+              {intro.paragraphs.map((p: any, i: number) => (
+                <p key={(p && typeof p === "object" && p._key) || i}>
+                  <RichText value={typeof p === "string" ? p : [p]} />
+                </p>
               ))}
             </div>
           </div>

@@ -437,8 +437,10 @@ function renderCustom(page: PageDoc, slugParts: string[]) {
                 </h2>
               </div>
               <div className="text-slate-700 text-[17px] leading-[1.75] space-y-4">
-                {(page.introParagraphs || []).map((p, i) => (
-                  <p key={i}>{p}</p>
+                {(page.introParagraphs || []).map((p: any, i: number) => (
+                  <p key={(p && typeof p === "object" && p._key) || i}>
+                    <RichText value={typeof p === "string" ? p : [p]} />
+                  </p>
                 ))}
               </div>
             </div>

@@ -9,11 +9,22 @@ import { PortableText, type PortableTextComponents } from "next-sanity";
  *   - If undefined/null, renders nothing.
  */
 
+// Render every block style as a plain fragment so the parent component
+// controls the wrapper element.  Without this catch-all, PortableText's
+// defaults would emit <h1>, <h2>, <p> etc. which breaks the markup when
+// the RichText component is already nested inside a <p> or <h1>.
+const inlineBlock = ({ children }: any) => <>{children}</>;
+
 const richTextComponents: PortableTextComponents = {
   block: {
-    // Render as a <span> fragment instead of <p> so the parent
-    // component controls the wrapper element and its styling.
-    normal: ({ children }) => <>{children}</>,
+    normal: inlineBlock,
+    h1: inlineBlock,
+    h2: inlineBlock,
+    h3: inlineBlock,
+    h4: inlineBlock,
+    h5: inlineBlock,
+    h6: inlineBlock,
+    blockquote: inlineBlock,
   },
   marks: {
     strong: ({ children }) => <strong>{children}</strong>,

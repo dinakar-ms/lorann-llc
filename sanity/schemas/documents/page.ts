@@ -47,9 +47,10 @@ export const pageType = defineType({
     // ─── Core ────────────────────────────────────────────
     defineField({
       name: "h1",
-      title: "H1 Tag (Main Heading)",
+      title: "Page Name",
       type: "string",
-      description: "The single H1 used as the page's main heading.",
+      description:
+        "Short page name used for breadcrumbs, navigation, and internal references. The visual H1 heading is built from the Title fields in the Hero Section below.",
       validation: (Rule) => Rule.required().max(120),
     }),
     defineField({
@@ -126,13 +127,13 @@ export const pageType = defineType({
     }),
     defineField({
       name: "titlePlain",
-      title: "Title (plain part)",
+      title: "H1 — first part",
       type: "string",
       fieldset: "hero",
     }),
     defineField({
       name: "titleAccent",
-      title: "Title (gradient part)",
+      title: "H1 — gradient highlight",
       type: "string",
       fieldset: "hero",
     }),
