@@ -60,6 +60,8 @@ export interface HubPageProps {
     columns?: 2 | 3 | 4;
     items: HubAttribute[];
   };
+  /** When true, skips the built-in FinalCTA (parent will render its own) */
+  hideFinalCta?: boolean;
 }
 
 /**
@@ -77,6 +79,7 @@ export default function HubPage({
   intro,
   childrenSection,
   attributesSection,
+  hideFinalCta,
 }: HubPageProps) {
   return (
     <>
@@ -161,7 +164,7 @@ export default function HubPage({
         </section>
       )}
 
-      <FinalCTA />
+      {!hideFinalCta && <FinalCTA />}
     </>
   );
 }

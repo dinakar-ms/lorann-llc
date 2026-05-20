@@ -4,8 +4,7 @@ import FeatureCardGrid from "@/components/sections/FeatureCardGrid";
 import FinalCTA from "@/components/sections/FinalCTA";
 import ScrollReveal from "@/components/ScrollReveal";
 import RichText from "@/components/RichText";
-import Link from "next/link";
-import { ShieldCheck, ArrowRight, CheckCircle2 } from "lucide-react";
+import { CheckCircle2 } from "lucide-react";
 import type { ReactNode } from "react";
 import type { Crumb } from "@/components/ui/SubPageHero";
 
@@ -36,13 +35,10 @@ export interface LeafPageProps {
   attributes: Attribute[];
   /** Use cases — 3 to 6 cards work best */
   useCases: UseCase[];
-  /** Compliance band copy */
-  compliance: {
-    headline: string;
-    body: string;
-  };
   /** Optional sibling-list "back" link below the closing band */
   backLink: { label: string; href: string };
+  /** When true, skips the built-in FinalCTA (parent will render its own) */
+  hideFinalCta?: boolean;
 }
 
 /**
@@ -60,8 +56,8 @@ export default function LeafPage({
   intro,
   attributes,
   useCases,
-  compliance,
   backLink,
+  hideFinalCta,
 }: LeafPageProps) {
   return (
     <>
@@ -180,69 +176,7 @@ export default function LeafPage({
         </div>
       </section>
 
-      {/* Compliance band */}
-      <section className="py-16 bg-white">
-        <div className="container-custom">
-          <div
-            className="relative overflow-hidden rounded-[24px] p-8 lg:p-12 text-white reveal"
-            style={{
-              background:
-                "radial-gradient(ellipse 80% 70% at 30% 20%, rgba(79, 125, 245, 0.3), transparent 60%), linear-gradient(135deg, #03061A 0%, #13256E 100%)",
-            }}
-          >
-            <div
-              className="absolute inset-0 opacity-60 pointer-events-none"
-              style={{
-                backgroundImage:
-                  "radial-gradient(circle, rgba(111, 211, 255, 0.14) 1px, transparent 1px)",
-                backgroundSize: "18px 18px",
-              }}
-            />
-            <div className="relative grid lg:grid-cols-[auto_1fr_auto] items-center gap-6 lg:gap-10">
-              <div className="w-14 h-14 rounded-2xl bg-cyan-400/15 border border-cyan-400/30 grid place-items-center text-cyan-300 flex-shrink-0">
-                <ShieldCheck className="w-7 h-7" />
-              </div>
-              <div>
-                <h3 className="font-display font-bold text-2xl lg:text-3xl tracking-tight mb-2">
-                  {compliance.headline}
-                </h3>
-                <p className="text-white/75 text-[15px] leading-relaxed max-w-2xl">
-                  <RichText value={compliance.body} />
-                </p>
-              </div>
-              <Link
-                href="/contact"
-                className="inline-flex items-center gap-2 px-5 py-3 bg-white text-slate-900 font-semibold text-[14px] rounded-xl hover:-translate-y-0.5 hover:shadow-[0_20px_40px_-10px_rgba(111,211,255,0.5)] transition-all flex-shrink-0"
-              >
-                Discuss Licensing
-                <ArrowRight className="w-4 h-4" />
-              </Link>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Closing licensing note */}
-      <section className="py-12 bg-white">
-        <div className="container-custom">
-          <div className="max-w-3xl mx-auto reveal">
-            <p className="text-[15px] text-slate-700 leading-relaxed border-l-4 border-blue-200 pl-5 italic">
-              <strong className="text-slate-900 not-italic">Please note:</strong> We offer direct
-              marketers the ability to license complete multi-channel records (with all
-              selections included) for a 12-month unlimited-use arrangement. Data can be used for
-              postal, email, and outbound telemarketing campaigns.{" "}
-              <Link
-                href="/contact"
-                className="text-blue-700 not-italic font-semibold hover:underline"
-              >
-                Contact Lorann for details and pricing.
-              </Link>
-            </p>
-          </div>
-        </div>
-      </section>
-
-      <FinalCTA />
+      {!hideFinalCta && <FinalCTA />}
     </>
   );
 }

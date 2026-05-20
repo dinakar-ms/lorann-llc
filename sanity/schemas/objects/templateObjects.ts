@@ -136,6 +136,70 @@ export const teamMemberType = defineType({
   },
 });
 
+export const proseSectionType = defineType({
+  name: "proseSection",
+  title: "Prose Section",
+  type: "object",
+  description: "A rich paragraph-style section with heading, body text, and optional highlights — used for 'Why Choose' and 'Who Can Use' sections.",
+  fields: [
+    defineField({
+      name: "style",
+      title: "Layout Style",
+      type: "string",
+      options: {
+        list: [
+          { title: "Split (prose left, highlights right)", value: "split" },
+          { title: "Centered (prose + highlight cards below)", value: "centered" },
+        ],
+        layout: "radio",
+      },
+      initialValue: "split",
+    }),
+    defineField({ name: "kicker", title: "Kicker", type: "string" }),
+    defineField({ name: "titlePlain", title: "Title (plain)", type: "string" }),
+    defineField({ name: "titleAccent", title: "Title (gradient)", type: "string" }),
+    defineField({
+      name: "paragraphs",
+      title: "Paragraphs",
+      type: "array",
+      of: [{ type: "text" }],
+      description: "Multiple paragraph blocks rendered as rich prose.",
+    }),
+    defineField({
+      name: "highlights",
+      title: "Highlight Points",
+      type: "array",
+      of: [
+        {
+          type: "object",
+          fields: [
+            defineField({ name: "label", title: "Label", type: "string" }),
+            defineField({ name: "text", title: "Text", type: "string" }),
+          ],
+          preview: { select: { title: "label" } },
+        },
+      ],
+      description: "Optional highlight callouts shown alongside the prose.",
+    }),
+  ],
+  preview: {
+    select: { title: "titlePlain", subtitle: "kicker" },
+  },
+});
+
+export const faqItemType = defineType({
+  name: "faqItem",
+  title: "FAQ Item",
+  type: "object",
+  fields: [
+    defineField({ name: "question", title: "Question", type: "string" }),
+    defineField({ name: "answer", title: "Answer", type: "richText" }),
+  ],
+  preview: {
+    select: { title: "question" },
+  },
+});
+
 export const caseStudyType = defineType({
   name: "caseStudy",
   title: "Case Study",

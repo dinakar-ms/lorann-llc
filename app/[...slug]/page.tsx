@@ -18,6 +18,8 @@ import FinalCTA, { type FinalCTAContent } from "@/components/sections/FinalCTA";
 import LeafPage from "@/components/templates/LeafPage";
 import HubPage from "@/components/templates/HubPage";
 import NewsletterForm from "@/app/insights/newsletter/NewsletterForm";
+import FaqAccordion from "@/components/sections/FaqAccordion";
+import ProseSection, { type ProseSectionData } from "@/components/sections/ProseSection";
 import * as LucideIcons from "lucide-react";
 
 // ─── Icon helper ─────────────────────────────────────────
@@ -71,6 +73,7 @@ type CaseStudyDoc = {
   metrics?: StatDoc[];
   _key?: string;
 };
+type FaqItemDoc = { question: string; answer: string; _key?: string };
 
 type PageDoc = {
   _id: string;
@@ -111,8 +114,11 @@ type PageDoc = {
   hubAttributesSectionDescription?: string;
   hubAttributesSectionColumns?: number;
   hubAttributesItems?: FeatureDoc[];
-  // Custom
+  // Extra content (all templates)
   featureGridSections?: GridSectionDoc[];
+  proseSections?: ProseSectionData[];
+  faqItems?: FaqItemDoc[];
+  // Custom
   ctaBannerData?: BannerDoc;
   teamMembers?: TeamMemberDoc[];
   caseStudies?: CaseStudyDoc[];
@@ -143,7 +149,7 @@ const fullPageQuery = groq`*[_type == "page" && slug.current == $slug][0]{
   hubAttributesSectionKicker, hubAttributesSectionTitlePlain,
   hubAttributesSectionTitleAccent, hubAttributesSectionDescription,
   hubAttributesSectionColumns, hubAttributesItems,
-  featureGridSections, ctaBannerData,
+  featureGridSections, proseSections, faqItems, ctaBannerData,
   teamMembers, caseStudies,
   newsletterHeadlinePlain, newsletterHeadlineAccent, newsletterBody, newsletterBullets,
   focusKeyphrase, metaTitle, metaDescription, canonicalUrl, schemaMarkup, noIndex
@@ -322,36 +328,173 @@ function mapHubChildren(items: FeatureDoc[] | undefined): { Icon: React.ElementT
   }));
 }
 
+// ─── Shared section renderers ────────────────────────────
+
+/** Renders featureGridSections array — reusable across all template types */
+function renderFeatureGridSections(sections: GridSectionDoc[] | undefined, startIdx = 0) {
+  if (!sections || sections.length === 0) return null;
+  return (
+    <>
+      {sections
+        .filter((section) => section.features && section.features.length > 0)
+        .map((section, idx) => (
+          <section
+            key={section._key || idx}
+            className={(idx + startIdx) % 2 === 0 ? "py-20 lg:py-28 radial-stats" : "py-20 lg:py-24 bg-white"}
+          >
+            <div className="container-custom">
+              <SectionHeader
+                kicker={section.kicker || ""}
+                title={
+                  section.titleAccent ? (
+                    <>
+                      {section.titlePlain}{" "}
+                      <span className="text-gradient">{section.titleAccent}</span>
+                    </>
+                  ) : (
+                    section.titlePlain || ""
+                  )
+                }
+                description={section.description}
+              />
+              <FeatureCardGrid
+                columns={(section.columns || 3) as 2 | 3 | 4}
+                style={section.style || "card"}
+                features={mapFeatures(section.features)}
+              />
+            </div>
+          </section>
+        ))}
+    </>
+  );
+}
+
+/** Renders prose sections (paragraph-style — Why Choose, Who Can Use) */
+function renderProseSections(proseSections: ProseSectionData[] | undefined) {
+  if (!proseSections || proseSections.length === 0) return null;
+  return (
+    <>
+      {proseSections.map((section, idx) => (
+        <ProseSection
+          key={section._key || idx}
+          section={section}
+          variant={idx % 2 === 0 ? "tinted" : "light"}
+        />
+      ))}
+    </>
+  );
+}
+
+/** Renders FAQ accordion section (animated client component) */
+function renderFaqSection(faqItems: FaqItemDoc[] | undefined) {
+  if (!faqItems || faqItems.length === 0) return null;
+  return <FaqAccordion items={faqItems} />;
+}
+
+/** Renders the compliance band + licensing note (moved out of LeafPage) */
+function renderComplianceBand(page: PageDoc) {
+  const headline = page.complianceHeadline || "Compliance is built in, not bolted on.";
+  const body = page.complianceBody || "";
+  return (
+    <>
+      <section className="py-16 bg-white">
+        <div className="container-custom">
+          <div
+            className="relative overflow-hidden rounded-[24px] p-8 lg:p-12 text-white reveal"
+            style={{
+              background:
+                "radial-gradient(ellipse 80% 70% at 30% 20%, rgba(79, 125, 245, 0.3), transparent 60%), linear-gradient(135deg, #03061A 0%, #13256E 100%)",
+            }}
+          >
+            <div
+              className="absolute inset-0 opacity-60 pointer-events-none"
+              style={{
+                backgroundImage:
+                  "radial-gradient(circle, rgba(111, 211, 255, 0.14) 1px, transparent 1px)",
+                backgroundSize: "18px 18px",
+              }}
+            />
+            <div className="relative grid lg:grid-cols-[auto_1fr_auto] items-center gap-6 lg:gap-10">
+              <div className="w-14 h-14 rounded-2xl bg-cyan-400/15 border border-cyan-400/30 grid place-items-center text-cyan-300 flex-shrink-0">
+                <LucideIcons.ShieldCheck className="w-7 h-7" />
+              </div>
+              <div>
+                <h3 className="font-display font-bold text-2xl lg:text-3xl tracking-tight mb-2">
+                  {headline}
+                </h3>
+                <p className="text-white/75 text-[15px] leading-relaxed max-w-2xl">
+                  <RichText value={body} />
+                </p>
+              </div>
+              <Link
+                href="/contact"
+                className="inline-flex items-center gap-2 px-5 py-3 bg-white text-slate-900 font-semibold text-[14px] rounded-xl hover:-translate-y-0.5 hover:shadow-[0_20px_40px_-10px_rgba(111,211,255,0.5)] transition-all flex-shrink-0"
+              >
+                Discuss Licensing
+                <LucideIcons.ArrowRight className="w-4 h-4" />
+              </Link>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section className="py-12 bg-white">
+        <div className="container-custom">
+          <div className="max-w-3xl mx-auto reveal">
+            <p className="text-[15px] text-slate-700 leading-relaxed border-l-4 border-blue-200 pl-5 italic">
+              <strong className="text-slate-900 not-italic">Please note:</strong> We offer direct
+              marketers the ability to license complete multi-channel records (with all
+              selections included) for a 12-month unlimited-use arrangement. Data can be used for
+              postal, email, and outbound telemarketing campaigns.{" "}
+              <Link
+                href="/contact"
+                className="text-blue-700 not-italic font-semibold hover:underline"
+              >
+                Contact Lorann for details and pricing.
+              </Link>
+            </p>
+          </div>
+        </div>
+      </section>
+    </>
+  );
+}
+
 // ─── Template renderers ──────────────────────────────────
 
 function renderLeaf(page: PageDoc, slugParts: string[]) {
   const crumbs = buildCrumbs(slugParts, page.h1);
+  const hasExtraSections = (page.featureGridSections && page.featureGridSections.length > 0) || (page.proseSections && page.proseSections.length > 0) || (page.faqItems && page.faqItems.length > 0);
 
   return (
-    <LeafPage
-      crumbs={crumbs}
-      kicker={page.kicker || ""}
-      titlePlain={page.titlePlain || page.h1}
-      titleAccent={page.titleAccent || ""}
-      description={page.heroDescription || page.metaDescription || ""}
-      stats={(page.stats || []).map((s) => ({ label: s.label, value: s.value }))}
-      intro={{
-        kicker: page.introKicker || "",
-        headlinePlain: page.introHeadlinePlain || "",
-        headlineAccent: page.introHeadlineAccent || "",
-        paragraphs: (page.introParagraphs || []).map((p) => p),
-      }}
-      attributes={mapAttributes(page.attributes)}
-      useCases={(page.useCases || []).map((u) => ({ title: u.title, desc: u.desc }))}
-      compliance={{
-        headline: page.complianceHeadline || "Compliance is built in, not bolted on.",
-        body: page.complianceBody || "",
-      }}
-      backLink={{
-        label: page.backLink?.label || "Back",
-        href: page.backLink?.href || "/" + slugParts.slice(0, -1).join("/"),
-      }}
-    />
+    <>
+      <LeafPage
+        crumbs={crumbs}
+        kicker={page.kicker || ""}
+        titlePlain={page.titlePlain || page.h1}
+        titleAccent={page.titleAccent || ""}
+        description={page.heroDescription || page.metaDescription || ""}
+        stats={(page.stats || []).map((s) => ({ label: s.label, value: s.value }))}
+        intro={{
+          kicker: page.introKicker || "",
+          headlinePlain: page.introHeadlinePlain || "",
+          headlineAccent: page.introHeadlineAccent || "",
+          paragraphs: (page.introParagraphs || []).map((p) => p),
+        }}
+        attributes={mapAttributes(page.attributes)}
+        useCases={(page.useCases || []).map((u) => ({ title: u.title, desc: u.desc }))}
+        backLink={{
+          label: page.backLink?.label || "Back",
+          href: page.backLink?.href || "/" + slugParts.slice(0, -1).join("/"),
+        }}
+        hideFinalCta={hasExtraSections}
+      />
+      {renderProseSections(page.proseSections)}
+      {renderFeatureGridSections(page.featureGridSections, 1)}
+      {renderFaqSection(page.faqItems)}
+      {renderComplianceBand(page)}
+      {hasExtraSections && <FinalCTA />}
+    </>
   );
 }
 
@@ -393,7 +536,17 @@ function renderHub(page: PageDoc, slugParts: string[]) {
     };
   }
 
-  return <HubPage {...hubProps} />;
+  const hasExtraSections = (page.featureGridSections && page.featureGridSections.length > 0) || (page.proseSections && page.proseSections.length > 0) || (page.faqItems && page.faqItems.length > 0);
+
+  return (
+    <>
+      <HubPage {...hubProps} hideFinalCta={hasExtraSections} />
+      {renderFeatureGridSections(page.featureGridSections, 1)}
+      {renderFaqSection(page.faqItems)}
+      {renderProseSections(page.proseSections)}
+      {hasExtraSections && <FinalCTA />}
+    </>
+  );
 }
 
 function renderCustom(page: PageDoc, slugParts: string[]) {
@@ -763,6 +916,12 @@ function renderCustom(page: PageDoc, slugParts: string[]) {
           </div>
         </section>
       )}
+
+      {/* FAQ Section */}
+      {renderFaqSection(page.faqItems)}
+
+      {/* Prose Sections (after FAQ) */}
+      {renderProseSections(page.proseSections)}
 
       <FinalCTA />
     </>

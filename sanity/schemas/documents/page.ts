@@ -333,15 +333,30 @@ export const pageType = defineType({
       hidden: ({ document }) => document?.templateType !== "hub",
     }),
 
-    // ─── Custom Page Fields ──────────────────────────────
+    // ─── Extra Content Sections (all templates) ─────────
     defineField({
       name: "featureGridSections",
       title: "Feature Grid Sections",
+      description: "Additional content sections — rendered after the main template sections on any page type.",
       type: "array",
       of: [{ type: "featureGridSection" }],
-      fieldset: "custom",
-      hidden: ({ document }) => document?.templateType !== "custom",
     }),
+    defineField({
+      name: "proseSections",
+      title: "Prose Sections",
+      description: "Paragraph-style content sections (e.g. 'Why Choose', 'Who Can Use') rendered as rich prose with optional highlight callouts.",
+      type: "array",
+      of: [{ type: "proseSection" }],
+    }),
+    defineField({
+      name: "faqItems",
+      title: "FAQ Section",
+      description: "Frequently asked questions displayed at the bottom of the page.",
+      type: "array",
+      of: [{ type: "faqItem" }],
+    }),
+
+    // ─── Custom Page Fields ──────────────────────────────
     defineField({
       name: "ctaBannerData",
       title: "CTA Banner",

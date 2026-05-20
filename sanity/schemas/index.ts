@@ -7,6 +7,8 @@ import {
   featureItemType,
   featureGridSectionType,
   ctaBannerType,
+  proseSectionType,
+  faqItemType,
   teamMemberType,
   caseStudyType,
 } from "./objects/templateObjects";
@@ -33,6 +35,8 @@ export const schema: { types: SchemaTypeDefinition[] } = {
     featureItemType,
     featureGridSectionType,
     ctaBannerType,
+    proseSectionType,
+    faqItemType,
     teamMemberType,
     caseStudyType,
     pageType,
