@@ -18,7 +18,7 @@ export default function SolutionsPage() {
       <PageHero
         kicker="Solutions"
         title={<>Flexible solutions for <span className="text-gradient">every campaign</span></>}
-        description="From audience discovery to activation, our services adapt to your marketing stack and operational workflow. Explore each solution below."
+        description="From audience discovery to activation, Lorann's services adapt to your marketing stack and operational workflow. Explore each solution below."
       />
       <SolutionsSection />
       <ValueProps />

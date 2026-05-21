@@ -206,7 +206,7 @@ const DEFAULT_ROWS = [
     kicker: "Core Service",
     title: "Precision",
     titleAccent: "audience targeting",
-    desc: "Leverage high-quality B2B, healthcare, and consumer data to build precise audiences based on industry, role, behavior, and intent signals — with Marketing Analytics Modeling for scale.",
+    desc: "Leverage Lorann's high-quality B2B, healthcare, and consumer data to build precise audiences based on industry, role, behavior, and intent signals — with Marketing Analytics Modeling for scale.",
     feats: [
       "Custom audience segmentation",
       "Firmographic, technographic, behavioral filters",
@@ -243,7 +243,7 @@ export default function SolutionsSection({ content }: { content?: SolutionsSecti
   const titleHighlight = content?.titleHighlight || "measurable impact";
   const description =
     content?.description ||
-    "From audience discovery to activation, each solution is designed to integrate with your marketing stack and drive real campaign performance.";
+    "From audience discovery to activation, each Lorann solution is designed to integrate with your marketing stack and drive real campaign performance.";
 
   const rows =
     content?.rows && content.rows.length > 0
