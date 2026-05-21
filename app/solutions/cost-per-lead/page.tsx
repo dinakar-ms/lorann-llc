@@ -138,8 +138,8 @@ const FAQS = [
     a: "Data quality is the single biggest lever for CPL optimization. Inaccurate contact data causes bounced emails (wasted send costs), wrong-person targeting (wasted ad spend), and low match rates on platforms like LinkedIn and Google (inflated bids). Verified, enriched data can reduce CPL by 40–60%.",
   },
   {
-    q: "How can Lorann LLC help reduce my CPL?",
-    a: "Lorann provides verified B2B and B2C databases with 95%+ accuracy, intent signals via Signal eXchange™, and data enrichment services. Our clients typically see 40–60% CPL reductions by replacing generic third-party data with precision-targeted, verified audience segments.",
+    q: "How can I reduce my CPL with better data?",
+    a: "Verified B2B and B2C databases with 95%+ accuracy, combined with intent signals and data enrichment services, typically produce 40–60% CPL reductions by replacing generic third-party data with precision-targeted, verified audience segments.",
   },
 ];
 
@@ -289,8 +289,8 @@ const ENHANCED_FAQS = [
     a: "Data quality is the single biggest lever for CPL optimization. Inaccurate contact data causes bounced emails (wasted send costs), wrong-person targeting (wasted ad spend), and low match rates on platforms like LinkedIn and Google (inflated bids). Verified, enriched data can reduce CPL by 40–60%.",
   },
   {
-    q: "How can Lorann LLC help reduce my CPL?",
-    a: "Lorann provides verified B2B and B2C databases with 95%+ accuracy, intent signals via Signal eXchange™, and data enrichment services. Our clients typically see 40–60% CPL reductions by replacing generic third-party data with precision-targeted, verified audience segments.",
+    q: "How can I reduce my CPL with better data?",
+    a: "Verified B2B and B2C databases with 95%+ accuracy, combined with intent signals and data enrichment services, typically produce 40–60% CPL reductions by replacing generic third-party data with precision-targeted, verified audience segments.",
   },
   {
     q: "What channels typically have the lowest CPL?",
@@ -305,12 +305,12 @@ const ENHANCED_FAQS = [
     a: "Yes. Intent data identifies accounts and contacts actively researching topics related to your product. By concentrating spend on in-market prospects rather than cold audiences, clients typically see CPL drop by 30–50%. Signal eXchange™ intent signals integrate directly with major ad platforms and marketing automation tools.",
   },
   {
-    q: "How does Lorann ensure the data stays fresh and accurate?",
+    q: "How do you ensure the data stays fresh and accurate?",
     a: "Our hygiene process runs on a continuous monthly cycle. We verify emails via SMTP handshake, validate phone numbers against carrier databases, cross-reference business records with corporate filings, and flag job-change events in real time. Records that fail verification are quarantined until re-confirmed.",
   },
   {
     q: "Is there a minimum campaign size or contract requirement?",
-    a: "Lorann offers flexible licensing options ranging from single-campaign list pulls to annual unlimited-use agreements. There is no minimum record count for standard list orders. Enterprise clients can license full multi-channel databases for a flat annual fee covering postal, email, and telemarketing channels.",
+    a: "We offer flexible licensing options ranging from single-campaign list pulls to annual unlimited-use agreements. There is no minimum record count for standard list orders. Enterprise clients can license full multi-channel databases for a flat annual fee covering postal, email, and telemarketing channels.",
   },
 ];
 
@@ -386,7 +386,7 @@ export default function CostPerLeadPage() {
                 Cost Per Lead (CPL) measures how much you spend to acquire a single qualified lead. It&rsquo;s the most critical efficiency metric in demand generation — and the clearest signal of whether your campaigns are profitable.
               </p>
               <p className="text-slate-700 text-[17px] leading-[1.75] mt-4">
-                A lower CPL means more leads for the same budget, a shorter path to ROI, and more room to scale. The biggest lever? <strong className="text-slate-900">The quality of data powering your campaigns.</strong>
+                A lower CPL means more leads for the same budget, a shorter path to ROI, and more room to scale. The biggest lever? <strong className="text-slate-900">The quality of data powering your campaigns — and that&rsquo;s where Lorann makes the difference.</strong>
               </p>
             </div>
 
@@ -455,7 +455,7 @@ export default function CostPerLeadPage() {
             {[
               { value: "$22", label: "Lowest Avg. CPL", sub: "Email Marketing" },
               { value: "$85", label: "Highest Avg. CPL", sub: "LinkedIn Ads" },
-              { value: "40–60%", label: "CPL Reduction", sub: "With Lorann Data" },
+              { value: "40–60%", label: "CPL Reduction", sub: "With Verified Data" },
               { value: "95%+", label: "Contact Accuracy", sub: "Verified & Deliverable" },
             ].map((s) => (
               <div key={s.label} className="text-center py-4">
@@ -509,7 +509,7 @@ export default function CostPerLeadPage() {
           </div>
 
           <p className="text-center text-[13px] text-slate-400 mt-8">
-            Sources: Aggregated from HubSpot, Gartner, and internal Lorann campaign data (2024–2025). All figures in USD.
+            Sources: Aggregated from HubSpot, Gartner, and internal campaign data (2024–2025). All figures in USD.
           </p>
         </div>
       </section>
@@ -779,7 +779,7 @@ export default function CostPerLeadPage() {
             </div>
             <div className="relative max-w-[560px]">
               <div className="font-mono text-[11px] font-semibold uppercase tracking-[0.14em] text-cyan-300 mb-3">
-                The Lorann Advantage
+                The Data Advantage
               </div>
               <h3 className="font-display font-bold text-2xl lg:text-[2rem] tracking-[-0.025em] leading-tight mb-3.5">
                 Cut your CPL by 40–60% — guaranteed.
@@ -807,7 +807,7 @@ export default function CostPerLeadPage() {
             <div className="reveal mb-12 lg:mb-16">
               <div className="font-mono text-[11px] font-semibold uppercase tracking-[0.14em] text-blue-700 mb-4 flex items-center gap-2">
                 <span className="w-1.5 h-1.5 rounded-full bg-cyan-500 shadow-[0_0_8px_#22BFFF] animate-pulse-dot" />
-                The Lorann Difference
+                The Difference
               </div>
               <h2 className="font-display font-bold text-3xl lg:text-[2.6rem] leading-[1.1] tracking-[-0.028em] text-slate-900 max-w-3xl">
                 Why Smart Marketers Choose{" "}
@@ -819,7 +819,7 @@ export default function CostPerLeadPage() {
               {/* Prose paragraphs */}
               <div className="space-y-5">
                 <p className="text-slate-700 text-[17px] leading-[1.8] tracking-[-0.005em]">
-                  Most marketers treat cost per lead as an output metric — something you measure after a campaign ends. At Lorann, we treat it as an input you can engineer from the start. By building campaigns on verified, enriched, and intent-scored audiences, you set a lower CPL floor before a single ad dollar is committed.
+                  Most marketers treat cost per lead as an output metric — something you measure after a campaign ends. We treat it as an input you can engineer from the start. By building campaigns on verified, enriched, and intent-scored audiences, you set a lower CPL floor before a single ad dollar is committed.
                 </p>
                 <p className="text-slate-700 text-[17px] leading-[1.8] tracking-[-0.005em]">
                   Our approach is different because we attack CPL from the data layer, not the creative layer. Better targeting means higher relevance scores, lower auction costs, and fewer wasted impressions. Better deliverability means every email, every call, and every direct-mail piece reaches a real person.
@@ -899,7 +899,7 @@ export default function CostPerLeadPage() {
                       Cost per lead is not just a marketing metric — it is a business performance indicator that touches demand generation, sales, finance, and executive leadership. Every team that touches the revenue pipeline has a stake in driving CPL down while maintaining lead quality.
                     </p>
                     <p className="text-white/70 text-[16px] leading-[1.85] tracking-[-0.005em]">
-                      Whether you are a growth marketer managing six-figure monthly media budgets, a sales development leader who needs qualified pipeline, or a CFO evaluating marketing ROI, Lorann&rsquo;s data infrastructure gives you the precision and transparency to make CPL work harder for your organization.
+                      Whether you are a growth marketer managing six-figure monthly media budgets, a sales development leader who needs qualified pipeline, or a CFO evaluating marketing ROI, our data infrastructure gives you the precision and transparency to make CPL work harder for your organization.
                     </p>
                   </div>
 
@@ -1003,7 +1003,7 @@ export default function CostPerLeadPage() {
                   Lower CPL without cutting corners on compliance.
                 </h3>
                 <p className="text-white/70 text-[15px] leading-relaxed max-w-3xl">
-                  Every lead generated through Lorann data is backed by CCPA, GDPR, and CAN-SPAM compliance. Our datasets are ethically sourced, regularly verified, and fully documented — so you can scale lead generation without regulatory risk.
+                  Every lead generated through our data is backed by CCPA, GDPR, and CAN-SPAM compliance. Our datasets are ethically sourced, regularly verified, and fully documented — so you can scale lead generation without regulatory risk.
                 </p>
               </div>
             </div>
