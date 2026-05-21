@@ -1,13 +1,13 @@
 import RichText from "@/components/RichText";
 
-type ProseHighlight = { label: string; text: string; _key?: string };
+type ProseHighlight = { label: string; text: any; _key?: string };
 
 export type ProseSectionData = {
   style?: "split" | "centered";
   kicker?: string;
   titlePlain?: string;
   titleAccent?: string;
-  paragraphs?: string[];
+  paragraphs?: any[];
   highlights?: ProseHighlight[];
   _key?: string;
 };
@@ -71,7 +71,7 @@ function SplitLayout({ section }: { section: ProseSectionData }) {
                       {h.label}
                     </div>
                     <p className="text-slate-700 text-[14.5px] leading-relaxed">
-                      {h.text}
+                      <RichText value={typeof h.text === "string" ? h.text : h.text} />
                     </p>
                   </div>
                 </div>
@@ -170,7 +170,7 @@ function CenteredLayout({ section }: { section: ProseSectionData }) {
                             {h.label}
                           </div>
                           <p className="text-white/55 text-[13.5px] leading-relaxed">
-                            {h.text}
+                            <RichText value={typeof h.text === "string" ? h.text : h.text} />
                           </p>
                         </div>
                       </div>

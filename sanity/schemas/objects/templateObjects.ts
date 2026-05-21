@@ -162,8 +162,39 @@ export const proseSectionType = defineType({
       name: "paragraphs",
       title: "Paragraphs",
       type: "array",
-      of: [{ type: "text" }],
-      description: "Multiple paragraph blocks rendered as rich prose.",
+      of: [
+        {
+          type: "block",
+          styles: [{ title: "Normal", value: "normal" }],
+          lists: [],
+          marks: {
+            decorators: [
+              { title: "Bold", value: "strong" },
+              { title: "Italic", value: "em" },
+              { title: "Underline", value: "underline" },
+            ],
+            annotations: [
+              {
+                name: "link",
+                type: "object",
+                title: "Link",
+                fields: [
+                  defineField({
+                    name: "href",
+                    type: "url",
+                    title: "URL",
+                    validation: (Rule: any) =>
+                      Rule.uri({ scheme: ["http", "https", "mailto", "tel"], allowRelative: true }),
+                  }),
+                  defineField({ name: "openInNewTab", type: "boolean", title: "Open in new tab", initialValue: false }),
+                  defineField({ name: "noFollow", type: "boolean", title: 'Add rel="nofollow"', initialValue: false }),
+                ],
+              },
+            ],
+          },
+        },
+      ],
+      description: "Multiple paragraph blocks rendered as rich prose. Supports Bold, Italic, Underline, and Links.",
     }),
     defineField({
       name: "highlights",
@@ -174,7 +205,43 @@ export const proseSectionType = defineType({
           type: "object",
           fields: [
             defineField({ name: "label", title: "Label", type: "string" }),
-            defineField({ name: "text", title: "Text", type: "string" }),
+            defineField({
+              name: "text",
+              title: "Text",
+              type: "array",
+              of: [
+                {
+                  type: "block",
+                  styles: [{ title: "Normal", value: "normal" }],
+                  lists: [],
+                  marks: {
+                    decorators: [
+                      { title: "Bold", value: "strong" },
+                      { title: "Italic", value: "em" },
+                      { title: "Underline", value: "underline" },
+                    ],
+                    annotations: [
+                      {
+                        name: "link",
+                        type: "object",
+                        title: "Link",
+                        fields: [
+                          defineField({
+                            name: "href",
+                            type: "url",
+                            title: "URL",
+                            validation: (Rule: any) =>
+                              Rule.uri({ scheme: ["http", "https", "mailto", "tel"], allowRelative: true }),
+                          }),
+                          defineField({ name: "openInNewTab", type: "boolean", title: "Open in new tab", initialValue: false }),
+                          defineField({ name: "noFollow", type: "boolean", title: 'Add rel="nofollow"', initialValue: false }),
+                        ],
+                      },
+                    ],
+                  },
+                },
+              ],
+            }),
           ],
           preview: { select: { title: "label" } },
         },

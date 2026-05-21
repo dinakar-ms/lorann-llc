@@ -179,8 +179,40 @@ export const pageType = defineType({
       name: "introParagraphs",
       title: "Intro Paragraphs",
       type: "array",
-      of: [{ type: "text" }],
+      of: [
+        {
+          type: "block",
+          styles: [{ title: "Normal", value: "normal" }],
+          lists: [],
+          marks: {
+            decorators: [
+              { title: "Bold", value: "strong" },
+              { title: "Italic", value: "em" },
+              { title: "Underline", value: "underline" },
+            ],
+            annotations: [
+              {
+                name: "link",
+                type: "object",
+                title: "Link",
+                fields: [
+                  defineField({
+                    name: "href",
+                    type: "url",
+                    title: "URL",
+                    validation: (Rule: any) =>
+                      Rule.uri({ scheme: ["http", "https", "mailto", "tel"], allowRelative: true }),
+                  }),
+                  defineField({ name: "openInNewTab", type: "boolean", title: "Open in new tab", initialValue: false }),
+                  defineField({ name: "noFollow", type: "boolean", title: 'Add rel="nofollow"', initialValue: false }),
+                ],
+              },
+            ],
+          },
+        },
+      ],
       fieldset: "intro",
+      description: "Intro paragraph blocks with Bold, Italic, Underline, and Link formatting.",
     }),
 
     // ─── Leaf Page Fields ────────────────────────────────
