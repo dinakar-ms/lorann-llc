@@ -542,8 +542,8 @@ function renderHub(page: PageDoc, slugParts: string[]) {
     <>
       <HubPage {...hubProps} hideFinalCta={hasExtraSections} />
       {renderFeatureGridSections(page.featureGridSections, 1)}
-      {renderFaqSection(page.faqItems)}
       {renderProseSections(page.proseSections)}
+      {renderFaqSection(page.faqItems)}
       {hasExtraSections && <FinalCTA />}
     </>
   );
@@ -917,11 +917,11 @@ function renderCustom(page: PageDoc, slugParts: string[]) {
         </section>
       )}
 
+      {/* Prose Sections (Why Choose / The Lorann Difference — before FAQ) */}
+      {renderProseSections(page.proseSections)}
+
       {/* FAQ Section */}
       {renderFaqSection(page.faqItems)}
-
-      {/* Prose Sections (after FAQ) */}
-      {renderProseSections(page.proseSections)}
 
       <FinalCTA />
     </>
