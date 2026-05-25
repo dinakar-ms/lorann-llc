@@ -161,7 +161,6 @@ const homepageCtaQuery = groq`*[_type == "homepage" && _id == "homepage"][0]{
 
 // ─── Reserved paths ──────────────────────────────────────
 const RESERVED_TOP_SEGMENTS = new Set([
-  "about",
   "api",
   "contact",
   "data-assets",
@@ -170,7 +169,6 @@ const RESERVED_TOP_SEGMENTS = new Set([
   "insights",
   "resources",
   "signal-exchange",
-  "solutions",
   "studio",
 ]);
 
