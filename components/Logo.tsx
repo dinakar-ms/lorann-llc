@@ -167,16 +167,14 @@ interface LogoProps {
 }
 
 export default function Logo({ dark = false, size = "md" }: LogoProps) {
-  // Display heights tuned for the navbar.
-  // Width auto-derives from the source's 3.22:1 aspect ratio.
-  //   sm → 40px tall, ≈ 129px wide
-  //   md → 52px tall, ≈ 167px wide   ← default, drops cleanly into the existing nav
-  //   lg → 64px tall, ≈ 206px wide
-  // The "List Smarter" subtitle is small in the source artwork, so
-  // anything under ~40px starts to make it unreadable. These heights
-  // keep both the wordmark and the tagline legible.
-  const heights = { sm: 40, md: 52, lg: 64 };
-  const h = heights[size];
+  // Responsive height classes ensure the logo fits within each navbar
+  // breakpoint: h-[64px] → sm:h-[70px] → md:h-[76px].
+  // The image auto-derives width from its 1.66:1 aspect ratio.
+  const heightClasses: Record<string, string> = {
+    sm: "h-[44px] sm:h-[48px]",
+    md: "h-[52px] sm:h-[58px] md:h-[66px]",
+    lg: "h-[66px] sm:h-[74px] md:h-[80px]",
+  };
 
   return (
     <Link
@@ -185,26 +183,14 @@ export default function Logo({ dark = false, size = "md" }: LogoProps) {
       aria-label="Lorann — List Smarter"
     >
       <Image
-        src="/lorann-logo2.png"
+        src="/lorann-logo3.png"
         alt="Lorann — List Smarter"
-        // Intrinsic dimensions of the source PNG (1200×373, 3.22:1).
-        // Next.js uses these only for the aspect-ratio reservation and srcset.
-        width={1200}
-        height={373}
-        // `sizes` tells Next.js which srcset variant to deliver to the browser.
-        // "256px" → on a 2× DPI retina display the browser fetches the ≈384-512px
-        // wide variant, giving 2-3× display-width headroom = razor-sharp rendering
-        // at every nav size we use.
-        sizes="(max-width: 640px) 200px, 256px"
-        // Above-the-fold asset — preload it instead of lazy-loading.
-        // Also avoids the brief blur-in flash that lazy images can cause.
+        width={1824}
+        height={1096}
+        sizes="(max-width: 640px) 180px, 260px"
         priority
-        // 95 is visually indistinguishable from 100 but ships fewer bytes.
-        // Keeps gradients and the soft glow on the globe icon clean.
-        quality={95}
-        className="w-auto object-contain select-none"
-        style={{ height: `${h}px` }}
-        // Prevent any accidental zoom-blur on touch devices
+        quality={100}
+        className={`w-auto object-contain select-none ${heightClasses[size]}`}
         draggable={false}
       />
     </Link>
