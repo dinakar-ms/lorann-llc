@@ -167,9 +167,8 @@ interface LogoProps {
 }
 
 export default function Logo({ dark = false, size = "md" }: LogoProps) {
-  // Responsive height classes ensure the logo fits within each navbar
-  // breakpoint: h-[64px] → sm:h-[70px] → md:h-[76px].
-  // The image auto-derives width from its 1.66:1 aspect ratio.
+  // Responsive height classes — 100% fill the navbar.
+  // Navbar breakpoints: h-[64px] → sm:h-[70px] → md:h-[76px].
   const heightClasses: Record<string, string> = {
     sm: "h-[44px] sm:h-[48px]",
     md: "h-[52px] sm:h-[58px] md:h-[66px]",
@@ -186,7 +185,7 @@ export default function Logo({ dark = false, size = "md" }: LogoProps) {
         src="/lorann-logo3.png"
         alt="Lorann — List Smarter"
         width={1824}
-        height={1096}
+        height={656}
         sizes="(max-width: 640px) 180px, 260px"
         priority
         quality={100}
