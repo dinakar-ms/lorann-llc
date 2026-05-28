@@ -89,6 +89,9 @@ const config: Config = {
         "line-pulse": "line-pulse 4s linear infinite",
         "packet-travel": "packet-travel 3s linear infinite",
         "bar-flicker": "bar-flicker 3s ease-in-out infinite",
+        "slideIn": "slideIn 0.35s ease-out both",
+        "bounceIn": "bounceIn 0.3s ease-out",
+        "float": "float 12s ease-in-out infinite",
       },
       keyframes: {
         "pulse-dot": {
@@ -169,6 +172,19 @@ const config: Config = {
         "bar-flicker": {
           "0%, 100%": { opacity: "0.4" },
           "50%": { opacity: "1" },
+        },
+        "slideIn": {
+          from: { opacity: "0", transform: "translateX(-12px)" },
+          to: { opacity: "1", transform: "translateX(0)" },
+        },
+        "bounceIn": {
+          "0%": { transform: "scale(0.3)", opacity: "0" },
+          "50%": { transform: "scale(1.15)" },
+          "100%": { transform: "scale(1)", opacity: "1" },
+        },
+        "float": {
+          "0%, 100%": { transform: "translateY(0px) scale(1)" },
+          "50%": { transform: "translateY(-30px) scale(1.05)" },
         },
       },
     },

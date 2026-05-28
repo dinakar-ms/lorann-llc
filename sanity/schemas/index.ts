@@ -7,10 +7,10 @@ import {
   featureItemType,
   featureGridSectionType,
   ctaBannerType,
-  proseSectionType,
-  faqItemType,
   teamMemberType,
   caseStudyType,
+  proseSectionType,
+  faqItemType,
 } from "./objects/templateObjects";
 import { pageType } from "./documents/page";
 import { industryTrendsPageType } from "./documents/industryTrendsPage";
@@ -25,6 +25,7 @@ import { insightsPageType } from "./documents/insightsPage";
 import { signalExchangePageType } from "./documents/signalExchangePage";
 import { resourcesPageType } from "./documents/resourcesPage";
 import { contactSubmissionType } from "./documents/contactSubmission";
+import { dataCardType } from "./documents/dataCard";
 
 export const schema: { types: SchemaTypeDefinition[] } = {
   types: [
@@ -35,10 +36,10 @@ export const schema: { types: SchemaTypeDefinition[] } = {
     featureItemType,
     featureGridSectionType,
     ctaBannerType,
-    proseSectionType,
-    faqItemType,
     teamMemberType,
     caseStudyType,
+    proseSectionType,
+    faqItemType,
     pageType,
     industryTrendsPageType,
     homepageType,
@@ -52,5 +53,6 @@ export const schema: { types: SchemaTypeDefinition[] } = {
     signalExchangePageType,
     resourcesPageType,
     contactSubmissionType,
+    dataCardType,
   ],
 };

@@ -20,6 +20,8 @@ import HubPage from "@/components/templates/HubPage";
 import NewsletterForm from "@/app/insights/newsletter/NewsletterForm";
 import FaqAccordion from "@/components/sections/FaqAccordion";
 import ProseSection, { type ProseSectionData } from "@/components/sections/ProseSection";
+import DataCardsTable from "@/components/sections/DataCardsTable";
+import type { DataCard } from "@/components/sections/DataCardsTable";
 import * as LucideIcons from "lucide-react";
 
 // ─── Icon helper ─────────────────────────────────────────
@@ -547,7 +549,7 @@ function renderHub(page: PageDoc, slugParts: string[]) {
   );
 }
 
-function renderCustom(page: PageDoc, slugParts: string[]) {
+function renderCustom(page: PageDoc, slugParts: string[], dataCards?: DataCard[]) {
   const crumbs = buildCrumbs(slugParts, page.h1);
   const kicker = page.kicker || "";
 
@@ -630,6 +632,11 @@ function renderCustom(page: PageDoc, slugParts: string[]) {
           </div>
         </section>
       ))}
+
+      {/* Data Cards Table — only for the data-cards page */}
+      {slugParts.join("/") === "data-assets/data-cards" && dataCards && dataCards.length > 0 && (
+        <DataCardsTable cards={dataCards} />
+      )}
 
       {/* CTA Banner */}
       {page.ctaBannerData?.title && (
@@ -986,6 +993,37 @@ export default async function Page({
 
   if (!page) notFound();
 
+  /* ── Fetch data cards dynamically for the data-cards page ── */
+  const isDataCardsPage = params.slug.join("/") === "data-assets/data-cards";
+  let dataCards: DataCard[] | undefined;
+  if (isDataCardsPage) {
+    const raw = await sanityFetch<
+      { name: string; universe: number; lastUpdated: string; category: string }[] | null
+    >({
+      query: groq`*[_type == "dataCard"] | order(name asc) {
+        name,
+        universe,
+        lastUpdated,
+        category
+      }`,
+      tags: ["dataCard"],
+    });
+    if (raw) {
+      dataCards = raw.map((c) => ({
+        name: c.name,
+        universe: c.universe,
+        lastUpdated: c.lastUpdated
+          ? new Date(c.lastUpdated).toLocaleDateString("en-US", {
+              month: "2-digit",
+              day: "2-digit",
+              year: "numeric",
+            })
+          : "",
+        category: c.category,
+      }));
+    }
+  }
+
   const jsonLd = buildJsonLd(page);
 
   const finalCta: FinalCTAContent = {
@@ -1006,7 +1044,7 @@ export default async function Page({
       />
       {page.templateType === "leaf" && renderLeaf(page, params.slug)}
       {page.templateType === "hub" && renderHub(page, params.slug)}
-      {page.templateType === "custom" && renderCustom(page, params.slug)}
+      {page.templateType === "custom" && renderCustom(page, params.slug, dataCards)}
       {!page.templateType && renderFallback(page, params.slug, finalCta)}
     </>
   );
