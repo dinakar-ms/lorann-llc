@@ -98,7 +98,13 @@ type PageDoc = {
   introParagraphs?: string[];
   // Leaf
   stats?: StatDoc[];
+  attributesSectionKicker?: string;
+  attributesSectionTitle?: string;
+  attributesSectionAccent?: string;
   attributes?: FeatureDoc[];
+  useCasesSectionKicker?: string;
+  useCasesSectionTitle?: string;
+  useCasesSectionAccent?: string;
   useCases?: UseCaseDoc[];
   complianceHeadline?: string;
   complianceBody?: string;
@@ -144,7 +150,8 @@ const fullPageQuery = groq`*[_type == "page" && slug.current == $slug][0]{
   kicker, titlePlain, titleAccent, heroDescription,
   primaryCta, secondaryCta,
   introKicker, introHeadlinePlain, introHeadlineAccent, introParagraphs,
-  stats, attributes, useCases,
+  stats, attributesSectionKicker, attributesSectionTitle, attributesSectionAccent, attributes,
+  useCasesSectionKicker, useCasesSectionTitle, useCasesSectionAccent, useCases,
   complianceHeadline, complianceBody, backLink,
   childrenSectionKicker, childrenSectionTitlePlain, childrenSectionTitleAccent,
   childrenSectionDescription, childrenSectionColumns, childrenItems,
@@ -482,7 +489,17 @@ function renderLeaf(page: PageDoc, slugParts: string[]) {
           paragraphs: (page.introParagraphs || []).map((p) => p),
         }}
         attributes={mapAttributes(page.attributes)}
+        attributesSection={{
+          kicker: page.attributesSectionKicker,
+          titlePlain: page.attributesSectionTitle,
+          titleAccent: page.attributesSectionAccent,
+        }}
         useCases={(page.useCases || []).map((u) => ({ title: u.title, desc: u.desc }))}
+        useCasesSection={{
+          kicker: page.useCasesSectionKicker,
+          titlePlain: page.useCasesSectionTitle,
+          titleAccent: page.useCasesSectionAccent,
+        }}
         backLink={{
           label: page.backLink?.label || "Back",
           href: page.backLink?.href || "/" + slugParts.slice(0, -1).join("/"),

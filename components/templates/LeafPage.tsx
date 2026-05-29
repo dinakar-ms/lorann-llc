@@ -33,8 +33,20 @@ export interface LeafPageProps {
   };
   /** "What's Included" attribute grid — 6 to 8 cards work best */
   attributes: Attribute[];
+  /** Dynamic section header overrides for attributes section */
+  attributesSection?: {
+    kicker?: string;
+    titlePlain?: string;
+    titleAccent?: string;
+  };
   /** Use cases — 3 to 6 cards work best */
   useCases: UseCase[];
+  /** Dynamic section header overrides for use cases section */
+  useCasesSection?: {
+    kicker?: string;
+    titlePlain?: string;
+    titleAccent?: string;
+  };
   /** Optional sibling-list "back" link below the closing band */
   backLink: { label: string; href: string };
   /** When true, skips the built-in FinalCTA (parent will render its own) */
@@ -55,7 +67,9 @@ export default function LeafPage({
   stats,
   intro,
   attributes,
+  attributesSection,
   useCases,
+  useCasesSection,
   backLink,
   hideFinalCta,
 }: LeafPageProps) {
@@ -132,14 +146,20 @@ export default function LeafPage({
       <section className="py-20 lg:py-28 radial-stats">
         <div className="container-custom">
           <SectionHeader
-            kicker="What's Included"
+            kicker={attributesSection?.kicker || "What's Included"}
             title={
-              <>
-                Every record carries the{" "}
-                <span className="text-gradient">data points marketers need.</span>
-              </>
+              attributesSection?.titleAccent ? (
+                <>
+                  {attributesSection.titlePlain || ""}{" "}
+                  <span className="text-gradient">{attributesSection.titleAccent}</span>
+                </>
+              ) : (
+                <>
+                  {attributesSection?.titlePlain || "Every record carries the"}{" "}
+                  <span className="text-gradient">{"data points marketers need."}</span>
+                </>
+              )
             }
-            description="Built so your team can segment, personalize, and activate without going back to enrich."
           />
           <FeatureCardGrid columns={4} features={attributes} />
         </div>
@@ -149,12 +169,19 @@ export default function LeafPage({
       <section className="py-20 lg:py-28 bg-white">
         <div className="container-custom">
           <SectionHeader
-            kicker="Use Cases"
+            kicker={useCasesSection?.kicker || "Use Cases"}
             title={
-              <>
-                Built for the campaigns{" "}
-                <span className="text-gradient">marketers run every day.</span>
-              </>
+              useCasesSection?.titleAccent ? (
+                <>
+                  {useCasesSection.titlePlain || ""}{" "}
+                  <span className="text-gradient">{useCasesSection.titleAccent}</span>
+                </>
+              ) : (
+                <>
+                  {useCasesSection?.titlePlain || "Built for the campaigns"}{" "}
+                  <span className="text-gradient">{"marketers run every day."}</span>
+                </>
+              )
             }
           />
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-5 max-w-6xl mx-auto">
