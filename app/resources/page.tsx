@@ -31,6 +31,8 @@ type ResourcesDoc = {
   newsletterCtaLabel?: string;
   metaTitle?: string;
   metaDescription?: string;
+  ogTitle?: string;
+  ogDescription?: string;
 };
 
 export const revalidate = 60;
@@ -46,6 +48,12 @@ export async function generateMetadata(): Promise<Metadata> {
     title: doc?.metaTitle || "Resources · Lorann LLC",
     description: doc?.metaDescription || "Guides, white papers, and case studies on audience intelligence, data quality, and marketing performance.",
     alternates: { canonical: "/resources" },
+    openGraph: {
+      title: doc?.ogTitle || doc?.metaTitle || "Resources · Lorann LLC",
+      description: doc?.ogDescription || doc?.metaDescription || "Guides, white papers, and case studies on audience intelligence, data quality, and marketing performance.",
+      type: "website",
+      url: "/resources",
+    },
   };
 }
 

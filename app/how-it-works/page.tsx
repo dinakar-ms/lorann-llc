@@ -30,6 +30,8 @@ type HowItWorksDoc = {
   promisesCards?: { iconName?: string; title?: string; desc?: string }[];
   metaTitle?: string;
   metaDescription?: string;
+  ogTitle?: string;
+  ogDescription?: string;
 };
 
 type HomepageShared = {
@@ -68,6 +70,12 @@ export async function generateMetadata(): Promise<Metadata> {
     title: doc?.metaTitle || "How It Works · Lorann LLC",
     description: doc?.metaDescription || "A structured four-step process from data strategy to audience activation and continuous optimization.",
     alternates: { canonical: "/how-it-works" },
+    openGraph: {
+      title: doc?.ogTitle || doc?.metaTitle || "How It Works · Lorann LLC",
+      description: doc?.ogDescription || doc?.metaDescription || "A structured four-step process from data strategy to audience activation and continuous optimization.",
+      type: "website",
+      url: "/how-it-works",
+    },
   };
 }
 

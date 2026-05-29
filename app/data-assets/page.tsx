@@ -37,6 +37,8 @@ type Doc = {
   metaDescription?: string;
   canonicalUrl?: string;
   noIndex?: boolean;
+  ogTitle?: string;
+  ogDescription?: string;
 };
 
 const DEFAULTS = {
@@ -109,6 +111,12 @@ export async function generateMetadata(): Promise<Metadata> {
     keywords: doc?.focusKeyphrase ? [doc.focusKeyphrase] : undefined,
     alternates: { canonical: doc?.canonicalUrl || "/data-assets" },
     robots: doc?.noIndex ? { index: false, follow: false } : { index: true, follow: true },
+    openGraph: {
+      title: doc?.ogTitle || doc?.metaTitle || "Data Assets · Built on Better Data — Lorann LLC",
+      description: doc?.ogDescription || doc?.metaDescription || DEFAULTS.heroDescription,
+      type: "website",
+      url: doc?.canonicalUrl || "/data-assets",
+    },
   };
 }
 

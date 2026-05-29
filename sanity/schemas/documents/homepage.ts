@@ -282,6 +282,29 @@ export const homepageType = defineType({
       validation: (Rule) => Rule.uri({ scheme: ["http", "https"], allowRelative: false }),
     }),
     defineField({ name: "schemaMarkup", title: "Schema Markup (JSON-LD)", type: "text", rows: 6, fieldset: "seo" }),
+    defineField({
+      name: "ogTitle",
+      title: "Open Graph Title",
+      type: "string",
+      fieldset: "seo",
+      description:
+        "Override for Facebook/LinkedIn share. Falls back to meta title.",
+      validation: (Rule) =>
+        Rule.max(90).warning("OG titles over 90 chars may be truncated."),
+    }),
+    defineField({
+      name: "ogDescription",
+      title: "Open Graph Description",
+      type: "text",
+      rows: 3,
+      fieldset: "seo",
+      description:
+        "Override for share previews. Falls back to meta description.",
+      validation: (Rule) =>
+        Rule.max(200).warning(
+          "OG descriptions over 200 chars may be truncated."
+        ),
+    }),
     defineField({ name: "noIndex", title: "Hide from Search Engines", type: "boolean", fieldset: "seo", initialValue: false }),
   ],
   preview: {

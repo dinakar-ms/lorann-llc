@@ -10,6 +10,12 @@ export const metadata: Metadata = {
   title: "Industries · Lorann LLC",
   description: "Vertical expertise across healthcare, financial, B2B, insurance, and automotive — powered by high-accuracy data.",
   alternates: { canonical: "/industries" },
+  openGraph: {
+    title: "Industries · Lorann LLC",
+    description: "Vertical expertise across healthcare, financial, B2B, insurance, and automotive — powered by high-accuracy data.",
+    type: "website",
+    url: "/industries",
+  },
 };
 
 const DEEP_DIVES = [

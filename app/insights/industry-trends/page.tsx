@@ -37,6 +37,8 @@ type Doc = {
   canonicalUrl?: string;
   schemaMarkup?: string;
   noIndex?: boolean;
+  ogTitle?: string;
+  ogDescription?: string;
 };
 
 export const revalidate = 60;
@@ -80,6 +82,12 @@ export async function generateMetadata(): Promise<Metadata> {
     robots: doc.noIndex
       ? { index: false, follow: false }
       : { index: true, follow: true },
+    openGraph: {
+      title: doc.ogTitle || doc.metaTitle || `${doc.titleStart} ${doc.titleHighlight}`.trim(),
+      description: doc.ogDescription || doc.metaDescription || doc.description,
+      type: "website",
+      url: doc.canonicalUrl || "/insights/industry-trends",
+    },
   };
 }
 

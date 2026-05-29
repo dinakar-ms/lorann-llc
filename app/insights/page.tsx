@@ -32,6 +32,8 @@ type InsightsDoc = {
   browseCards?: { iconName?: string; title?: string; desc?: any; href?: string }[];
   metaTitle?: string;
   metaDescription?: string;
+  ogTitle?: string;
+  ogDescription?: string;
 };
 
 export const revalidate = 60;
@@ -47,6 +49,12 @@ export async function generateMetadata(): Promise<Metadata> {
     title: doc?.metaTitle || "Insights · Lorann LLC",
     description: doc?.metaDescription || "POV, commentary, case studies, and newsletters on data, audience strategy, and performance-driven marketing.",
     alternates: { canonical: "/insights" },
+    openGraph: {
+      title: doc?.ogTitle || doc?.metaTitle || "Insights · Lorann LLC",
+      description: doc?.ogDescription || doc?.metaDescription || "POV, commentary, case studies, and newsletters on data, audience strategy, and performance-driven marketing.",
+      type: "website",
+      url: "/insights",
+    },
   };
 }
 

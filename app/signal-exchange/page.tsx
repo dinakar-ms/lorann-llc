@@ -46,6 +46,8 @@ type SignalExchangeDoc = {
   resultsStats?: { num?: string; label?: string }[];
   metaTitle?: string;
   metaDescription?: string;
+  ogTitle?: string;
+  ogDescription?: string;
 };
 
 type HomepageShared = {
@@ -77,6 +79,12 @@ export async function generateMetadata(): Promise<Metadata> {
     title: doc?.metaTitle || "Signal eXchange™ · Lorann LLC",
     description: doc?.metaDescription || "Our proprietary intelligence layer fuses first-party lead data with real-time intent signals — producing higher-converting audiences.",
     alternates: { canonical: "/signal-exchange" },
+    openGraph: {
+      title: doc?.ogTitle || doc?.metaTitle || "Signal eXchange™ · Lorann LLC",
+      description: doc?.ogDescription || doc?.metaDescription || "Our proprietary intelligence layer fuses first-party lead data with real-time intent signals — producing higher-converting audiences.",
+      type: "website",
+      url: "/signal-exchange",
+    },
   };
 }
 

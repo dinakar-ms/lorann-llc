@@ -49,6 +49,8 @@ type ContactDoc = {
   metaDescription?: string;
   canonicalUrl?: string;
   noIndex?: boolean;
+  ogTitle?: string;
+  ogDescription?: string;
 };
 
 const DEFAULTS = {
@@ -109,6 +111,12 @@ export async function generateMetadata(): Promise<Metadata> {
     keywords: doc?.focusKeyphrase ? [doc.focusKeyphrase] : undefined,
     alternates: { canonical: doc?.canonicalUrl || "/contact" },
     robots: doc?.noIndex ? { index: false, follow: false } : { index: true, follow: true },
+    openGraph: {
+      title: doc?.ogTitle || doc?.metaTitle || "Contact · Lorann LLC",
+      description: doc?.ogDescription || doc?.metaDescription || DEFAULTS.heroDescription,
+      type: "website",
+      url: doc?.canonicalUrl || "/contact",
+    },
   };
 }
 
