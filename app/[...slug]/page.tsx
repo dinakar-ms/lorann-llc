@@ -140,6 +140,8 @@ type PageDoc = {
   metaDescription?: string;
   canonicalUrl?: string;
   schemaMarkup?: string;
+  ogTitle?: string;
+  ogDescription?: string;
   noIndex?: boolean;
 };
 
@@ -161,7 +163,7 @@ const fullPageQuery = groq`*[_type == "page" && slug.current == $slug][0]{
   featureGridSections, proseSections, faqItems, ctaBannerData,
   teamMembers, caseStudies,
   newsletterHeadlinePlain, newsletterHeadlineAccent, newsletterBody, newsletterBullets,
-  focusKeyphrase, metaTitle, metaDescription, canonicalUrl, schemaMarkup, noIndex
+  focusKeyphrase, metaTitle, metaDescription, canonicalUrl, schemaMarkup, ogTitle, ogDescription, noIndex
 }`;
 
 const homepageCtaQuery = groq`*[_type == "homepage" && _id == "homepage"][0]{
@@ -237,8 +239,8 @@ export async function generateMetadata({
       ? { index: false, follow: false }
       : { index: true, follow: true },
     openGraph: {
-      title,
-      description: description || undefined,
+      title: page.ogTitle || title,
+      description: page.ogDescription || description || undefined,
       type: "article",
       url: page.canonicalUrl || `/${path}`,
     },
