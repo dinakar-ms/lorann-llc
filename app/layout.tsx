@@ -1,11 +1,11 @@
 import type { Metadata } from "next";
-import { GoogleAnalytics } from "@next/third-parties/google";
 import { Space_Grotesk, Inter, JetBrains_Mono } from "next/font/google";
 import { draftMode } from "next/headers";
 import { VisualEditing } from "next-sanity";
 import "./globals.css";
 import LayoutChrome from "@/components/LayoutChrome";
 import DisableDraftMode from "@/components/DisableDraftMode";
+import CookieConsent from "@/components/CookieConsent";
 
 const spaceGrotesk = Space_Grotesk({
   subsets: ["latin"],
@@ -98,7 +98,7 @@ export default function RootLayout({
             sanity/lib/fetch.ts). */}
         <VisualEditing />
         {draftMode().isEnabled && <DisableDraftMode />}
-        <GoogleAnalytics gaId="G-SD98EK2RQ4" />
+        <CookieConsent />
       </body>
     </html>
   );
