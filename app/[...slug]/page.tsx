@@ -818,7 +818,7 @@ function renderCustom(page: PageDoc, slugParts: string[], dataCards?: DataCard[]
                         <LucideIcons.Linkedin className="w-4 h-4" />
                       </a>
                       <a
-                        href={`mailto:${m.email}`}
+                        href={`mailto:${m.email}?subject=${encodeURIComponent(`Inquiry for ${m.name}`)}`}
                         aria-label={`Email ${m.name}`}
                         className="w-9 h-9 rounded-[10px] grid place-items-center text-slate-500 bg-slate-50 hover:bg-blue-50 hover:text-blue-700 transition-all"
                       >
