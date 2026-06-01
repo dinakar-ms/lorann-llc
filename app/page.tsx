@@ -1,16 +1,27 @@
 import type { Metadata } from "next";
+import dynamic from "next/dynamic";
 import { groq } from "next-sanity";
 import Hero, { type HeroContent } from "@/components/sections/Hero";
 import StatsStripAndTrust, { type StatsStripAndTrustContent } from "@/components/sections/StatsStripAndTrust";
-import ValueProps, { type ValuePropsContent } from "@/components/sections/ValueProps";
-import SignalExchangeSection, { type SignalExchangeContent } from "@/components/sections/SignalExchangeSection";
-import HowItWorksSection, { type HowItWorksContent } from "@/components/sections/HowItWorksSection";
-import StatsSection, { type StatsSectionContent } from "@/components/sections/StatsSection";
-import SolutionsSection, { type SolutionsSectionContent } from "@/components/sections/SolutionsSection";
-import IndustriesSection, { type IndustriesContent } from "@/components/sections/IndustriesSection";
-import FinalCTA, { type FinalCTAContent } from "@/components/sections/FinalCTA";
 import ScrollReveal from "@/components/ScrollReveal";
 import { sanityFetch } from "@/sanity/lib/fetch";
+
+// Below-the-fold sections — lazy loaded to speed up initial paint
+import type { ValuePropsContent } from "@/components/sections/ValueProps";
+import type { SignalExchangeContent } from "@/components/sections/SignalExchangeSection";
+import type { HowItWorksContent } from "@/components/sections/HowItWorksSection";
+import type { StatsSectionContent } from "@/components/sections/StatsSection";
+import type { SolutionsSectionContent } from "@/components/sections/SolutionsSection";
+import type { IndustriesContent } from "@/components/sections/IndustriesSection";
+import type { FinalCTAContent } from "@/components/sections/FinalCTA";
+
+const ValueProps = dynamic(() => import("@/components/sections/ValueProps"));
+const SignalExchangeSection = dynamic(() => import("@/components/sections/SignalExchangeSection"));
+const HowItWorksSection = dynamic(() => import("@/components/sections/HowItWorksSection"));
+const StatsSection = dynamic(() => import("@/components/sections/StatsSection"));
+const SolutionsSection = dynamic(() => import("@/components/sections/SolutionsSection"));
+const IndustriesSection = dynamic(() => import("@/components/sections/IndustriesSection"));
+const FinalCTA = dynamic(() => import("@/components/sections/FinalCTA"));
 
 type Cta = { label?: string; href?: string };
 

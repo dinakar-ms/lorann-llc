@@ -1,7 +1,14 @@
+import dynamic from "next/dynamic";
 import { Play } from "lucide-react";
 import Button from "../ui/Button";
-import HeroGlobe from "../HeroGlobe";
 import RichText from "../RichText";
+
+const HeroGlobe = dynamic(() => import("../HeroGlobe"), {
+  ssr: false,
+  loading: () => (
+    <div className="w-full h-full rounded-full bg-gradient-to-br from-blue-500/10 to-cyan-400/5 animate-pulse" />
+  ),
+});
 
 export type HeroContent = {
   badgeLabel?: string;
@@ -60,18 +67,18 @@ export default function Hero({ content }: { content?: HeroContent }) {
       className="relative overflow-hidden pt-40 pb-20 xl:min-h-screen radial-hero dot-grid"
       id="top"
     >
-      {/* Floating orbs */}
+      {/* Floating orbs — GPU-promoted with will-change */}
       <div
         className="absolute top-[10%] -left-[5%] w-[500px] h-[500px] rounded-full pointer-events-none blur-[80px] animate-orb-float-1"
-        style={{ background: "rgba(79, 125, 245, 0.5)" }}
+        style={{ background: "rgba(79, 125, 245, 0.5)", willChange: "transform, opacity", contain: "strict" }}
       />
       <div
         className="absolute bottom-[5%] -right-[5%] w-[450px] h-[450px] rounded-full pointer-events-none blur-[80px] animate-orb-float-2"
-        style={{ background: "rgba(34, 191, 255, 0.4)" }}
+        style={{ background: "rgba(34, 191, 255, 0.4)", willChange: "transform, opacity", contain: "strict" }}
       />
       <div
         className="absolute top-1/2 left-1/2 w-[300px] h-[300px] rounded-full pointer-events-none blur-[80px] animate-orb-float-3"
-        style={{ background: "rgba(111, 211, 255, 0.3)" }}
+        style={{ background: "rgba(111, 211, 255, 0.3)", willChange: "transform, opacity", contain: "strict" }}
       />
 
       <div className="container-custom">

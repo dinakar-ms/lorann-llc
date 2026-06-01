@@ -8,6 +8,12 @@ const nextConfig = {
         hostname: "cdn.sanity.io",
       },
     ],
+    // Serve modern image formats for smaller file sizes
+    formats: ["image/avif", "image/webp"],
+  },
+  experimental: {
+    // Tree-shake icon libraries — only include the icons actually imported
+    optimizePackageImports: ["lucide-react", "@sanity/icons"],
   },
 };
 

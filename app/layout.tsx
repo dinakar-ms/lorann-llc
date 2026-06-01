@@ -1,22 +1,30 @@
 import type { Metadata } from "next";
+import dynamic from "next/dynamic";
 import { Space_Grotesk, Inter, JetBrains_Mono } from "next/font/google";
 import { draftMode } from "next/headers";
-import { VisualEditing } from "next-sanity";
 import "./globals.css";
 import LayoutChrome from "@/components/LayoutChrome";
 import DisableDraftMode from "@/components/DisableDraftMode";
-import CookieConsent from "@/components/CookieConsent";
+
+// Lazy-load heavy client components — not needed for first paint
+const CookieConsent = dynamic(() => import("@/components/CookieConsent"), {
+  ssr: false,
+});
+const VisualEditing = dynamic(
+  () => import("next-sanity").then((m) => m.VisualEditing),
+  { ssr: false }
+);
 
 const spaceGrotesk = Space_Grotesk({
   subsets: ["latin"],
-  weight: ["300", "400", "500", "600", "700"],
+  weight: ["400", "500", "600", "700"],
   variable: "--font-space-grotesk",
   display: "swap",
 });
 
 const inter = Inter({
   subsets: ["latin"],
-  weight: ["300", "400", "500", "600", "700"],
+  weight: ["400", "500", "600", "700"],
   variable: "--font-inter",
   display: "swap",
 });

@@ -1,10 +1,13 @@
 "use client";
 
+import dynamic from "next/dynamic";
 import { usePathname } from "next/navigation";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import SocialRail from "@/components/SocialRail";
-import ContactDial from "@/components/ContactDial";
+
+// Lazy-load non-critical floating UI — not needed for first paint
+const SocialRail = dynamic(() => import("@/components/SocialRail"), { ssr: false });
+const ContactDial = dynamic(() => import("@/components/ContactDial"), { ssr: false });
 
 export default function LayoutChrome({
   children,

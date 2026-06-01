@@ -184,11 +184,11 @@ export default function Logo({ dark = false, size = "md" }: LogoProps) {
       <Image
         src="/lorann-logo3.png"
         alt="Lorann — List Smarter"
-        width={1824}
-        height={656}
+        width={600}
+        height={216}
         sizes="(max-width: 640px) 180px, 260px"
         priority
-        quality={100}
+        quality={90}
         className={`w-auto object-contain select-none ${heightClasses[size]}`}
         draggable={false}
       />

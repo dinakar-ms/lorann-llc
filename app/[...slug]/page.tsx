@@ -20,15 +20,12 @@ import HubPage from "@/components/templates/HubPage";
 import NewsletterForm from "@/app/insights/newsletter/NewsletterForm";
 import FaqAccordion from "@/components/sections/FaqAccordion";
 import ProseSection, { type ProseSectionData } from "@/components/sections/ProseSection";
-import DataCardsTable from "@/components/sections/DataCardsTable";
+import dynamic from "next/dynamic";
 import type { DataCard } from "@/components/sections/DataCardsTable";
-import * as LucideIcons from "lucide-react";
+import { ArrowRight, ShieldCheck, Linkedin, Mail } from "lucide-react";
+import { getIcon } from "@/components/ui/IconByName";
 
-// ─── Icon helper ─────────────────────────────────────────
-function getIcon(name: string | undefined): React.ElementType {
-  if (!name) return LucideIcons.Circle;
-  return (LucideIcons as any)[name] || LucideIcons.Circle;
-}
+const DataCardsTable = dynamic(() => import("@/components/sections/DataCardsTable"), { ssr: true });
 
 // ─── Types ───────────────────────────────────────────────
 type CTA = { label?: string; href?: string } | null;
@@ -425,7 +422,7 @@ function renderComplianceBand(page: PageDoc) {
             />
             <div className="relative grid lg:grid-cols-[auto_1fr_auto] items-center gap-6 lg:gap-10">
               <div className="w-14 h-14 rounded-2xl bg-cyan-400/15 border border-cyan-400/30 grid place-items-center text-cyan-300 flex-shrink-0">
-                <LucideIcons.ShieldCheck className="w-7 h-7" />
+                <ShieldCheck className="w-7 h-7" />
               </div>
               <div>
                 <h3 className="font-display font-bold text-2xl lg:text-3xl tracking-tight mb-2">
@@ -440,7 +437,7 @@ function renderComplianceBand(page: PageDoc) {
                 className="inline-flex items-center gap-2 px-5 py-3 bg-white text-slate-900 font-semibold text-[14px] rounded-xl hover:-translate-y-0.5 hover:shadow-[0_20px_40px_-10px_rgba(111,211,255,0.5)] transition-all flex-shrink-0"
               >
                 Discuss Licensing
-                <LucideIcons.ArrowRight className="w-4 h-4" />
+                <ArrowRight className="w-4 h-4" />
               </Link>
             </div>
           </div>
@@ -711,7 +708,7 @@ function renderCustom(page: PageDoc, slugParts: string[], dataCards?: DataCard[]
                     className="relative inline-flex items-center gap-2 px-6 py-3.5 bg-white/10 border border-cyan-400/30 text-white font-semibold text-[14.5px] rounded-xl backdrop-blur-md hover:bg-white/20 hover:-translate-y-0.5 transition-all"
                   >
                     {page.ctaBannerData.ctaLabel}
-                    <LucideIcons.ArrowRight className="w-4 h-4" />
+                    <ArrowRight className="w-4 h-4" />
                   </Link>
                 )}
               </div>
@@ -737,7 +734,7 @@ function renderCustom(page: PageDoc, slugParts: string[], dataCards?: DataCard[]
                     className="inline-flex items-center gap-2 px-6 py-3.5 bg-gradient-to-br from-blue-600 to-blue-700 text-white font-semibold text-[14.5px] rounded-xl shadow-brand hover:-translate-y-0.5 transition-all"
                   >
                     {page.ctaBannerData.ctaLabel}
-                    <LucideIcons.ArrowRight className="w-4 h-4" />
+                    <ArrowRight className="w-4 h-4" />
                   </Link>
                 )}
               </div>
@@ -815,14 +812,14 @@ function renderCustom(page: PageDoc, slugParts: string[], dataCards?: DataCard[]
                         aria-label={`${m.name} on LinkedIn`}
                         className="w-9 h-9 rounded-[10px] grid place-items-center text-slate-500 bg-slate-50 hover:bg-blue-50 hover:text-blue-700 transition-all"
                       >
-                        <LucideIcons.Linkedin className="w-4 h-4" />
+                        <Linkedin className="w-4 h-4" />
                       </a>
                       <a
                         href={`mailto:${m.email}?subject=${encodeURIComponent(`Inquiry for ${m.name}`)}`}
                         aria-label={`Email ${m.name}`}
                         className="w-9 h-9 rounded-[10px] grid place-items-center text-slate-500 bg-slate-50 hover:bg-blue-50 hover:text-blue-700 transition-all"
                       >
-                        <LucideIcons.Mail className="w-4 h-4" />
+                        <Mail className="w-4 h-4" />
                       </a>
                     </div>
                   </div>

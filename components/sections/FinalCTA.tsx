@@ -73,19 +73,19 @@ export default function FinalCTA({ content }: { content?: FinalCTAContent }) {
           {/* Orbits */}
           <div
             className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] border border-white/8 rounded-full pointer-events-none"
-            style={{ animation: "spin 40s linear infinite" }}
+            style={{ animation: "spin 40s linear infinite", willChange: "transform" }}
           >
             <div className="absolute -top-1 left-1/2 -translate-x-1/2 w-2 h-2 rounded-full bg-cyan-400 shadow-[0_0_16px_#22BFFF]" />
           </div>
           <div
             className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] border border-white/8 rounded-full pointer-events-none"
-            style={{ animation: "spin 60s linear infinite reverse" }}
+            style={{ animation: "spin 60s linear infinite reverse", willChange: "transform" }}
           >
             <div className="absolute -top-1 left-1/2 -translate-x-1/2 w-2 h-2 rounded-full bg-cyan-400 shadow-[0_0_16px_#22BFFF]" />
           </div>
           <div
             className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[1000px] h-[1000px] border border-white/8 rounded-full pointer-events-none"
-            style={{ animation: "spin 80s linear infinite" }}
+            style={{ animation: "spin 80s linear infinite", willChange: "transform" }}
           >
             <div className="absolute -top-1 left-1/2 -translate-x-1/2 w-2 h-2 rounded-full bg-cyan-400 shadow-[0_0_16px_#22BFFF]" />
           </div>
