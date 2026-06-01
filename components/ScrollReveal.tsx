@@ -2,74 +2,58 @@
 
 import { useEffect } from "react";
 
+/**
+ * Single IntersectionObserver for all scroll-reveal elements.
+ * Merges `.reveal` and `[data-observe]` selectors + count-up animation.
+ */
 export default function ScrollReveal() {
   useEffect(() => {
-    const io = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            entry.target.classList.add("in");
+    // Use requestIdleCallback to avoid blocking main thread
+    const init = () => {
+      const io = new IntersectionObserver(
+        (entries) => {
+          for (const entry of entries) {
+            if (!entry.isIntersecting) continue;
+            const el = entry.target;
+            el.classList.add("in", "in-view");
+
             // Count-up support
-            entry.target.querySelectorAll<HTMLElement>("[data-count]").forEach((el) => {
-              if (el.dataset.done) return;
-              el.dataset.done = "1";
-              const target = parseInt(el.dataset.count || "0", 10);
-              const suffix = el.dataset.suffix || "";
+            el.querySelectorAll<HTMLElement>("[data-count]").forEach((counter) => {
+              if (counter.dataset.done) return;
+              counter.dataset.done = "1";
+              const target = parseInt(counter.dataset.count || "0", 10);
+              const suffix = counter.dataset.suffix || "";
               const duration = 2200;
               const start = performance.now();
               const frame = (now: number) => {
                 const progress = Math.min((now - start) / duration, 1);
                 const eased = 1 - Math.pow(1 - progress, 3);
-                el.textContent = Math.floor(target * eased) + suffix;
+                counter.textContent = Math.floor(target * eased) + suffix;
                 if (progress < 1) requestAnimationFrame(frame);
-                else el.textContent = target + suffix;
+                else counter.textContent = target + suffix;
               };
               requestAnimationFrame(frame);
             });
-            io.unobserve(entry.target);
+
+            io.unobserve(el);
           }
-        });
-      },
-      { threshold: 0.12 }
-    );
+        },
+        { threshold: 0.12 }
+      );
 
-    document.querySelectorAll(".reveal").forEach((el) => io.observe(el));
+      document.querySelectorAll(".reveal, [data-observe]").forEach((el) => io.observe(el));
 
-    const io2 = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            entry.target.classList.add("in-view");
-            entry.target.querySelectorAll<HTMLElement>("[data-count]").forEach((el) => {
-              if (el.dataset.done) return;
-              el.dataset.done = "1";
-              const target = parseInt(el.dataset.count || "0", 10);
-              const suffix = el.dataset.suffix || "";
-              const duration = 2200;
-              const start = performance.now();
-              const frame = (now: number) => {
-                const progress = Math.min((now - start) / duration, 1);
-                const eased = 1 - Math.pow(1 - progress, 3);
-                el.textContent = Math.floor(target * eased) + suffix;
-                if (progress < 1) requestAnimationFrame(frame);
-                else el.textContent = target + suffix;
-              };
-              requestAnimationFrame(frame);
-            });
-            io2.unobserve(entry.target);
-          }
-        });
-      },
-      { threshold: 0.2 }
-    );
-    document
-      .querySelectorAll("[data-observe]")
-      .forEach((el) => io2.observe(el));
-
-    return () => {
-      io.disconnect();
-      io2.disconnect();
+      return () => io.disconnect();
     };
+
+    // Defer to idle time so it doesn't block first paint
+    if ("requestIdleCallback" in window) {
+      const id = requestIdleCallback(init);
+      return () => cancelIdleCallback(id);
+    } else {
+      const t = setTimeout(init, 100);
+      return () => clearTimeout(t);
+    }
   }, []);
 
   return null;

@@ -4,16 +4,21 @@ import { Space_Grotesk, Inter, JetBrains_Mono } from "next/font/google";
 import { draftMode } from "next/headers";
 import "./globals.css";
 import LayoutChrome from "@/components/LayoutChrome";
-import DisableDraftMode from "@/components/DisableDraftMode";
 
-// Lazy-load heavy client components — not needed for first paint
-const CookieConsent = dynamic(() => import("@/components/CookieConsent"), {
-  ssr: false,
-});
+// Only load in draft mode — zero cost in production
 const VisualEditing = dynamic(
   () => import("next-sanity").then((m) => m.VisualEditing),
   { ssr: false }
 );
+const DisableDraftMode = dynamic(
+  () => import("@/components/DisableDraftMode"),
+  { ssr: false }
+);
+
+// Non-critical — load after first paint
+const CookieConsent = dynamic(() => import("@/components/CookieConsent"), {
+  ssr: false,
+});
 
 const spaceGrotesk = Space_Grotesk({
   subsets: ["latin"],
@@ -92,6 +97,8 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
+  const isDraft = draftMode().isEnabled;
+
   return (
     <html
       lang="en"
@@ -99,13 +106,13 @@ export default function RootLayout({
     >
       <body className="font-body text-slate-900 bg-bg-base">
         <LayoutChrome>{children}</LayoutChrome>
-        {/* VisualEditing must mount unconditionally so Sanity Presentation
-            can complete its parent ↔ iframe handshake. The visible "Open
-            in Studio" tooltip is suppressed on the public site by
-            disabling stega encoding for non-draft fetches (see
-            sanity/lib/fetch.ts). */}
-        <VisualEditing />
-        {draftMode().isEnabled && <DisableDraftMode />}
+        {/* Sanity editing tools — ONLY loaded when draft mode is active */}
+        {isDraft && (
+          <>
+            <VisualEditing />
+            <DisableDraftMode />
+          </>
+        )}
         <CookieConsent />
       </body>
     </html>
