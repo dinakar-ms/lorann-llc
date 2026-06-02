@@ -282,6 +282,20 @@ function buildCrumbs(slugParts: string[], pageTitle: string) {
   return crumbs;
 }
 
+/** Extract plain text from Portable Text blocks */
+function ptToPlainText(blocks: any): string {
+  if (!blocks) return "";
+  if (typeof blocks === "string") return blocks;
+  if (!Array.isArray(blocks)) return "";
+  return blocks
+    .map((block: any) => {
+      if (block._type !== "block" || !block.children) return "";
+      return block.children.map((child: any) => child.text || "").join("");
+    })
+    .join(" ")
+    .trim();
+}
+
 function buildJsonLd(page: PageDoc) {
   if (page.schemaMarkup) {
     try {
@@ -290,7 +304,11 @@ function buildJsonLd(page: PageDoc) {
       // fall through
     }
   }
-  return {
+
+  const schemas: any[] = [];
+
+  // 1. Article / WebPage schema
+  schemas.push({
     "@context": "https://schema.org",
     "@type": "Article",
     headline: page.h1,
@@ -299,8 +317,61 @@ function buildJsonLd(page: PageDoc) {
     image: page.heroImage?.asset
       ? urlForImage(page.heroImage).width(1600).url()
       : undefined,
-    mainEntityOfPage: page.canonicalUrl,
-  };
+    mainEntityOfPage:
+      page.canonicalUrl ||
+      `https://www.lorannllc.com/${page.slug}`,
+    publisher: {
+      "@type": "Organization",
+      name: "Lorann LLC",
+      url: "https://www.lorannllc.com",
+    },
+  });
+
+  // 2. FAQPage schema — if page has FAQ items
+  if (page.faqItems && page.faqItems.length > 0) {
+    schemas.push({
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      mainEntity: page.faqItems.map((faq) => ({
+        "@type": "Question",
+        name: faq.question,
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: ptToPlainText(faq.answer),
+        },
+      })),
+    });
+  }
+
+  // 3. BreadcrumbList schema
+  const slugParts = page.slug.split("/");
+  const breadcrumbs = [
+    { name: "Home", url: "https://www.lorannllc.com/" },
+  ];
+  for (let i = 0; i < slugParts.length; i++) {
+    const segment = slugParts[i];
+    const url = `https://www.lorannllc.com/${slugParts.slice(0, i + 1).join("/")}`;
+    const name =
+      i === slugParts.length - 1
+        ? page.h1
+        : segment
+            .replace(/-/g, " ")
+            .replace(/\b\w/g, (c) => c.toUpperCase());
+    breadcrumbs.push({ name, url });
+  }
+  schemas.push({
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: breadcrumbs.map((crumb, i) => ({
+      "@type": "ListItem",
+      position: i + 1,
+      name: crumb.name,
+      item: crumb.url,
+    })),
+  });
+
+  // Return array of schemas (Google supports multiple JSON-LD blocks)
+  return schemas;
 }
 
 function mapFeatures(items: FeatureDoc[] | undefined): Feature[] {
@@ -1054,10 +1125,13 @@ export default async function Page({
 
   return (
     <>
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-      />
+      {(Array.isArray(jsonLd) ? jsonLd : [jsonLd]).map((schema, i) => (
+        <script
+          key={i}
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
+        />
+      ))}
       {page.templateType === "leaf" && renderLeaf(page, params.slug)}
       {page.templateType === "hub" && renderHub(page, params.slug)}
       {page.templateType === "custom" && renderCustom(page, params.slug, dataCards)}
