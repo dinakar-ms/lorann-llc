@@ -106,13 +106,11 @@ export default function RootLayout({
     >
       <body className="font-body text-slate-900 bg-bg-base">
         <LayoutChrome>{children}</LayoutChrome>
-        {/* Sanity editing tools — ONLY loaded when draft mode is active */}
-        {isDraft && (
-          <>
-            <VisualEditing />
-            <DisableDraftMode />
-          </>
-        )}
+        {/* VisualEditing must mount unconditionally so Sanity Presentation
+            can complete its parent ↔ iframe handshake. Loaded lazily
+            (ssr: false) so it doesn't block first paint. */}
+        <VisualEditing />
+        {isDraft && <DisableDraftMode />}
         <CookieConsent />
       </body>
     </html>
