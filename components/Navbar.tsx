@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
 import {
@@ -155,114 +155,81 @@ const NAV: NavItem[] = [
 ];
 
 /* ─────────────────────────────────────────────────────────────────
-   CASCADING MEGA-MENU FOR DATA ASSETS
-   Up to 4 columns: Category > Sub-hub > Sub-sub-hub > Leaf.
-   Each column highlights the row whose children populate the next column.
+   DATA ASSETS MEGA-MENU — HOVER CASCADE (matches lorannllc.com design)
+   Up to 4 columns: Data Assets → Sub-hub → Sub-category → Leaf
+   Hover to navigate. Anchors only update on rows that have children.
    ───────────────────────────────────────────────────────────────── */
 
-type CascadeColumnProps = {
-  items: DataAssetNode[];
-  /** Label of the row currently under the cursor — drives the visual highlight. */
-  hoveredLabel: string | null;
-  /** Label of the row that is the cascade anchor (whose children fill the next column). May equal hoveredLabel. */
-  anchoredLabel: string | null;
-  /** Called when the user enters a row — drives the next column. */
-  onHoverRow: (node: DataAssetNode) => void;
-  /** Called when any link is clicked — closes the dropdown. */
-  onLinkClick: () => void;
-  /** Whether each row should reserve space for a chevron (only when this column has children-bearing rows). */
-  showChevronGutter: boolean;
-  /** Visual title shown above the column. */
-  title: string;
-  /** Width preset for this column. First column is wider, others narrower. */
-  variant?: "primary" | "secondary";
-};
-
-function CascadeColumn({
-  items,
-  hoveredLabel,
-  anchoredLabel,
-  onHoverRow,
-  onLinkClick,
-  showChevronGutter,
-  title,
-  variant = "secondary",
-}: CascadeColumnProps) {
+/* ── Shared column header ── */
+function ColHeader({ label }: { label: string }) {
   return (
-    <div
-      className={`flex flex-col ${
-        variant === "primary" ? "min-w-[260px]" : "min-w-[240px]"
-      }`}
-    >
-      <h4 className="font-mono text-[10.5px] font-semibold uppercase tracking-[0.14em] text-blue-700 mb-3.5 flex items-center gap-2 px-1">
-        {title}
-        <span className="flex-1 h-px bg-gradient-to-r from-blue-200 to-transparent" />
-      </h4>
+    <h4 className="font-mono text-[10.5px] font-semibold uppercase tracking-[0.14em] text-blue-700 mb-3 flex items-center gap-2 px-1">
+      {label}
+      <span className="flex-1 h-px bg-gradient-to-r from-blue-200 to-transparent" />
+    </h4>
+  );
+}
+
+/* ── Single column of nav rows ── */
+function NavColumn({
+  title, items, activeHref, anchorHref, onHover, onLinkClick, isPrimary,
+}: {
+  title: string;
+  items: DataAssetNode[];
+  activeHref: string | null;
+  anchorHref: string | null;
+  onHover: (node: DataAssetNode) => void;
+  onLinkClick: () => void;
+  isPrimary?: boolean;
+}) {
+  return (
+    <div className={`flex flex-col flex-shrink-0 ${isPrimary ? "w-[220px] xl:w-[240px]" : "w-[200px] xl:w-[218px]"}`}>
+      <ColHeader label={title} />
       <ul className="flex flex-col gap-0.5">
         {items.map((node) => {
           const Icon = node.Icon;
           const hasChildren = !!node.children?.length;
-          // Visual highlight follows the cursor — anchor controls cascade content.
-          const isHovered = hoveredLabel === node.label;
-          const isAnchored = anchoredLabel === node.label;
-          const isActive = isHovered || isAnchored;
+          const isActive = activeHref === node.href || anchorHref === node.href;
           return (
-            <li
-              key={node.href}
-              onMouseEnter={() => onHoverRow(node)}
-            >
+            <li key={node.href} onMouseEnter={() => onHover(node)}>
               <Link
                 href={node.href}
                 onClick={onLinkClick}
-                className={`grid items-center gap-2.5 px-2.5 py-2 rounded-lg transition-colors group/cell ${
-                  isActive
-                    ? "bg-blue-50 text-blue-700"
-                    : "hover:bg-blue-50 text-slate-800 hover:text-blue-700"
-                }`}
-                style={{
-                  gridTemplateColumns: variant === "primary"
-                    ? `auto 1fr ${showChevronGutter ? "auto" : ""}`
-                    : `1fr ${showChevronGutter ? "auto" : ""}`,
-                }}
+                className={`flex items-center gap-2.5 px-2.5 py-2 rounded-xl transition-colors group/row
+                  ${isActive ? "bg-blue-50 text-blue-700" : "text-slate-800 hover:bg-blue-50 hover:text-blue-700"}`}
               >
-                {variant === "primary" && Icon && (
+                {isPrimary && Icon && (
                   <span
-                    className={`w-8 h-8 rounded-[8px] grid place-items-center transition-all flex-shrink-0 ${
-                      isActive
-                        ? "bg-gradient-to-br from-blue-600 to-cyan-500 text-white border border-transparent"
-                        : "bg-gradient-to-br from-blue-50 to-slate-100 border border-slate-150 text-blue-700 group-hover/cell:bg-gradient-to-br group-hover/cell:from-blue-600 group-hover/cell:to-cyan-500 group-hover/cell:text-white group-hover/cell:border-transparent"
-                    }`}
+                    className={`w-9 h-9 rounded-[10px] grid place-items-center transition-all flex-shrink-0
+                      ${isActive
+                        ? "bg-gradient-to-br from-blue-600 to-cyan-500 text-white"
+                        : "bg-gradient-to-br from-blue-50 to-slate-100 border border-slate-150 text-blue-700 group-hover/row:from-blue-600 group-hover/row:to-cyan-500 group-hover/row:text-white group-hover/row:border-transparent"
+                      }`}
                   >
                     <Icon className="w-4 h-4" />
                   </span>
                 )}
-                <span className="min-w-0">
-                  <span className="flex items-center gap-2 font-semibold text-[13.5px] leading-tight">
+                <span className="flex-1 min-w-0">
+                  <span className="flex items-center gap-1.5 font-semibold text-[13.5px] leading-tight">
                     <span className="truncate">{node.label}</span>
                     {node.badge && (
-                      <span className="font-mono text-[9px] font-bold uppercase tracking-[0.08em] px-1.5 py-0.5 rounded-full bg-gradient-to-r from-blue-600 to-cyan-500 text-white flex-shrink-0">
+                      <span className="font-mono text-[9px] font-bold uppercase tracking-wide px-1.5 py-0.5 rounded-full bg-gradient-to-r from-blue-600 to-cyan-500 text-white flex-shrink-0">
                         {node.badge}
                       </span>
                     )}
                   </span>
-                  {variant === "primary" && node.desc && (
-                    <span className="block text-[11.5px] text-slate-500 mt-0.5 leading-snug">
+                  {isPrimary && node.desc && (
+                    <span className="block text-[11.5px] text-slate-500 mt-0.5 leading-snug truncate">
                       {node.desc}
                     </span>
                   )}
                 </span>
-                {showChevronGutter && (
-                  <span className="flex-shrink-0">
-                    {hasChildren ? (
-                      <ChevronRight
-                        className={`w-3.5 h-3.5 transition-colors ${
-                          isActive ? "text-blue-700" : "text-slate-300 group-hover/cell:text-blue-600"
-                        }`}
-                      />
-                    ) : (
-                      <ArrowUpRight className="w-3 h-3 text-slate-300 group-hover/cell:text-blue-600" />
-                    )}
-                  </span>
+                {hasChildren ? (
+                  <ChevronRight
+                    className={`w-3.5 h-3.5 flex-shrink-0 ${isActive ? "text-blue-600" : "text-slate-300 group-hover/row:text-blue-500"}`}
+                  />
+                ) : (
+                  <ArrowUpRight className="w-3 h-3 text-slate-300 group-hover/row:text-blue-500 flex-shrink-0" />
                 )}
               </Link>
             </li>
@@ -280,151 +247,122 @@ function DataAssetsCascade({
   isOpen: boolean;
   onLinkClick: () => void;
 }) {
-  // Default open path: B2B Database > Healthcare so the menu shows content immediately.
-  const defaultLevel1 = DATA_ASSETS_TREE[0];
-  const defaultLevel2 = defaultLevel1.children?.[0] ?? null;
+  // Defaults: B2B Database → Healthcare → first HC group
+  const defaultL1 = DATA_ASSETS_TREE[0];
+  const defaultL2 = defaultL1.children?.[0] ?? null;
+  const defaultL3 = defaultL2?.children?.[0] ?? null;
 
-  /* ── ANCHOR STATE — drives WHAT each subsequent column shows ──
-     An anchor is a row whose children populate the NEXT column. Anchors only
-     change when the cursor enters a row that HAS children. Hovering a leaf-only
-     row (e.g. Data Cards, Signal eXchange) does NOT collapse the cascade — it
-     just updates the hover highlight at that level.
-     ─────────────────────────────────────────────────────────────── */
-  const [level1Anchor, setLevel1Anchor] = useState<DataAssetNode>(defaultLevel1);
-  const [level2Anchor, setLevel2Anchor] = useState<DataAssetNode | null>(defaultLevel2);
-  const [level3Anchor, setLevel3Anchor] = useState<DataAssetNode | null>(null);
+  // Anchor drives content of next column; hover drives visual highlight only
+  const [l1Anchor, setL1Anchor] = useState<DataAssetNode>(defaultL1);
+  const [l2Anchor, setL2Anchor] = useState<DataAssetNode | null>(defaultL2);
+  const [l3Anchor, setL3Anchor] = useState<DataAssetNode | null>(defaultL3);
+  const [l1Hover, setL1Hover] = useState<string | null>(defaultL1.href);
+  const [l2Hover, setL2Hover] = useState<string | null>(defaultL2?.href ?? null);
+  const [l3Hover, setL3Hover] = useState<string | null>(defaultL3?.href ?? null);
 
-  /* ── HOVER STATE — drives only the VISUAL highlight per column ──
-     These update on every row enter, including leaf-only rows. They give the
-     user immediate feedback when crossing rows even if the row is a leaf and
-     therefore wouldn't change the cascade content.
-     ─────────────────────────────────────────────────────────────── */
-  const [level1Hover, setLevel1Hover] = useState<string | null>(defaultLevel1.label);
-  const [level2Hover, setLevel2Hover] = useState<string | null>(defaultLevel2?.label ?? null);
-  const [level3Hover, setLevel3Hover] = useState<string | null>(null);
-
-  // When the dropdown closes (mouse left, escape pressed, route change), reset
-  // to the default open path so re-opening always starts at B2B Database > Healthcare.
   useEffect(() => {
     if (!isOpen) {
-      setLevel1Anchor(defaultLevel1);
-      setLevel2Anchor(defaultLevel2);
-      setLevel3Anchor(null);
-      setLevel1Hover(defaultLevel1.label);
-      setLevel2Hover(defaultLevel2?.label ?? null);
-      setLevel3Hover(null);
+      setL1Anchor(defaultL1); setL2Anchor(defaultL2); setL3Anchor(defaultL3);
+      setL1Hover(defaultL1.href); setL2Hover(defaultL2?.href ?? null); setL3Hover(defaultL3?.href ?? null);
     }
-    // We intentionally only run this on isOpen flip; defaultLevel1/2 are constants.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isOpen]);
 
-  const onHoverLevel1 = (node: DataAssetNode) => {
-    setLevel1Hover(node.label);
-    // Re-anchor only when the hovered row has children. This is the key fix:
-    // hovering Data Cards or Signal eXchange (leaves) leaves the cascade intact.
+  const handleL1 = (node: DataAssetNode) => {
+    setL1Hover(node.href);
     if (!node.children?.length) return;
-    setLevel1Anchor(node);
-    const firstChild = node.children[0];
-    setLevel2Anchor(firstChild);
-    setLevel2Hover(firstChild.label);
-    if (firstChild.children?.length) {
-      const firstWithChildren = firstChild.children.find((c) => c.children?.length) ?? null;
-      setLevel3Anchor(firstWithChildren);
-      setLevel3Hover(firstWithChildren?.label ?? null);
-    } else {
-      setLevel3Anchor(null);
-      setLevel3Hover(null);
-    }
+    setL1Anchor(node);
+    const first = node.children[0];
+    setL2Anchor(first); setL2Hover(first.href);
+    const firstGrand = first.children?.[0] ?? null;
+    setL3Anchor(firstGrand); setL3Hover(firstGrand?.href ?? null);
   };
 
-  const onHoverLevel2 = (node: DataAssetNode) => {
-    setLevel2Hover(node.label);
-    setLevel2Anchor(node);
-    if (node.children?.length) {
-      const firstWithChildren = node.children.find((c) => c.children?.length) ?? null;
-      setLevel3Anchor(firstWithChildren);
-      setLevel3Hover(firstWithChildren?.label ?? null);
-    } else {
-      setLevel3Anchor(null);
-      setLevel3Hover(null);
-    }
+  const handleL2 = (node: DataAssetNode) => {
+    setL2Hover(node.href);
+    if (!node.children?.length) return;
+    setL2Anchor(node);
+    const first = node.children[0];
+    setL3Anchor(first.children?.length ? first : null);
+    setL3Hover(first.children?.length ? first.href : null);
   };
 
-  const onHoverLevel3 = (node: DataAssetNode) => {
-    setLevel3Hover(node.label);
-    if (node.children?.length) {
-      setLevel3Anchor(node);
-    } else {
-      setLevel3Anchor(null);
-    }
+  const handleL3 = (node: DataAssetNode) => {
+    setL3Hover(node.href);
+    if (node.children?.length) setL3Anchor(node);
   };
 
-  const level2Items = level1Anchor.children ?? [];
-  const level3Items = level2Anchor?.children ?? [];
-  const level4Items = level3Anchor?.children ?? [];
+  const col2Items = l1Anchor.children ?? [];
+  const col3Items = l2Anchor?.children ?? [];
+  const col4Items = l3Anchor?.children ?? [];
 
   return (
     <div
-      className="bg-white border border-slate-200 rounded-[22px] shadow-2xl p-5 xl:p-6 flex gap-4"
-      style={{ maxWidth: "min(95vw, 1180px)" }}
+      className="bg-white border border-slate-200 rounded-[22px] shadow-2xl p-5 xl:p-6 flex overflow-x-auto"
+      style={{ maxWidth: "min(calc(100vw - 32px), 1140px)", scrollbarWidth: "none" }}
     >
-      {/* Level 1 — Data Assets categories. Always visible. */}
-      <CascadeColumn
+      {/* Column 1 — Data Assets (always visible) */}
+      <NavColumn
         title="Data Assets"
         items={DATA_ASSETS_TREE}
-        hoveredLabel={level1Hover}
-        anchoredLabel={level1Anchor.label}
-        onHoverRow={onHoverLevel1}
+        activeHref={l1Hover}
+        anchorHref={l1Anchor.href}
+        onHover={handleL1}
         onLinkClick={onLinkClick}
-        showChevronGutter
-        variant="primary"
+        isPrimary
       />
 
-      {/* Level 2 — visible whenever level1Anchor has children (always true for B2B / B2C). */}
-      {level2Items.length > 0 && (
+      {/* Column 2 — Sub-categories of selected L1 */}
+      {col2Items.length > 0 && (
         <>
-          <div className="w-px bg-slate-150 self-stretch" />
-          <CascadeColumn
-            title={level1Anchor.label}
-            items={level2Items}
-            hoveredLabel={level2Hover}
-            anchoredLabel={level2Anchor?.label ?? null}
-            onHoverRow={onHoverLevel2}
+          <div className="w-px bg-slate-150 mx-4 self-stretch flex-shrink-0" />
+          <NavColumn
+            title={l1Anchor.label}
+            items={col2Items}
+            activeHref={l2Hover}
+            anchorHref={l2Anchor?.href ?? null}
+            onHover={handleL2}
             onLinkClick={onLinkClick}
-            showChevronGutter={level2Items.some((n) => n.children?.length)}
           />
         </>
       )}
 
-      {/* Level 3 — visible when level2Anchor has children. Hidden for B2C leaves. */}
-      {level3Items.length > 0 && (
+      {/* Column 3 — Children of selected L2 */}
+      {col3Items.length > 0 && (
         <>
-          <div className="w-px bg-slate-150 self-stretch" />
-          <CascadeColumn
-            title={level2Anchor?.label ?? ""}
-            items={level3Items}
-            hoveredLabel={level3Hover}
-            anchoredLabel={level3Anchor?.label ?? null}
-            onHoverRow={onHoverLevel3}
+          <div className="w-px bg-slate-150 mx-4 self-stretch flex-shrink-0" />
+          <NavColumn
+            title={l2Anchor?.label ?? ""}
+            items={col3Items}
+            activeHref={l3Hover}
+            anchorHref={l3Anchor?.href ?? null}
+            onHover={handleL3}
             onLinkClick={onLinkClick}
-            showChevronGutter={level3Items.some((n) => n.children?.length)}
           />
         </>
       )}
 
-      {/* Level 4 — Technology platforms only (when a level-3 row with children is anchored). */}
-      {level4Items.length > 0 && (
+      {/* Column 4 — Leaves of selected L3 (HC specialty leaves / ERP items etc.) */}
+      {col4Items.length > 0 && (
         <>
-          <div className="w-px bg-slate-150 self-stretch" />
-          <CascadeColumn
-            title={level3Anchor?.label ?? ""}
-            items={level4Items}
-            hoveredLabel={null}
-            anchoredLabel={null}
-            onHoverRow={() => {}}
-            onLinkClick={onLinkClick}
-            showChevronGutter={false}
-          />
+          <div className="w-px bg-slate-150 mx-4 self-stretch flex-shrink-0" />
+          <div className="flex flex-col flex-shrink-0 w-[200px] xl:w-[218px]">
+            <ColHeader label={l3Anchor?.label ?? ""} />
+            <ul className="flex flex-col gap-0.5">
+              {col4Items.map((leaf) => (
+                <li key={leaf.href}>
+                  <Link
+                    href={leaf.href}
+                    onClick={onLinkClick}
+                    className="flex items-center gap-2 px-2.5 py-2 rounded-xl text-[13.5px] font-semibold text-slate-700 hover:text-blue-700 hover:bg-blue-50 transition-colors group/lf"
+                  >
+                    <span className="truncate flex-1">{leaf.label}</span>
+                    <ArrowUpRight className="w-3 h-3 text-slate-300 group-hover/lf:text-blue-500 flex-shrink-0" />
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
         </>
       )}
     </div>

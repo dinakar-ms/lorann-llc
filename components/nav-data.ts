@@ -12,18 +12,15 @@ import {
   Factory,
   Home,
   Car,
-  // Healthcare
+  // Healthcare — group icons
   Stethoscope,
   Pill,
-  Cat,
-  ClipboardList,
   Building2,
   HeartPulse,
-  Scissors,
-  Hand,
   Smile,
-  Scan,
   UserCog,
+  Brain,
+  Award,
   // Technology category icons
   Monitor,
   Database,
@@ -60,25 +57,133 @@ export type DataAssetNode = {
   children?: DataAssetNode[];
 };
 
-/* ─────────── Healthcare leaves (12) ─────────── */
+/* ─────────── Healthcare — 8 specialty groups ─────────── */
+const HC = "/data-assets/b2b-database/healthcare";
+
+const HC_PHYSICIANS: DataAssetNode = {
+  label: "Physicians & Advanced Practice",
+  href: `${HC}/physicians-advanced-practice`,
+  Icon: UserCog,
+  desc: "Physicians, Podiatrists, NPs, PAs, MAs",
+  children: [
+    { label: "Physicians & Doctors",   href: `${HC}/physicians-advanced-practice/physicians-doctors` },
+    { label: "Podiatrists",            href: `${HC}/physicians-advanced-practice/podiatrists` },
+    { label: "Nurse Practitioners",    href: `${HC}/physicians-advanced-practice/nurse-practitioners` },
+    { label: "Physician Assistants",   href: `${HC}/physicians-advanced-practice/physician-assistants` },
+    { label: "Medical Assistants",     href: `${HC}/physicians-advanced-practice/medical-assistants` },
+  ],
+};
+
+const HC_NURSING: DataAssetNode = {
+  label: "Nursing Professionals",
+  href: `${HC}/nursing-professionals`,
+  Icon: HeartPulse,
+  desc: "RNs, LPNs, CNAs, Nurse-Midwives",
+  children: [
+    { label: "Registered Nurses",           href: `${HC}/nursing-professionals/registered-nurses` },
+    { label: "Licensed Practical Nurses",   href: `${HC}/nursing-professionals/licensed-practical-nurses` },
+    { label: "Certified Nursing Assistants",href: `${HC}/nursing-professionals/certified-nursing-assistants` },
+    { label: "Certified Nurse-Midwives",    href: `${HC}/nursing-professionals/certified-nurse-midwives` },
+  ],
+};
+
+const HC_HOSPITAL: DataAssetNode = {
+  label: "Hospital Decision Makers",
+  href: `${HC}/hospital-decision-makers`,
+  Icon: Building2,
+  desc: "Administrators, CMO, CNO, Medical Directors",
+  children: [
+    { label: "Hospital Administrators",  href: `${HC}/hospital-decision-makers/hospital-administrators` },
+    { label: "CEO & CFO",               href: `${HC}/hospital-decision-makers/ceo-cfo-healthcare` },
+    { label: "Chief Medical Officers",  href: `${HC}/hospital-decision-makers/chief-medical-officers` },
+    { label: "Chief Nursing Officers",  href: `${HC}/hospital-decision-makers/chief-nursing-officers` },
+    { label: "Chief of Staff",          href: `${HC}/hospital-decision-makers/chief-of-staff` },
+    { label: "Medical Directors",       href: `${HC}/hospital-decision-makers/medical-directors` },
+  ],
+};
+
+const HC_THERAPY: DataAssetNode = {
+  label: "Health & Therapy",
+  href: `${HC}/health-therapy`,
+  Icon: Activity,
+  desc: "PT, OT, SLP, RT, EMT, Rad Tech, Dieticians",
+  children: [
+    { label: "Physical Therapists",         href: `${HC}/health-therapy/physical-therapists` },
+    { label: "Occupational Therapists",     href: `${HC}/health-therapy/occupational-therapists` },
+    { label: "Speech & Language Therapists",href: `${HC}/health-therapy/speech-language-therapists` },
+    { label: "Respiratory Therapists",      href: `${HC}/health-therapy/respiratory-therapists` },
+    { label: "Massage Therapists",          href: `${HC}/health-therapy/massage-therapists` },
+    { label: "EMTs & Paramedics",           href: `${HC}/health-therapy/emts-paramedics` },
+    { label: "Radiologic Technicians",      href: `${HC}/health-therapy/radiologic-technicians` },
+    { label: "Dieticians & Nutritionists",  href: `${HC}/health-therapy/dieticians-nutritionists` },
+  ],
+};
+
+const HC_BEHAVIORAL: DataAssetNode = {
+  label: "Behavioral & Mental Health",
+  href: `${HC}/behavioral-mental-health`,
+  Icon: Brain,
+  desc: "Psychologists, Psychiatrists, Counselors",
+  children: [
+    { label: "Psychologists",              href: `${HC}/behavioral-mental-health/psychologists` },
+    { label: "Psychiatrists",              href: `${HC}/behavioral-mental-health/psychiatrists` },
+    { label: "Mental Health Counselors",   href: `${HC}/behavioral-mental-health/mental-health-counselors` },
+    { label: "Social Workers",             href: `${HC}/behavioral-mental-health/social-workers` },
+    { label: "Marriage & Family Therapists",href: `${HC}/behavioral-mental-health/marriage-family-therapists` },
+  ],
+};
+
+const HC_DENTAL: DataAssetNode = {
+  label: "Dental & Vision",
+  href: `${HC}/dental-vision`,
+  Icon: Smile,
+  desc: "Dentists, Hygienists, Optometrists",
+  children: [
+    { label: "Dentists",           href: `${HC}/dental-vision/dentists` },
+    { label: "Dental Hygienists",  href: `${HC}/dental-vision/dental-hygienists` },
+    { label: "Dental Assistants",  href: `${HC}/dental-vision/dental-assistants` },
+    { label: "Optometrists",       href: `${HC}/dental-vision/optometrists` },
+    { label: "Opticians",          href: `${HC}/dental-vision/opticians` },
+  ],
+};
+
+const HC_PHARMACY: DataAssetNode = {
+  label: "Pharmacy & Practice Management",
+  href: `${HC}/pharmacy-practice-management`,
+  Icon: Pill,
+  desc: "Pharmacists, Practice Managers",
+  children: [
+    { label: "Pharmacists",                href: `${HC}/pharmacy-practice-management/pharmacists` },
+    { label: "Physician Practice Managers",href: `${HC}/pharmacy-practice-management/physician-practice-managers` },
+  ],
+};
+
+const HC_SPECIALTY: DataAssetNode = {
+  label: "Specialty & Other",
+  href: `${HC}/specialty-other`,
+  Icon: Award,
+  desc: "Chiropractors, Veterinarians, Allied Health",
+  children: [
+    { label: "Chiropractors",               href: `${HC}/specialty-other/chiropractors` },
+    { label: "Veterinarians",               href: `${HC}/specialty-other/veterinarians` },
+    { label: "Allied Healthcare Professionals", href: `${HC}/specialty-other/allied-healthcare-professionals` },
+  ],
+};
+
 const HEALTHCARE: DataAssetNode = {
   label: "Healthcare",
   href: "/data-assets/b2b-database/healthcare",
-  Icon: Activity,
-  desc: "12 specialty-driven email lists.",
+  Icon: Stethoscope,
+  desc: "8 specialty segments · 38 targeted lists",
   children: [
-    { label: "Doctors Email List", href: "/data-assets/b2b-database/healthcare/doctors-email-list", Icon: Stethoscope },
-    { label: "Physician Email Lists", href: "/data-assets/b2b-database/healthcare/physician-email-lists", Icon: UserCog },
-    { label: "US Pharmacist Email List", href: "/data-assets/b2b-database/healthcare/us-pharmacist-email-list", Icon: Pill },
-    { label: "Veterinarians Email DataBase", href: "/data-assets/b2b-database/healthcare/veterinarians-email-database", Icon: Cat },
-    { label: "Medical Mailing Lists", href: "/data-assets/b2b-database/healthcare/medical-mailing-lists", Icon: ClipboardList },
-    { label: "Hospital Mailing List", href: "/data-assets/b2b-database/healthcare/hospital-mailing-list", Icon: Building2 },
-    { label: "Nurses Email List", href: "/data-assets/b2b-database/healthcare/nurses-email-list", Icon: HeartPulse },
-    { label: "Plastic Surgeons Mailing Addresses", href: "/data-assets/b2b-database/healthcare/plastic-surgeons-mailing-addresses", Icon: Scissors },
-    { label: "Cardiologists Email Lists", href: "/data-assets/b2b-database/healthcare/cardiologists-email-lists", Icon: Activity },
-    { label: "Chiropractors Email Lists", href: "/data-assets/b2b-database/healthcare/chiropractors-email-lists", Icon: Hand },
-    { label: "Dentist Email List", href: "/data-assets/b2b-database/healthcare/dentist-email-list", Icon: Smile },
-    { label: "X-Ray Laboratories Mailing List", href: "/data-assets/b2b-database/healthcare/x-ray-laboratories-mailing-list", Icon: Scan },
+    HC_PHYSICIANS,
+    HC_NURSING,
+    HC_HOSPITAL,
+    HC_THERAPY,
+    HC_BEHAVIORAL,
+    HC_DENTAL,
+    HC_PHARMACY,
+    HC_SPECIALTY,
   ],
 };
 
