@@ -65,26 +65,45 @@ function storeConsent(consent: ConsentState) {
 }
 
 /* ═══════════════════════════════════════════════════════
-   GA
+   GA — Consent Mode v2
+   gtag script is loaded in layout.tsx with default=denied.
+   These functions just update consent state via gtag().
    ═══════════════════════════════════════════════════════ */
 
-let gaLoaded = false;
+function callGtag(...args: any[]) {
+  if (typeof window === "undefined") return;
+  (window as any).dataLayer = (window as any).dataLayer || [];
+  (window as any).dataLayer.push(args);
+}
 
 function loadGA() {
-  if (gaLoaded || typeof window === "undefined") return;
-  gaLoaded = true;
-  const s = document.createElement("script");
-  s.src = "https://www.googletagmanager.com/gtag/js?id=G-SD98EK2RQ4";
-  s.async = true;
-  document.head.appendChild(s);
-  (window as any).dataLayer = (window as any).dataLayer || [];
-  function gtag(...a: any[]) { (window as any).dataLayer.push(a); }
-  gtag("js", new Date());
-  gtag("config", "G-SD98EK2RQ4", { anonymize_ip: true, cookie_flags: "SameSite=Lax;Secure" });
+  // Grant analytics storage — gtag script is already on the page
+  callGtag("consent", "update", {
+    analytics_storage:  "granted",
+    ad_storage:         "denied",   // only grant if marketing consent given
+    ad_user_data:       "denied",
+    ad_personalization: "denied",
+  });
+}
+
+function loadGAMarketing() {
+  // Grant all storage for marketing consent
+  callGtag("consent", "update", {
+    analytics_storage:  "granted",
+    ad_storage:         "granted",
+    ad_user_data:       "granted",
+    ad_personalization: "granted",
+  });
 }
 
 function disableGA() {
-  if (typeof window !== "undefined") (window as any)[`ga-disable-G-SD98EK2RQ4`] = true;
+  // Deny all — reverts to default
+  callGtag("consent", "update", {
+    analytics_storage:  "denied",
+    ad_storage:         "denied",
+    ad_user_data:       "denied",
+    ad_personalization: "denied",
+  });
 }
 
 /* ═══════════════════════════════════════════════════════
@@ -126,7 +145,9 @@ export default function CookieConsent() {
     const stored = getStoredConsent();
     if (stored) {
       setConsent(stored);
-      if (stored.analytics) loadGA(); else disableGA();
+      if (stored.marketing) loadGAMarketing();
+      else if (stored.analytics) loadGA();
+      else disableGA();
     } else {
       disableGA();
       const t = setTimeout(() => setVisible(true), 1200);
@@ -137,7 +158,9 @@ export default function CookieConsent() {
   const handleClose = useCallback((c: ConsentState) => {
     setClosing(true);
     storeConsent(c);
-    if (c.analytics) loadGA(); else disableGA();
+    if (c.marketing) loadGAMarketing();
+    else if (c.analytics) loadGA();
+    else disableGA();
     setTimeout(() => { setVisible(false); setClosing(false); }, 400);
   }, []);
 

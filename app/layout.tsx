@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import dynamic from "next/dynamic";
+import Script from "next/script";
 import { Space_Grotesk, Inter, JetBrains_Mono } from "next/font/google";
 import { draftMode } from "next/headers";
 import "./globals.css";
@@ -104,6 +105,35 @@ export default function RootLayout({
       lang="en"
       className={`${spaceGrotesk.variable} ${inter.variable} ${jetbrains.variable}`}
     >
+      <head>
+        {/* ── Google tag (gtag.js) — Consent Mode v2 ──────────────────────
+            Script loads on every page. Consent defaults to 'denied'.
+            CookieConsent component calls gtag('consent','update',…)
+            to grant analytics_storage only after the user opts in.
+            ─────────────────────────────────────────────────────────────── */}
+        <Script
+          src="https://www.googletagmanager.com/gtag/js?id=G-SD98EK2RQ4"
+          strategy="afterInteractive"
+        />
+        <Script id="gtag-init" strategy="afterInteractive">
+          {`
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+
+            /* Default: deny analytics until user accepts cookie banner */
+            gtag('consent', 'default', {
+              'ad_storage':              'denied',
+              'ad_user_data':            'denied',
+              'ad_personalization':      'denied',
+              'analytics_storage':       'denied',
+              'wait_for_update':         500
+            });
+
+            gtag('config', 'G-SD98EK2RQ4', { 'anonymize_ip': true });
+          `}
+        </Script>
+      </head>
       <body className="font-body text-slate-900 bg-bg-base">
         <LayoutChrome>{children}</LayoutChrome>
         {/* VisualEditing must mount unconditionally so Sanity Presentation
