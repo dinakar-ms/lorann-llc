@@ -14,6 +14,10 @@ const SINGLETONS = [
   "resourcesPage",
 ];
 
+// Document types managed entirely via the website/API — hidden from the
+// Studio Content sidebar to keep editorial work uncluttered.
+const HIDDEN_FROM_STUDIO = ["dataCardSubmission"];
+
 // Groups all `page` documents whose slug starts with a given prefix.
 const pageGroup = (S: any, title: string, prefix: string) =>
   S.listItem()
@@ -139,6 +143,8 @@ export const structure: StructureResolver = (S) =>
       // ---- Anything else not yet listed ----
       ...S.documentTypeListItems().filter(
         (li: any) =>
-          !["page", ...SINGLETONS].includes(li.getId() as string)
+          !["page", ...SINGLETONS, ...HIDDEN_FROM_STUDIO].includes(
+            li.getId() as string
+          )
       ),
     ]);

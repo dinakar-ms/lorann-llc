@@ -228,7 +228,7 @@ export default function DataCardDetail({ card, relatedCards, totalCards }: Props
             <span className="text-slate-900 font-semibold truncate max-w-[250px]">{card.name}</span>
           </nav>
 
-          <div className="flex flex-col lg:flex-row gap-8 lg:gap-12">
+          <div className="flex flex-col gap-8">
             {/* Left */}
             <div className="flex-1 min-w-0">
               {/* Badges */}
@@ -258,71 +258,14 @@ export default function DataCardDetail({ card, relatedCards, totalCards }: Props
                 {card.source && <> Source: {card.source}.</>}
               </p>
 
-              {/* Description in hero */}
-              {card.description && (
-                <div className="text-[13px] text-slate-500 leading-relaxed max-w-2xl mb-5 animate-[slideIn_0.5s_ease-out_0.18s_both] space-y-2">
-                  {card.description.split("\n\n").slice(0, 2).map((p, i) => (
-                    <p key={i}>{p}</p>
-                  ))}
-                </div>
-              )}
-
               {/* CTA Buttons */}
               <div className="flex flex-wrap gap-3 animate-[slideIn_0.5s_ease-out_0.2s_both]">
                 <Link href="/contact" className={`inline-flex items-center gap-2 px-7 py-3.5 rounded-xl bg-gradient-to-r ${gradient} text-white font-bold text-sm shadow-lg hover:shadow-xl hover:-translate-y-0.5 hover:scale-[1.02] transition-all duration-300`}>
                   <Send className="w-4 h-4" /> Request This Data Card
                 </Link>
-                <Link href="/contact" className="inline-flex items-center gap-2 px-7 py-3.5 rounded-xl bg-white border border-slate-200 text-slate-700 font-bold text-sm hover:border-blue-300 hover:text-blue-700 hover:shadow-md hover:-translate-y-0.5 transition-all duration-300">
-                  <Download className="w-4 h-4" /> Download PDF Card
-                </Link>
               </div>
             </div>
 
-            {/* Right: Sidebar card */}
-            <div className="w-full lg:w-[360px] flex-shrink-0 animate-[slideIn_0.6s_ease-out_0.2s_both]">
-              <div className="bg-white/90 backdrop-blur-md rounded-3xl border border-slate-200/70 shadow-xl overflow-hidden">
-                <div className={`h-1.5 bg-gradient-to-r ${gradient}`} />
-
-                {/* Universe counter */}
-                <div ref={universeCounter.ref} className="text-center py-4 px-6 border-b border-slate-100">
-                  <p className="text-[10px] font-bold uppercase tracking-[0.15em] text-slate-400 mb-1">Total Universe / Universe Rate</p>
-                  <p className="text-4xl font-bold text-slate-900 tabular-nums tracking-tight">{fmt.format(universeCounter.count)}</p>
-                </div>
-
-                {/* Quick metadata */}
-                <div className="p-5 space-y-2 text-sm border-b border-slate-100">
-                  {card.market && (
-                    <div className="flex justify-between py-1.5"><span className="text-slate-500 flex items-center gap-1.5"><Building2 className="w-3.5 h-3.5" />Market</span><span className="font-bold text-slate-800">{card.market}</span></div>
-                  )}
-                  {card.dataType && (
-                    <div className="flex justify-between py-1.5"><span className="text-slate-500 flex items-center gap-1.5"><Layers className="w-3.5 h-3.5" />Type</span><span className="font-bold text-slate-800">{card.dataType}</span></div>
-                  )}
-                  {card.source && (
-                    <div className="flex justify-between py-1.5"><span className="text-slate-500 flex items-center gap-1.5"><Database className="w-3.5 h-3.5" />Source</span><span className="font-bold text-slate-800 text-right max-w-[180px]">{card.source}</span></div>
-                  )}
-                  {card.geo && (
-                    <div className="flex justify-between py-1.5"><span className="text-slate-500 flex items-center gap-1.5"><Globe className="w-3.5 h-3.5" />Geo</span><span className="font-bold text-slate-800">{card.geo}</span></div>
-                  )}
-                  {card.genderMale != null && card.genderFemale != null && (
-                    <div className="flex justify-between py-1.5">
-                      <span className="text-slate-500 flex items-center gap-1.5"><Users className="w-3.5 h-3.5" />Gender</span>
-                      <span className="font-bold text-slate-800">{card.genderFemale}% Female {card.genderMale}% Male</span>
-                    </div>
-                  )}
-                  <div className="flex justify-between py-1.5"><span className="text-slate-500 flex items-center gap-1.5"><Calendar className="w-3.5 h-3.5" />Updated</span><span className="font-bold text-slate-800">{card.lastUpdated}</span></div>
-                  {card.frequency && (
-                    <div className="flex justify-between py-1.5"><span className="text-slate-500 flex items-center gap-1.5"><RefreshCw className="w-3.5 h-3.5" />Frequency</span><span className="font-bold text-emerald-600">{card.frequency}</span></div>
-                  )}
-                </div>
-
-                {/* CTA */}
-                <div className="p-5">
-                  <Link href="/contact" className={`flex items-center justify-center gap-2 w-full py-3.5 rounded-xl bg-gradient-to-r ${gradient} text-white font-bold text-sm shadow-lg hover:shadow-xl hover:scale-[1.02] transition-all duration-300`}>
-                    Get a Custom Quote <ArrowRight className="w-4 h-4" />
-                  </Link>
-                </div>
-              </div>
-            </div>
           </div>
         </div>
       </section>

@@ -5,6 +5,7 @@ import { Space_Grotesk, Inter, JetBrains_Mono } from "next/font/google";
 import { draftMode } from "next/headers";
 import "./globals.css";
 import LayoutChrome from "@/components/LayoutChrome";
+import AuthProvider from "@/components/AuthProvider";
 
 // Only load in draft mode — zero cost in production
 const VisualEditing = dynamic(
@@ -135,7 +136,9 @@ export default function RootLayout({
         </Script>
       </head>
       <body className="font-body text-slate-900 bg-bg-base">
-        <LayoutChrome>{children}</LayoutChrome>
+        <AuthProvider>
+          <LayoutChrome>{children}</LayoutChrome>
+        </AuthProvider>
         {/* VisualEditing must mount unconditionally so Sanity Presentation
             can complete its parent ↔ iframe handshake. Loaded lazily
             (ssr: false) so it doesn't block first paint. */}
