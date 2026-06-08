@@ -22,7 +22,8 @@ const allFieldsQuery = groq`*[_type == "dataCard"] | order(name asc) {
   brokerCommission, agencyCommission,
   exchangeAvailable, reuseAvailable,
   emailDeliveryFee, ftpDeliveryFee,
-  marketEntryDate, nextUpdateDate, frequency
+  marketEntryDate, nextUpdateDate, frequency,
+  tags
 }`;
 
 /* ── Static params ─────────────────────────────────────── */
@@ -37,15 +38,30 @@ export async function generateStaticParams() {
 
 /* ── Metadata ──────────────────────────────────────────── */
 export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
-  const cards = await sanityFetch<{ name: string; universe: number }[] | null>({
-    query: groq`*[_type == "dataCard"]{ name, universe }`,
+  const cards = await sanityFetch<{ name: string; universe: number; category?: string; tags?: string[] }[] | null>({
+    query: groq`*[_type == "dataCard"]{ name, universe, category, tags }`,
     tags: ["dataCard"],
   });
   const card = cards?.find((c) => nameToSlug(c.name) === params.slug);
   if (!card) return { title: "Data Card Not Found" };
+  // Build the keywords list: tags first (uploader-supplied) then a few defaults.
+  const baseKeywords = [
+    card.name,
+    `${card.name} data card`,
+    `${card.name} mailing list`,
+    "data card",
+    "B2B data",
+    "email marketing list",
+    "audience targeting",
+  ];
+  if (card.category) baseKeywords.push(card.category);
+  const keywords = Array.from(
+    new Set([...(card.tags || []), ...baseKeywords].map((k) => k.trim()).filter(Boolean))
+  );
   return {
     title: `${card.name} Data Card · Lorann LLC`,
     description: `Access ${new Intl.NumberFormat("en-US").format(card.universe)}+ verified ${card.name.toLowerCase()} contacts. Explore universe size, selects, and activation channels.`,
+    keywords,
   };
 }
 

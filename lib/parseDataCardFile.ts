@@ -24,6 +24,7 @@ export type ParsedDataCard = {
   genderMale?: number;
   genderFemale?: number;
   selects?: string[];
+  tags?: string[];
   minimumOrder?: number;
   minimumPrice?: number;
   netNamePercent?: number;

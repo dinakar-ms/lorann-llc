@@ -1,8 +1,6 @@
 import type { NextAuthOptions } from "next-auth";
 import type { JWT } from "next-auth/jwt";
 import AzureADProvider from "next-auth/providers/azure-ad";
-import CredentialsProvider from "next-auth/providers/credentials";
-import bcrypt from "bcryptjs";
 import { writeClient } from "@/sanity/lib/writeClient";
 
 /**
@@ -73,65 +71,104 @@ export const authOptions: NextAuthOptions = {
   },
   providers: [
     AzureADProvider({
-      clientId: process.env.AZURE_AD_CLIENT_ID || "",
-      clientSecret: process.env.AZURE_AD_CLIENT_SECRET || "",
-      tenantId: process.env.AZURE_AD_TENANT_ID || "common",
-    }),
-    CredentialsProvider({
-      name: "Email and password",
-      credentials: {
-        email: { label: "Email", type: "email" },
-        password: { label: "Password", type: "password" },
-      },
-      async authorize(credentials) {
-        if (!credentials?.email || !credentials.password) return null;
-        const user = await findUserByEmail(credentials.email.toLowerCase().trim());
-        if (!user || !user.hashedPassword) return null;
-        const ok = await bcrypt.compare(credentials.password, user.hashedPassword);
-        if (!ok) return null;
-        // Stamp lastLoginAt (best-effort)
-        writeClient
-          .patch(user._id)
-          .set({ lastLoginAt: new Date().toISOString() })
-          .commit()
-          .catch(() => {});
-        return {
-          id: user._id,
-          email: user.email,
-          name: user.name,
-          image: user.image,
-        };
-      },
+      clientId:
+        process.env.AZURE_AD_CLIENT_ID || process.env.MICROSOFT_CLIENT_ID || "",
+      clientSecret:
+        process.env.AZURE_AD_CLIENT_SECRET ||
+        process.env.MICROSOFT_CLIENT_SECRET ||
+        "",
+      tenantId:
+        process.env.AZURE_AD_TENANT_ID ||
+        process.env.MICROSOFT_TENANT_ID ||
+        "common",
     }),
   ],
   callbacks: {
     async signIn({ user, account, profile }) {
-      if (!account) return false;
-      if (account.provider === "credentials") return true;
-      if (!user.email) return false;
+      if (!account) {
+        console.error("[signIn] missing account");
+        return false;
+      }
+
+      // Azure AD exposes the email under different claims depending on the account
+      // type (work/school vs personal). Fall back through every common claim.
+      const p = (profile || {}) as {
+        email?: string;
+        preferred_username?: string;
+        upn?: string;
+        unique_name?: string;
+        name?: string;
+        oid?: string;
+        sub?: string;
+      };
+      const email =
+        user.email ||
+        p.email ||
+        p.preferred_username ||
+        p.upn ||
+        p.unique_name ||
+        null;
+
+      if (!email) {
+        console.error(
+          "[signIn] no email could be derived from Microsoft profile. Available claims:",
+          Object.keys(p)
+        );
+        return false;
+      }
+
+      // Restrict sign-in to a whitelist of email domains. Comma-separated env
+      // var, e.g. "lorannllc.com,sagaciousinfosystems.com". Defaults to
+      // lorannllc.com only.
+      const allowedDomains = (
+        process.env.AUTH_ALLOWED_DOMAINS || "lorannllc.com"
+      )
+        .split(",")
+        .map((d) => d.trim().toLowerCase())
+        .filter(Boolean);
+      const emailDomain = email.toLowerCase().split("@")[1] || "";
+      if (!allowedDomains.includes(emailDomain)) {
+        console.error(
+          `[signIn] domain ${emailDomain} is not in the allowed list:`,
+          allowedDomains
+        );
+        return "/auth/login?error=AccessDenied";
+      }
 
       try {
         await upsertOAuthUser({
-          email: user.email.toLowerCase(),
-          name: user.name ?? (profile as { name?: string })?.name ?? "",
+          email: email.toLowerCase(),
+          name: user.name ?? p.name ?? "",
           image: user.image ?? null,
           provider: account.provider as "azure-ad",
-          providerAccountId: account.providerAccountId,
+          providerAccountId:
+            account.providerAccountId || p.oid || p.sub || email,
         });
         return true;
       } catch (err) {
-        console.error("OAuth user upsert failed:", err);
+        console.error("[signIn] OAuth user upsert failed:", err);
         return false;
       }
     },
-    async jwt({ token, user }) {
-      if (user?.email && !token.sanityUserId) {
-        const sanityUser = await findUserByEmail(user.email.toLowerCase());
-        if (sanityUser) {
-          token.sanityUserId = sanityUser._id;
-          token.role = sanityUser.role || "user";
-        }
-      } else if (token.email && !token.sanityUserId) {
+    async jwt({ token, user, profile }) {
+      const p = (profile || {}) as {
+        email?: string;
+        preferred_username?: string;
+        upn?: string;
+        unique_name?: string;
+      };
+      // Best-effort: backfill the token email from OIDC claims if NextAuth's
+      // default didn't get it (common for personal Microsoft accounts).
+      if (!token.email) {
+        token.email =
+          user?.email ||
+          p.email ||
+          p.preferred_username ||
+          p.upn ||
+          p.unique_name ||
+          token.email;
+      }
+      if (token.email && !token.sanityUserId) {
         const sanityUser = await findUserByEmail(String(token.email).toLowerCase());
         if (sanityUser) {
           token.sanityUserId = sanityUser._id;

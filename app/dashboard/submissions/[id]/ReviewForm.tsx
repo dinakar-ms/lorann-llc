@@ -63,6 +63,12 @@ const PARSED_FIELDS: FieldDef[] = [
   { key: "nextUpdateDate", label: "Next update date", type: "text" },
   { key: "frequency", label: "Update frequency", type: "text" },
   { key: "selects", label: "Selects (comma separated)", type: "csv", span: 3 },
+  {
+    key: "tags",
+    label: "Tags / SEO keywords (comma separated)",
+    type: "csv",
+    span: 3,
+  },
   { key: "description", label: "Public description", type: "textarea", span: 3 },
 ];
 

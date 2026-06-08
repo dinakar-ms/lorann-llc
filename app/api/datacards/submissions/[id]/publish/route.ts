@@ -40,6 +40,7 @@ type ParsedFields = {
   frequency?: string;
   lastUpdated?: string;
   selects?: string[];
+  tags?: string[];
 };
 
 type Submission = {
@@ -90,6 +91,7 @@ const optionalKeys: (keyof ParsedFields)[] = [
   "marketEntryDate",
   "nextUpdateDate",
   "selects",
+  "tags",
 ];
 
 export async function POST(_req: NextRequest, { params }: { params: { id: string } }) {

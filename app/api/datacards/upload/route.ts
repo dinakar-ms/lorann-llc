@@ -40,6 +40,13 @@ export async function POST(req: NextRequest) {
   const category = String(form.get("category") || "other").trim();
   const universeRaw = String(form.get("universe") || "").trim();
   const universe = universeRaw ? Number(universeRaw) : undefined;
+  const tagsRaw = String(form.get("tags") || "").trim();
+  const tags = tagsRaw
+    ? tagsRaw
+        .split(/[\n,;|]/)
+        .map((t) => t.trim())
+        .filter(Boolean)
+    : [];
   const file = form.get("file");
 
   if (!title || title.length < 2) {
@@ -105,6 +112,13 @@ export async function POST(req: NextRequest) {
         ? universe
         : undefined;
 
+    // Merge user-supplied tags into parsedFields so they flow through the same
+    // edit/publish pipeline as everything else.
+    const parsedWithTags = {
+      ...parsed.fields,
+      ...(tags.length > 0 ? { tags } : {}),
+    };
+
     const doc = await writeClient.create({
       _type: "dataCardSubmission",
       title: finalTitle,
@@ -120,7 +134,7 @@ export async function POST(req: NextRequest) {
       uploaderEmail: session.user.email || "",
       status: "pending",
       submittedAt: nowIso,
-      parsedFields: parsed.fields,
+      parsedFields: parsedWithTags,
       parseWarnings: softWarnings,
     });
 

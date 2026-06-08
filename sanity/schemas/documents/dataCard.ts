@@ -208,6 +208,14 @@ export const dataCardType = defineType({
       type: "date",
     }),
     defineField({
+      name: "tags",
+      title: "Tags / SEO Keywords",
+      type: "array",
+      of: [{ type: "string" }],
+      description: "Topical tags for search/discovery; included in <meta keywords>.",
+      options: { layout: "tags" },
+    }),
+    defineField({
       name: "frequency",
       title: "Update Frequency",
       type: "string",

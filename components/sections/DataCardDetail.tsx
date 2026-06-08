@@ -45,6 +45,7 @@ export interface FullDataCard {
   marketEntryDate?: string;
   nextUpdateDate?: string;
   frequency?: string;
+  tags?: string[];
 }
 
 interface RelatedCard {
@@ -257,6 +258,20 @@ export default function DataCardDetail({ card, relatedCards, totalCards }: Props
                 {card.dataType && <> Available as <strong className="text-slate-800">{card.dataType}</strong>.</>}
                 {card.source && <> Source: {card.source}.</>}
               </p>
+
+              {/* Tags */}
+              {card.tags && card.tags.length > 0 && (
+                <div className="flex flex-wrap gap-2 mb-5 animate-[slideIn_0.5s_ease-out_0.18s_both]">
+                  {card.tags.map((t) => (
+                    <span
+                      key={t}
+                      className="inline-flex items-center px-2.5 py-1 rounded-full bg-blue-50 border border-blue-100 text-[12px] font-semibold text-blue-700"
+                    >
+                      #{t}
+                    </span>
+                  ))}
+                </div>
+              )}
 
               {/* CTA Buttons */}
               <div className="flex flex-wrap gap-3 animate-[slideIn_0.5s_ease-out_0.2s_both]">

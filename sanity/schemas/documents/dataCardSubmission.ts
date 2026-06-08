@@ -143,6 +143,12 @@ export const dataCardSubmissionType = defineType({
         { name: "frequency", title: "Frequency", type: "string" },
         { name: "lastUpdated", title: "Last Updated", type: "date" },
         { name: "selects", title: "Selects", type: "array", of: [{ type: "string" }] },
+        {
+          name: "tags",
+          title: "Tags / SEO Keywords",
+          type: "array",
+          of: [{ type: "string" }],
+        },
       ],
     }),
     defineField({
