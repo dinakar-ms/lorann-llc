@@ -24,6 +24,7 @@ import dynamic from "next/dynamic";
 import type { DataCard } from "@/components/sections/DataCardsTable";
 import { ArrowRight, ShieldCheck, Linkedin, Mail } from "lucide-react";
 import { getIcon } from "@/components/ui/IconByName";
+import { getHealthcareIllustration } from "@/components/ui/HealthcareHeroIllustrations";
 
 const DataCardsTable = dynamic(() => import("@/components/sections/DataCardsTable"), { ssr: true });
 
@@ -542,12 +543,14 @@ function renderComplianceBand(page: PageDoc) {
 function renderLeaf(page: PageDoc, slugParts: string[]) {
   const crumbs = buildCrumbs(slugParts, page.h1);
   const hasExtraSections = (page.featureGridSections && page.featureGridSections.length > 0) || (page.proseSections && page.proseSections.length > 0) || (page.faqItems && page.faqItems.length > 0);
+  const illustration = getHealthcareIllustration(slugParts);
 
   return (
     <>
       <LeafPage
         crumbs={crumbs}
         kicker={page.kicker || ""}
+        illustration={illustration ?? undefined}
         titlePlain={page.titlePlain || page.h1}
         titleAccent={page.titleAccent || ""}
         description={page.heroDescription || page.metaDescription || ""}
@@ -587,10 +590,12 @@ function renderLeaf(page: PageDoc, slugParts: string[]) {
 
 function renderHub(page: PageDoc, slugParts: string[]) {
   const crumbs = buildCrumbs(slugParts, page.h1);
+  const illustration = getHealthcareIllustration(slugParts);
 
   const hubProps: any = {
     crumbs,
     kicker: page.kicker || "",
+    illustration: illustration ?? undefined,
     titlePlain: page.titlePlain || page.h1,
     titleAccent: page.titleAccent || "",
     description: page.heroDescription || page.metaDescription || "",
@@ -639,6 +644,7 @@ function renderHub(page: PageDoc, slugParts: string[]) {
 function renderCustom(page: PageDoc, slugParts: string[], dataCards?: DataCard[]) {
   const crumbs = buildCrumbs(slugParts, page.h1);
   const kicker = page.kicker || "";
+  const illustration = getHealthcareIllustration(slugParts);
 
   return (
     <>
@@ -646,6 +652,7 @@ function renderCustom(page: PageDoc, slugParts: string[], dataCards?: DataCard[]
       <SubPageHero
         crumbs={crumbs}
         kicker={kicker}
+        illustration={illustration ?? undefined}
         title={
           page.titleAccent ? (
             <>
@@ -1026,6 +1033,7 @@ function renderFallback(page: PageDoc, slugParts: string[], finalCta: FinalCTACo
   const kicker = slugParts.length > 1
     ? slugParts[0].replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase())
     : "";
+  const illustration = getHealthcareIllustration(slugParts);
 
   return (
     <>
@@ -1035,6 +1043,7 @@ function renderFallback(page: PageDoc, slugParts: string[], finalCta: FinalCTACo
         kicker={kicker}
         title={page.h1}
         description={page.metaDescription || ""}
+        illustration={illustration ?? undefined}
       />
       <section className="py-16 lg:py-24 bg-white">
         <div className="container-custom">

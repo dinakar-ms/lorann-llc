@@ -62,6 +62,8 @@ export interface HubPageProps {
   };
   /** When true, skips the built-in FinalCTA (parent will render its own) */
   hideFinalCta?: boolean;
+  /** Optional hero illustration (passed through to SubPageHero) */
+  illustration?: ReactNode;
 }
 
 /**
@@ -80,6 +82,7 @@ export default function HubPage({
   childrenSection,
   attributesSection,
   hideFinalCta,
+  illustration,
 }: HubPageProps) {
   return (
     <>
@@ -95,6 +98,7 @@ export default function HubPage({
         description={description}
         primaryCta={primaryCta}
         secondaryCta={secondaryCta}
+        illustration={illustration}
       />
 
       {/* Intro split */}

@@ -7,6 +7,14 @@ const nextConfig = {
         protocol: "https",
         hostname: "cdn.sanity.io",
       },
+      {
+        protocol: "https",
+        hostname: "images.unsplash.com",
+      },
+      {
+        protocol: "https",
+        hostname: "plus.unsplash.com",
+      },
     ],
     // Serve modern image formats for smaller file sizes
     formats: ["image/avif", "image/webp"],

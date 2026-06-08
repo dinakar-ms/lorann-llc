@@ -8,6 +8,7 @@ import { CheckCircle2 } from "lucide-react";
 import type { ReactNode } from "react";
 import type { Crumb } from "@/components/ui/SubPageHero";
 
+
 export type Stat = { label: string; value: string };
 export type Attribute = { Icon: React.ElementType; title: string; desc: any };
 export type UseCase = { title: string; desc: any };
@@ -51,6 +52,8 @@ export interface LeafPageProps {
   backLink: { label: string; href: string };
   /** When true, skips the built-in FinalCTA (parent will render its own) */
   hideFinalCta?: boolean;
+  /** Optional hero illustration (passed through to SubPageHero) */
+  illustration?: ReactNode;
 }
 
 /**
@@ -72,6 +75,7 @@ export default function LeafPage({
   useCasesSection,
   backLink,
   hideFinalCta,
+  illustration,
 }: LeafPageProps) {
   return (
     <>
@@ -87,6 +91,7 @@ export default function LeafPage({
         description={description}
         primaryCta={{ label: "Request Counts & Sample", href: "/contact" }}
         secondaryCta={backLink}
+        illustration={illustration}
       />
 
       {/* Snapshot strip */}

@@ -13,6 +13,8 @@ interface SubPageHeroProps {
   description: any; // richText (Portable Text) or legacy string
   primaryCta?: { label: string; href: string };
   secondaryCta?: { label: string; href: string };
+  /** Optional right-side illustration (shown on lg+ screens only) */
+  illustration?: ReactNode;
 }
 
 export default function SubPageHero({
@@ -22,6 +24,7 @@ export default function SubPageHero({
   description,
   primaryCta,
   secondaryCta,
+  illustration,
 }: SubPageHeroProps) {
   return (
     <section className="relative pt-36 pb-20 lg:pt-44 lg:pb-24 overflow-hidden radial-hero dot-grid">
@@ -33,7 +36,9 @@ export default function SubPageHero({
         className="absolute -bottom-20 -right-[10%] w-[450px] h-[450px] rounded-full pointer-events-none blur-[80px] animate-orb-float-2"
         style={{ background: "rgba(34, 191, 255, 0.3)" }}
       />
+
       <div className="container-custom relative z-[5]">
+        {/* Breadcrumbs — always full width */}
         {crumbs && crumbs.length > 0 && (
           <nav
             aria-label="Breadcrumb"
@@ -62,34 +67,53 @@ export default function SubPageHero({
           </nav>
         )}
 
-        <div className="max-w-3xl">
-          <Kicker>{kicker}</Kicker>
-          <h1 className="font-display font-bold text-4xl sm:text-5xl lg:text-[4.2rem] leading-[1.04] tracking-[-0.035em] text-slate-900 mt-5 mb-5">
-            {title}
-          </h1>
-          <p className="text-lg sm:text-xl text-slate-600 max-w-2xl leading-relaxed">
-            <RichText value={description} />
-          </p>
+        {/* Content row — single col without illustration, 2-col with */}
+        <div
+          className={
+            illustration
+              ? "grid lg:grid-cols-[1fr_0.9fr] gap-12 lg:gap-20 items-center"
+              : "max-w-3xl"
+          }
+        >
+          {/* Left: text (unchanged content) */}
+          <div className={illustration ? "" : ""}>
+            <Kicker>{kicker}</Kicker>
+            <h1 className="font-display font-bold text-4xl sm:text-5xl lg:text-[4.2rem] leading-[1.04] tracking-[-0.035em] text-slate-900 mt-5 mb-5">
+              {title}
+            </h1>
+            <p className="text-lg sm:text-xl text-slate-600 max-w-2xl leading-relaxed">
+              <RichText value={description} />
+            </p>
 
-          {(primaryCta || secondaryCta) && (
-            <div className="mt-9 flex flex-wrap gap-3">
-              {primaryCta && (
-                <Link
-                  href={primaryCta.href}
-                  className="inline-flex items-center gap-2 px-6 py-3.5 bg-gradient-to-br from-blue-600 to-blue-700 text-white font-semibold text-[14.5px] rounded-xl shadow-brand hover:-translate-y-0.5 hover:shadow-[0_22px_48px_-12px_rgba(29,69,217,0.65)] transition-all"
-                >
-                  {primaryCta.label}
-                  <ArrowRight className="w-4 h-4" />
-                </Link>
-              )}
-              {secondaryCta && (
-                <Link
-                  href={secondaryCta.href}
-                  className="inline-flex items-center gap-2 px-6 py-3.5 bg-white border border-slate-200 text-slate-900 font-semibold text-[14.5px] rounded-xl shadow-sm hover:border-blue-500 hover:text-blue-700 hover:-translate-y-0.5 hover:shadow-[0_10px_22px_-8px_rgba(29,69,217,0.3)] transition-all"
-                >
-                  {secondaryCta.label}
-                </Link>
-              )}
+            {(primaryCta || secondaryCta) && (
+              <div className="mt-9 flex flex-wrap gap-3">
+                {primaryCta && (
+                  <Link
+                    href={primaryCta.href}
+                    className="inline-flex items-center gap-2 px-6 py-3.5 bg-gradient-to-br from-blue-600 to-blue-700 text-white font-semibold text-[14.5px] rounded-xl shadow-brand hover:-translate-y-0.5 hover:shadow-[0_22px_48px_-12px_rgba(29,69,217,0.65)] transition-all"
+                  >
+                    {primaryCta.label}
+                    <ArrowRight className="w-4 h-4" />
+                  </Link>
+                )}
+                {secondaryCta && (
+                  <Link
+                    href={secondaryCta.href}
+                    className="inline-flex items-center gap-2 px-6 py-3.5 bg-white border border-slate-200 text-slate-900 font-semibold text-[14.5px] rounded-xl shadow-sm hover:border-blue-500 hover:text-blue-700 hover:-translate-y-0.5 hover:shadow-[0_10px_22px_-8px_rgba(29,69,217,0.3)] transition-all"
+                  >
+                    {secondaryCta.label}
+                  </Link>
+                )}
+              </div>
+            )}
+          </div>
+
+          {/* Right: photo panel (lg+ only) */}
+          {illustration && (
+            <div className="hidden lg:flex items-center justify-center">
+              <div className="relative w-full rounded-2xl overflow-hidden border border-blue-100/40 shadow-[0_8px_40px_-12px_rgba(29,69,217,0.22)]">
+                {illustration}
+              </div>
             </div>
           )}
         </div>
