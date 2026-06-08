@@ -27,6 +27,8 @@ import { getIcon } from "@/components/ui/IconByName";
 import { getHealthcareIllustration } from "@/components/ui/HealthcareHeroIllustrations";
 import { getTechnologyIllustration } from "@/components/ui/TechnologyHeroIllustrations";
 import { getOtherIndustryIllustration } from "@/components/ui/OtherIndustryHeroIllustrations";
+import { getB2CDatabaseIllustration } from "@/components/ui/B2CDatabaseHeroIllustrations";
+import { getSolutionsIllustration } from "@/components/ui/SolutionsHeroIllustrations";
 
 const DataCardsTable = dynamic(() => import("@/components/sections/DataCardsTable"), { ssr: true });
 
@@ -545,7 +547,7 @@ function renderComplianceBand(page: PageDoc) {
 function renderLeaf(page: PageDoc, slugParts: string[]) {
   const crumbs = buildCrumbs(slugParts, page.h1);
   const hasExtraSections = (page.featureGridSections && page.featureGridSections.length > 0) || (page.proseSections && page.proseSections.length > 0) || (page.faqItems && page.faqItems.length > 0);
-  const illustration = getHealthcareIllustration(slugParts) ?? getTechnologyIllustration(slugParts) ?? getOtherIndustryIllustration(slugParts);
+  const illustration = getHealthcareIllustration(slugParts) ?? getTechnologyIllustration(slugParts) ?? getOtherIndustryIllustration(slugParts) ?? getB2CDatabaseIllustration(slugParts) ?? getSolutionsIllustration(slugParts);
 
   return (
     <>
@@ -592,7 +594,7 @@ function renderLeaf(page: PageDoc, slugParts: string[]) {
 
 function renderHub(page: PageDoc, slugParts: string[]) {
   const crumbs = buildCrumbs(slugParts, page.h1);
-  const illustration = getHealthcareIllustration(slugParts) ?? getTechnologyIllustration(slugParts) ?? getOtherIndustryIllustration(slugParts);
+  const illustration = getHealthcareIllustration(slugParts) ?? getTechnologyIllustration(slugParts) ?? getOtherIndustryIllustration(slugParts) ?? getB2CDatabaseIllustration(slugParts) ?? getSolutionsIllustration(slugParts);
 
   const hubProps: any = {
     crumbs,
@@ -646,7 +648,7 @@ function renderHub(page: PageDoc, slugParts: string[]) {
 function renderCustom(page: PageDoc, slugParts: string[], dataCards?: DataCard[]) {
   const crumbs = buildCrumbs(slugParts, page.h1);
   const kicker = page.kicker || "";
-  const illustration = getHealthcareIllustration(slugParts) ?? getTechnologyIllustration(slugParts) ?? getOtherIndustryIllustration(slugParts);
+  const illustration = getHealthcareIllustration(slugParts) ?? getTechnologyIllustration(slugParts) ?? getOtherIndustryIllustration(slugParts) ?? getB2CDatabaseIllustration(slugParts) ?? getSolutionsIllustration(slugParts);
 
   return (
     <>
@@ -1035,7 +1037,7 @@ function renderFallback(page: PageDoc, slugParts: string[], finalCta: FinalCTACo
   const kicker = slugParts.length > 1
     ? slugParts[0].replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase())
     : "";
-  const illustration = getHealthcareIllustration(slugParts) ?? getTechnologyIllustration(slugParts) ?? getOtherIndustryIllustration(slugParts);
+  const illustration = getHealthcareIllustration(slugParts) ?? getTechnologyIllustration(slugParts) ?? getOtherIndustryIllustration(slugParts) ?? getB2CDatabaseIllustration(slugParts) ?? getSolutionsIllustration(slugParts);
 
   return (
     <>
