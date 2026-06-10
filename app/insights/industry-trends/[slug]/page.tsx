@@ -17,6 +17,7 @@ import {
   ShieldCheck,
 } from "lucide-react";
 import SubPageHero from "@/components/ui/SubPageHero";
+import { getInsightsIllustration } from "@/components/ui/InsightsHeroIllustrations";
 import FinalCTA from "@/components/sections/FinalCTA";
 import RichText from "@/components/RichText";
 import ScrollReveal from "@/components/ScrollReveal";
@@ -339,6 +340,7 @@ export default async function IndustryTrendArticle({
           label: "All Industry Trends",
           href: "/insights/industry-trends",
         }}
+        illustration={getInsightsIllustration(["insights", "industry-trends", "article"])}
       />
 
       {/* Meta strip */}

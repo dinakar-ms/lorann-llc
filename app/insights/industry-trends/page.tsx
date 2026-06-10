@@ -4,6 +4,7 @@ import { ArrowRight, Clock, Tag, TrendingUp, Sparkles } from "lucide-react";
 import { groq } from "next-sanity";
 import RichText from "@/components/RichText";
 import SubPageHero from "@/components/ui/SubPageHero";
+import { getInsightsIllustration } from "@/components/ui/InsightsHeroIllustrations";
 import SectionHeader from "@/components/ui/SectionHeader";
 import FinalCTA from "@/components/sections/FinalCTA";
 import ScrollReveal from "@/components/ScrollReveal";
@@ -148,6 +149,7 @@ export default async function IndustryTrendsPage() {
         description={doc.description}
         primaryCta={doc.primaryCta}
         secondaryCta={doc.secondaryCta}
+        illustration={getInsightsIllustration(["insights", "industry-trends"])}
       />
 
       {featured && (

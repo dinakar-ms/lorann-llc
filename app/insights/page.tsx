@@ -1,4 +1,5 @@
 import SubPageHero from "@/components/ui/SubPageHero";
+import { getInsightsIllustration } from "@/components/ui/InsightsHeroIllustrations";
 import SectionHeader from "@/components/ui/SectionHeader";
 import FeatureCardGrid from "@/components/sections/FeatureCardGrid";
 import FinalCTA, { type FinalCTAContent } from "@/components/sections/FinalCTA";
@@ -96,6 +97,7 @@ export default async function InsightsPage() {
           label: doc?.heroSecondaryCta?.label ?? "See Case Studies",
           href: doc?.heroSecondaryCta?.href ?? "/insights/case-studies",
         }}
+        illustration={getInsightsIllustration(["insights"])}
       />
 
       <section className="py-20 lg:py-28 bg-white">
