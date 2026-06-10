@@ -38,7 +38,7 @@ const DataCardsTable = dynamic(() => import("@/components/sections/DataCardsTabl
 type CTA = { label?: string; href?: string } | null;
 type StatDoc = { label: string; value: string; _key?: string };
 type FeatureDoc = { icon?: string; title: string; desc: string; href?: string; badge?: string; _key?: string };
-type UseCaseDoc = { title: string; desc: string; _key?: string };
+type UseCaseDoc = { icon?: string; title: string; desc: string; _key?: string };
 type GridSectionDoc = {
   kicker?: string;
   titlePlain?: string;
@@ -573,7 +573,7 @@ function renderLeaf(page: PageDoc, slugParts: string[]) {
           titlePlain: page.attributesSectionTitle,
           titleAccent: page.attributesSectionAccent,
         }}
-        useCases={(page.useCases || []).map((u) => ({ title: u.title, desc: u.desc }))}
+        useCases={(page.useCases || []).map((u) => ({ icon: u.icon, title: u.title, desc: u.desc }))}
         useCasesSection={{
           kicker: page.useCasesSectionKicker,
           titlePlain: page.useCasesSectionTitle,

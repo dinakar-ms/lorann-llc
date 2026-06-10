@@ -5,13 +5,14 @@ import FinalCTA from "@/components/sections/FinalCTA";
 import ScrollReveal from "@/components/ScrollReveal";
 import RichText from "@/components/RichText";
 import { CheckCircle2 } from "lucide-react";
+import { getIcon } from "@/components/ui/IconByName";
 import type { ReactNode } from "react";
 import type { Crumb } from "@/components/ui/SubPageHero";
 
 
 export type Stat = { label: string; value: string };
 export type Attribute = { Icon: React.ElementType; title: string; desc: any };
-export type UseCase = { title: string; desc: any };
+export type UseCase = { icon?: string; title: string; desc: any };
 
 export interface LeafPageProps {
   /** Breadcrumb trail leading to this page */
@@ -190,20 +191,23 @@ export default function LeafPage({
             }
           />
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-5 max-w-6xl mx-auto">
-            {useCases.map((u) => (
+            {useCases.map((u) => {
+              const UseCaseIcon = getIcon(u.icon) ?? CheckCircle2;
+              return (
               <div
                 key={u.title}
                 className="reveal bg-white border border-slate-150 rounded-2xl p-7 hover:-translate-y-1 hover:shadow-lg hover:border-blue-200 transition-all duration-500 group"
               >
                 <div className="w-10 h-10 rounded-[10px] grid place-items-center mb-4 bg-gradient-to-br from-blue-50 to-slate-100 border border-slate-150 text-blue-700 group-hover:bg-gradient-to-br group-hover:from-blue-600 group-hover:to-cyan-500 group-hover:text-white group-hover:border-transparent transition-all">
-                  <CheckCircle2 className="w-5 h-5" />
+                  <UseCaseIcon className="w-5 h-5" />
                 </div>
                 <h3 className="font-display font-semibold text-lg mb-2 tracking-tight text-slate-900">
                   {u.title}
                 </h3>
                 <p className="text-slate-600 text-[14.5px] leading-relaxed"><RichText value={u.desc} /></p>
               </div>
-            ))}
+              );
+            })}
           </div>
         </div>
       </section>
