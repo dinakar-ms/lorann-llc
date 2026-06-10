@@ -286,6 +286,24 @@ export const pageType = defineType({
         {
           type: "object",
           fields: [
+            defineField({
+              name: "icon",
+              title: "Icon",
+              type: "string",
+              options: {
+                list: [
+                  "Activity","Award","Banknote","BarChart3","Brain","Briefcase",
+                  "Building","Building2","Calendar","Car","Code","CreditCard",
+                  "Crosshair","Cross","Cpu","Database","Eye","Factory","FileText",
+                  "Globe","Globe2","Heart","HeartPulse","Home","Hospital","Landmark",
+                  "Layers","Lock","MapPin","Monitor","Network","Phone","Pill","Play",
+                  "Plug","Radio","RefreshCw","Rocket","Scale","Search","Server",
+                  "ServerCog","Shield","ShieldCheck","ShoppingBag","ShoppingCart",
+                  "Sparkles","Stethoscope","Tag","Target","TrendingUp","Truck",
+                  "UserCheck","Users","Users2","Wrench","Zap",
+                ].map((v) => ({ title: v, value: v })),
+              },
+            }),
             defineField({ name: "title", title: "Title", type: "string" }),
             defineField({ name: "desc", title: "Description", type: "richText" }),
           ],
