@@ -296,12 +296,19 @@ function DataAssetsCascade({
   const col3Items = l2Anchor?.children ?? [];
   const col4Items = l3Anchor?.children ?? [];
 
+  const show2 = col2Items.length > 0;
+  const show3 = col3Items.length > 0;
+  const show4 = col4Items.length > 0;
+
+  // When all col2 items are leaves (e.g. B2C Database), fill the empty right area with descriptions
+  const col2AllLeaves = show2 && col2Items.every(n => !n.children?.length);
+
   return (
     <div
-      className="bg-white border border-slate-200 rounded-[22px] shadow-2xl p-5 xl:p-6 flex overflow-x-auto"
-      style={{ maxWidth: "min(calc(100vw - 32px), 1140px)", scrollbarWidth: "none" }}
+      className="bg-white border border-slate-200 rounded-[22px] shadow-2xl p-5 xl:p-6 flex items-start overflow-x-auto"
+      style={{ maxWidth: "min(calc(100vw - 32px), 1140px)", minHeight: "340px", scrollbarWidth: "none" }}
     >
-      {/* Column 1 — Data Assets (always visible) */}
+      {/* Column 1 — always visible */}
       <NavColumn
         title="Data Assets"
         items={DATA_ASSETS_TREE}
@@ -312,10 +319,10 @@ function DataAssetsCascade({
         isPrimary
       />
 
-      {/* Column 2 — Sub-categories of selected L1 */}
-      {col2Items.length > 0 && (
-        <>
-          <div className="w-px bg-slate-150 mx-4 self-stretch flex-shrink-0" />
+      {/* Divider + Column 2 — always in DOM, opacity-hidden when empty */}
+      <div className={`w-px bg-slate-150 mx-4 self-stretch flex-shrink-0 transition-opacity duration-150 ${show2 ? "opacity-100" : "opacity-0"}`} />
+      <div className={`flex-shrink-0 w-[200px] xl:w-[218px] transition-opacity duration-150 ${show2 ? "opacity-100" : "opacity-0 pointer-events-none"}`}>
+        {show2 && (
           <NavColumn
             title={l1Anchor.label}
             items={col2Items}
@@ -324,45 +331,123 @@ function DataAssetsCascade({
             onHover={handleL2}
             onLinkClick={onLinkClick}
           />
-        </>
-      )}
+        )}
+      </div>
 
-      {/* Column 3 — Children of selected L2 */}
-      {col3Items.length > 0 && (
+      {/* When B2C (all leaves): fill the right area with a 2-col descriptions grid */}
+      {col2AllLeaves ? (
         <>
-          <div className="w-px bg-slate-150 mx-4 self-stretch flex-shrink-0" />
-          <NavColumn
-            title={l2Anchor?.label ?? ""}
-            items={col3Items}
-            activeHref={l3Hover}
-            anchorHref={l3Anchor?.href ?? null}
-            onHover={handleL3}
-            onLinkClick={onLinkClick}
-          />
-        </>
-      )}
-
-      {/* Column 4 — Leaves of selected L3 (HC specialty leaves / ERP items etc.) */}
-      {col4Items.length > 0 && (
-        <>
-          <div className="w-px bg-slate-150 mx-4 self-stretch flex-shrink-0" />
-          <div className="flex flex-col flex-shrink-0 w-[200px] xl:w-[218px]">
-            <ColHeader label={l3Anchor?.label ?? ""} />
-            <ul className="flex flex-col gap-0.5">
-              {col4Items.map((leaf) => (
-                <li key={leaf.href}>
+          <div className="w-px bg-slate-200 mx-4 self-stretch flex-shrink-0" />
+          <div className="flex-shrink-0 w-[420px] xl:w-[460px]">
+            <ColHeader label="Browse by Category" />
+            <div className="grid grid-cols-2 gap-x-3 gap-y-0.5">
+              {col2Items.map((node) => {
+                const Icon = node.Icon;
+                const isActive = l2Hover === node.href;
+                return (
                   <Link
-                    href={leaf.href}
+                    key={node.href}
+                    href={node.href}
+                    onMouseEnter={() => handleL2(node)}
                     onClick={onLinkClick}
-                    className="flex items-center gap-2 px-2.5 py-2 rounded-xl text-[13.5px] font-semibold text-slate-700 hover:text-blue-700 hover:bg-blue-50 transition-colors group/lf"
+                    className={`flex items-start gap-2.5 px-2.5 py-2 rounded-xl transition-colors group/b2c ${isActive ? "bg-blue-50" : "hover:bg-blue-50"}`}
                   >
-                    <span className="truncate flex-1">{leaf.label}</span>
-                    <ArrowUpRight className="w-3 h-3 text-slate-300 group-hover/lf:text-blue-500 flex-shrink-0" />
+                    {Icon && (
+                      <span className={`w-7 h-7 rounded-lg grid place-items-center flex-shrink-0 mt-0.5 transition-colors ${isActive ? "bg-blue-600 text-white" : "bg-slate-100 text-blue-600 group-hover/b2c:bg-blue-600 group-hover/b2c:text-white"}`}>
+                        <Icon className="w-3.5 h-3.5" />
+                      </span>
+                    )}
+                    <span className="min-w-0">
+                      <span className={`block font-semibold text-[13px] leading-tight transition-colors ${isActive ? "text-blue-700" : "text-slate-800 group-hover/b2c:text-blue-700"}`}>
+                        {node.label}
+                      </span>
+                      {node.desc && (
+                        <span className="block text-[11px] text-slate-500 mt-0.5 leading-snug">
+                          {node.desc}
+                        </span>
+                      )}
+                    </span>
                   </Link>
-                </li>
-              ))}
-            </ul>
+                );
+              })}
+            </div>
           </div>
+        </>
+      ) : (
+        <>
+          {/* Divider + Column 3 */}
+          <div className={`w-px bg-slate-150 mx-4 self-stretch flex-shrink-0 transition-opacity duration-150 ${show3 ? "opacity-100" : "opacity-0"}`} />
+
+          {show3 && col3Items.every(n => !n.children?.length) ? (
+            /* Col3 items are all leaves — spread them into a 2-col grid, skip col4 */
+            <div className="flex-shrink-0 w-[420px] xl:w-[460px]">
+              <ColHeader label={l2Anchor?.label ?? ""} />
+              <div className="grid grid-cols-2 gap-x-3 gap-y-0.5">
+                {col3Items.map((node) => {
+                  const Icon = node.Icon;
+                  const isActive = l3Hover === node.href;
+                  return (
+                    <Link
+                      key={node.href}
+                      href={node.href}
+                      onMouseEnter={() => handleL3(node)}
+                      onClick={onLinkClick}
+                      className={`flex items-center gap-2 px-2.5 py-2 rounded-xl transition-colors group/lf3 ${isActive ? "bg-blue-50" : "hover:bg-blue-50"}`}
+                    >
+                      {Icon && (
+                        <span className={`w-6 h-6 rounded-md grid place-items-center flex-shrink-0 transition-colors ${isActive ? "bg-blue-600 text-white" : "bg-slate-100 text-blue-600 group-hover/lf3:bg-blue-600 group-hover/lf3:text-white"}`}>
+                          <Icon className="w-3 h-3" />
+                        </span>
+                      )}
+                      <span className={`truncate flex-1 font-semibold text-[13px] transition-colors ${isActive ? "text-blue-700" : "text-slate-700 group-hover/lf3:text-blue-700"}`}>
+                        {node.label}
+                      </span>
+                      <ArrowUpRight className="w-3 h-3 text-slate-300 group-hover/lf3:text-blue-500 flex-shrink-0" />
+                    </Link>
+                  );
+                })}
+              </div>
+            </div>
+          ) : (
+            <>
+              <div className={`flex-shrink-0 w-[200px] xl:w-[218px] transition-opacity duration-150 ${show3 ? "opacity-100" : "opacity-0 pointer-events-none"}`}>
+                {show3 && (
+                  <NavColumn
+                    title={l2Anchor?.label ?? ""}
+                    items={col3Items}
+                    activeHref={l3Hover}
+                    anchorHref={l3Anchor?.href ?? null}
+                    onHover={handleL3}
+                    onLinkClick={onLinkClick}
+                  />
+                )}
+              </div>
+
+              {/* Divider + Column 4 — always in DOM, opacity-hidden when empty */}
+              <div className={`w-px bg-slate-150 mx-4 self-stretch flex-shrink-0 transition-opacity duration-150 ${show4 ? "opacity-100" : "opacity-0"}`} />
+              <div className={`flex-shrink-0 w-[200px] xl:w-[218px] transition-opacity duration-150 ${show4 ? "opacity-100" : "opacity-0 pointer-events-none"}`}>
+                {show4 && (
+                  <>
+                    <ColHeader label={l3Anchor?.label ?? ""} />
+                    <ul className="flex flex-col gap-0.5">
+                      {col4Items.map((leaf) => (
+                        <li key={leaf.href}>
+                          <Link
+                            href={leaf.href}
+                            onClick={onLinkClick}
+                            className="flex items-center gap-2 px-2.5 py-2 rounded-xl text-[13.5px] font-semibold text-slate-700 hover:text-blue-700 hover:bg-blue-50 transition-colors group/lf"
+                          >
+                            <span className="truncate flex-1">{leaf.label}</span>
+                            <ArrowUpRight className="w-3 h-3 text-slate-300 group-hover/lf:text-blue-500 flex-shrink-0" />
+                          </Link>
+                        </li>
+                      ))}
+                    </ul>
+                  </>
+                )}
+              </div>
+            </>
+          )}
         </>
       )}
     </div>
@@ -497,6 +582,7 @@ export default function Navbar() {
     return () => window.removeEventListener("keydown", onKey);
   }, []);
 
+
   const isActive = (href: string) => {
     if (href === "/") return pathname === "/";
     return pathname === href || pathname.startsWith(href + "/");
@@ -528,9 +614,7 @@ export default function Navbar() {
                   <li
                     key={item.label}
                     className="relative"
-                    onMouseEnter={() => {
-                      if (hasDropdown) setOpenDesktopMenu(item.label);
-                    }}
+                    onMouseEnter={() => { if (hasDropdown) setOpenDesktopMenu(item.label); }}
                     onMouseLeave={() => setOpenDesktopMenu(null)}
                   >
                     <Link
