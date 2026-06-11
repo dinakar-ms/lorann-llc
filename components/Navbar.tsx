@@ -27,7 +27,6 @@ import {
   MapPin,
 } from "lucide-react";
 import Logo from "./Logo";
-import NavAuthChip from "./NavAuthChip";
 import { DATA_ASSETS_TREE, type DataAssetNode } from "./nav-data";
 
 type NavChild = {
@@ -668,7 +667,6 @@ export default function Navbar() {
             </ul>
 
             <div className="hidden lg:flex items-center gap-2 xl:gap-3 flex-shrink-0">
-              <NavAuthChip />
               <Link
                 href="/contact"
                 className="inline-flex items-center gap-1.5 xl:gap-2 px-4 xl:px-5 py-2.5 bg-gradient-to-br from-blue-600 to-blue-700 text-white text-[13.5px] xl:text-[14px] font-semibold rounded-xl shadow-brand hover:-translate-y-0.5 hover:shadow-[0_22px_48px_-12px_rgba(29,69,217,0.65)] transition-all"
