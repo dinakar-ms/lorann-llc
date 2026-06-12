@@ -114,7 +114,7 @@ export default function Footer() {
               </a>
               <span className="flex items-start gap-2.5 text-[13.5px] text-slate-700">
                 <MapPin className="w-[15px] h-[15px] text-blue-600 flex-shrink-0 mt-0.5" />
-                382 NE 191st St, PMB 463398, Miami, Florida 33179-3899
+                382 NE 191st St, Ste 463398, Miami, Florida 33179-3899
               </span>
             </div>
           </div>

@@ -928,7 +928,7 @@ export default function Navbar() {
                 </a>
                 <div className="flex items-start gap-2.5">
                   <MapPin className="w-4 h-4 text-blue-600 flex-shrink-0 mt-0.5" />
-                  <span>382 NE 191st St, PMB 463398, Miami, FL 33179</span>
+                  <span>382 NE 191st St, Ste 463398, Miami, FL 33179</span>
                 </div>
               </div>
             </div>
