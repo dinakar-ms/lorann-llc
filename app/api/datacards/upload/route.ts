@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { writeClient } from "@/sanity/lib/writeClient";
-import { parseDataCardFile } from "@/lib/parseDataCardFile";
+import { parseDataCardFile, PARSER_VERSION } from "@/lib/parseDataCardFile";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -181,6 +181,7 @@ export async function POST(req: NextRequest) {
       id: doc._id,
       title: finalTitle,
       warnings: softWarnings,
+      parserVersion: PARSER_VERSION,
       message: `Submitted for review.${
         softWarnings.length > 0 ? ` ${softWarnings.length} field(s) need admin attention.` : ""
       }`,

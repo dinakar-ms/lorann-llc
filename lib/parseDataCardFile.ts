@@ -1,3 +1,7 @@
+// Parser version sentinel — bump this to force Vercel to rebuild this module
+// instead of serving a cached compilation. Visible in logs via PARSER_VERSION.
+export const PARSER_VERSION = "v2-segments-extras-rtf-fix";
+
 import * as XLSX from "xlsx";
 
 /**

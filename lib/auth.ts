@@ -1,6 +1,8 @@
 import type { NextAuthOptions } from "next-auth";
 import type { JWT } from "next-auth/jwt";
 import AzureADProvider from "next-auth/providers/azure-ad";
+import CredentialsProvider from "next-auth/providers/credentials";
+import bcrypt from "bcryptjs";
 import { writeClient } from "@/sanity/lib/writeClient";
 
 /**
@@ -82,6 +84,32 @@ export const authOptions: NextAuthOptions = {
         process.env.MICROSOFT_TENANT_ID ||
         "common",
     }),
+    CredentialsProvider({
+      name: "Email and password",
+      credentials: {
+        email: { label: "Email", type: "email" },
+        password: { label: "Password", type: "password" },
+      },
+      async authorize(credentials) {
+        if (!credentials?.email || !credentials.password) return null;
+        const email = credentials.email.toLowerCase().trim();
+        const user = await findUserByEmail(email);
+        if (!user || !user.hashedPassword) return null;
+        const ok = await bcrypt.compare(credentials.password, user.hashedPassword);
+        if (!ok) return null;
+        writeClient
+          .patch(user._id)
+          .set({ lastLoginAt: new Date().toISOString() })
+          .commit()
+          .catch(() => {});
+        return {
+          id: user._id,
+          email: user.email,
+          name: user.name,
+          image: user.image,
+        };
+      },
+    }),
   ],
   callbacks: {
     async signIn({ user, account, profile }) {
@@ -89,6 +117,10 @@ export const authOptions: NextAuthOptions = {
         console.error("[signIn] missing account");
         return false;
       }
+
+      // Credentials provider: authorize() already verified the user against
+      // Sanity, so we trust it and skip the OAuth domain check.
+      if (account.provider === "credentials") return true;
 
       // Azure AD exposes the email under different claims depending on the account
       // type (work/school vs personal). Fall back through every common claim.
