@@ -2,7 +2,11 @@ import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { writeClient } from "@/sanity/lib/writeClient";
-import { parseDataCardFile, PARSER_VERSION } from "@/lib/parseDataCardFile";
+import {
+  parseDataCardFile,
+  PARSER_VERSION,
+  extractTextFromRtf,
+} from "@/lib/parseDataCardFile";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -86,22 +90,48 @@ export async function POST(req: NextRequest) {
   try {
     const buf = Buffer.from(await file.arrayBuffer());
 
-    // ── Diagnostic: capture exactly what the parser saw so we can compare
-    // local vs. production behavior post-hoc.
+    // ── Diagnostic: capture exactly what the parser saw + what the RTF text
+    // extractor produced. Stored on the submission as a "parserDiag" warning
+    // so we can read it from Sanity without needing Vercel logs.
+    let extractedTextLength = -1;
+    let extractedFirstLines: string[] = [];
+    let extractTextError = "";
+    if (ext === "rtf") {
+      try {
+        const text = extractTextFromRtf(buf);
+        extractedTextLength = text.length;
+        extractedFirstLines = text
+          .split(/\r?\n/)
+          .map((l) => l.replace(/[\t ]+/g, " ").trim())
+          .filter((l) => l.length > 0)
+          .slice(0, 12)
+          .map((l) => l.slice(0, 120));
+      } catch (err) {
+        extractTextError = (err as Error)?.message || String(err);
+      }
+    }
     const diag = {
       fileName: file.name,
       fileSize: buf.length,
       fileType: file.type,
       fileExt: ext,
-      // First 200 bytes as a hex preview — tells us if RTF/PDF magic bytes are correct
       head200Hex: buf.subarray(0, 200).toString("hex"),
-      // First 200 bytes interpreted as UTF-8 — quickly shows if it looks like RTF
-      head200Utf8: buf.subarray(0, 200).toString("utf8").replace(/[\x00-\x1f]/g, "."),
-      // Approximate text-extraction sanity check for RTF
-      hasSegmentsLiteral: ext === "rtf" ? buf.toString("utf8").includes("SEGMENTS") : null,
-      hasRtfHeader: ext === "rtf" ? buf.toString("utf8").startsWith("{\\rtf") : null,
+      head200Utf8: buf
+        .subarray(0, 200)
+        .toString("utf8")
+        .replace(/[\x00-\x1f]/g, "."),
+      hasSegmentsLiteral:
+        ext === "rtf" ? buf.toString("utf8").includes("SEGMENTS") : null,
+      hasRtfHeader:
+        ext === "rtf" ? buf.toString("utf8").startsWith("{\\rtf") : null,
+      // RTF text-extraction observability:
+      extractedTextLength,
+      extractedFirstLines,
+      extractTextError,
+      parserVersion: PARSER_VERSION,
+      nodeVersion: process.version,
     };
-    console.log("[upload DIAG]", JSON.stringify(diag).slice(0, 1000));
+    console.log("[upload DIAG]", JSON.stringify(diag).slice(0, 3000));
 
     // Parse uploaded file (xlsx/xls/csv/pdf/docx/rtf supported; .doc unsupported).
     // Parsing is best-effort: missing/blank fields just mean admin fills them in at approval.
@@ -190,7 +220,13 @@ export async function POST(req: NextRequest) {
       status: "pending",
       submittedAt: nowIso,
       parsedFields: parsedWithTags,
-      parseWarnings: softWarnings,
+      // Append the diagnostic snapshot to parseWarnings so it can be read
+      // from Sanity directly. Temporary — strip once prod is fixed.
+      parseWarnings: [
+        ...softWarnings,
+        `__DIAG__ extractedTextLength=${extractedTextLength} extractTextError="${extractTextError}" parserVersion=${PARSER_VERSION} nodeVersion=${process.version} hasRtfHeader=${diag.hasRtfHeader} hasSegmentsLiteral=${diag.hasSegmentsLiteral}`,
+        `__DIAG_LINES__ ${JSON.stringify(extractedFirstLines)}`,
+      ],
     });
 
     return NextResponse.json({

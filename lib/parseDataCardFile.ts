@@ -888,7 +888,7 @@ function stripGroup(s: string, i: number): number {
 }
 
 /** Strip RTF control codes to plain text (no library — RTF is well-defined enough). */
-function extractTextFromRtf(buf: Buffer): string {
+export function extractTextFromRtf(buf: Buffer): string {
   let s = buf.toString("utf8");
 
   // 1) Remove destination groups that contain non-textual data (pictures, font
