@@ -136,6 +136,18 @@ export default function ReviewForm({ submission }: { submission: ReviewSubmissio
   }
   const [parsedVals, setParsedVals] = useState<Record<string, string>>(initialParsed);
 
+  // Editable additional fields — anything from parsedFields.extraFields plus
+  // whatever the user types in via the "Add field" button below the form.
+  type ExtraRow = { label: string; value: string };
+  const initialExtras: ExtraRow[] = Array.isArray(
+    (submission.parsedFields as Record<string, unknown>)?.extraFields
+  )
+    ? ((submission.parsedFields as Record<string, unknown>).extraFields as ExtraRow[]).map(
+        (e) => ({ label: e?.label || "", value: e?.value || "" })
+      )
+    : [];
+  const [extras, setExtras] = useState<ExtraRow[]>(initialExtras);
+
   async function save(): Promise<boolean> {
     setMsg(null);
     setBusy("save");
@@ -144,6 +156,17 @@ export default function ReviewForm({ submission }: { submission: ReviewSubmissio
       const v = fromFormValue(parsedVals[f.key], f.type);
       if (v !== undefined) parsedBody[f.key] = v;
     }
+    // Preserve segments (parser-extracted, not edited here yet) so they aren't
+    // wiped on save.
+    const submissionParsed = submission.parsedFields as Record<string, unknown> | undefined;
+    if (Array.isArray(submissionParsed?.segments)) {
+      parsedBody.segments = submissionParsed!.segments;
+    }
+    // Collect the dynamic extra-fields rows. Drop any with an empty label.
+    const cleanExtras = extras
+      .map((e) => ({ label: (e.label || "").trim(), value: (e.value || "").trim() }))
+      .filter((e) => e.label.length > 0);
+    if (cleanExtras.length) parsedBody.extraFields = cleanExtras;
     // Also mirror the dataCard's name/description/category/universe to the
     // submission top-level fields so list views stay in sync.
     const topBody = {
@@ -221,8 +244,10 @@ export default function ReviewForm({ submission }: { submission: ReviewSubmissio
         setMsg({ kind: "err", text: json.message || "Unpublish failed" });
         return;
       }
-      setMsg({ kind: "ok", text: "Unpublished." });
-      router.refresh();
+      setMsg({ kind: "ok", text: "Unpublished. Reloading…" });
+      // Hard reload picks up the server-side state immediately and clears any
+      // stale client state about the published dataCard.
+      window.location.reload();
     } catch {
       setMsg({ kind: "err", text: "Network error" });
     } finally {
@@ -360,6 +385,64 @@ export default function ReviewForm({ submission }: { submission: ReviewSubmissio
               onChange={(v) => setParsedVals((s) => ({ ...s, [f.key]: v }))}
             />
           ))}
+        </div>
+      </section>
+
+      <section className="bg-white border border-slate-200 rounded-2xl p-6 lg:p-8">
+        <h2 className="font-display font-semibold text-lg text-slate-900 mb-1">
+          Additional fields
+        </h2>
+        <p className="text-sm text-slate-600 mb-5">
+          Any other labeled data the parser found in your file, plus anything you want to
+          add manually. These render on the public data card&apos;s details section.
+        </p>
+        <div className="space-y-3">
+          {extras.length === 0 && (
+            <p className="text-sm text-slate-500 italic">No additional fields yet.</p>
+          )}
+          {extras.map((row, i) => (
+            <div
+              key={`extra-${i}`}
+              className="grid grid-cols-1 md:grid-cols-[1fr_1fr_auto] gap-3 items-start"
+            >
+              <input
+                type="text"
+                placeholder="Label (e.g. NextMark ID)"
+                value={row.label}
+                onChange={(e) => {
+                  const v = e.target.value;
+                  setExtras((arr) => arr.map((r, j) => (j === i ? { ...r, label: v } : r)));
+                }}
+                className="w-full px-3 py-2.5 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:border-blue-500 focus:ring-2 focus:ring-blue-100 outline-none text-slate-900 text-sm"
+              />
+              <input
+                type="text"
+                placeholder="Value"
+                value={row.value}
+                onChange={(e) => {
+                  const v = e.target.value;
+                  setExtras((arr) => arr.map((r, j) => (j === i ? { ...r, value: v } : r)));
+                }}
+                className="w-full px-3 py-2.5 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:border-blue-500 focus:ring-2 focus:ring-blue-100 outline-none text-slate-900 text-sm"
+              />
+              <button
+                type="button"
+                onClick={() =>
+                  setExtras((arr) => arr.filter((_, j) => j !== i))
+                }
+                className="px-3 py-2.5 rounded-xl border border-red-200 text-red-700 hover:bg-red-50 text-xs font-semibold"
+              >
+                Remove
+              </button>
+            </div>
+          ))}
+          <button
+            type="button"
+            onClick={() => setExtras((arr) => [...arr, { label: "", value: "" }])}
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-xl border border-dashed border-slate-300 text-slate-700 hover:border-blue-400 hover:text-blue-700 text-sm font-semibold transition-colors"
+          >
+            + Add field
+          </button>
         </div>
       </section>
 

@@ -208,6 +208,48 @@ export const dataCardType = defineType({
       type: "date",
     }),
     defineField({
+      name: "segments",
+      title: "Segments",
+      type: "array",
+      description: "Each row from the data card's SEGMENTS table: a sub-population with its own count and rate.",
+      of: [
+        {
+          type: "object",
+          fields: [
+            { name: "label", title: "Label", type: "string" },
+            { name: "count", title: "Count", type: "number" },
+            { name: "rate", title: "Rate ($/M)", type: "number" },
+          ],
+          preview: {
+            select: { title: "label", count: "count", rate: "rate" },
+            prepare({ title, count, rate }) {
+              const countStr = typeof count === "number" ? count.toLocaleString() : "?";
+              const rateStr = typeof rate === "number" ? `$${rate}/M` : "—";
+              return { title: `${title || "(unlabeled)"} — ${countStr} @ ${rateStr}` };
+            },
+          },
+        },
+      ],
+    }),
+    defineField({
+      name: "extraFields",
+      title: "Additional Fields",
+      type: "array",
+      description: "Any other labeled data point from the source file. label + value, free-form.",
+      of: [
+        {
+          type: "object",
+          fields: [
+            { name: "label", title: "Label", type: "string" },
+            { name: "value", title: "Value", type: "string" },
+          ],
+          preview: {
+            select: { title: "label", subtitle: "value" },
+          },
+        },
+      ],
+    }),
+    defineField({
       name: "tags",
       title: "Tags / SEO Keywords",
       type: "array",

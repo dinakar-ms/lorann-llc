@@ -17,6 +17,7 @@ export default function ManageCardRow({ card }: { card: ManageCard }) {
   const router = useRouter();
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState<string | null>(null);
+  const [removed, setRemoved] = useState(false);
 
   async function onDelete() {
     if (
@@ -37,15 +38,20 @@ export default function ManageCardRow({ card }: { card: ManageCard }) {
       const json = await res.json();
       if (!res.ok || !json.success) {
         setErr(json.message || "Delete failed");
+        setBusy(false);
         return;
       }
+      // Optimistic: hide the row immediately so the user sees instant feedback.
+      // router.refresh() syncs the rest of the page state with the server.
+      setRemoved(true);
       router.refresh();
     } catch {
       setErr("Network error");
-    } finally {
       setBusy(false);
     }
   }
+
+  if (removed) return null;
 
   const slug = toSlug(card.name);
 

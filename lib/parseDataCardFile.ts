@@ -24,6 +24,8 @@ export type ParsedDataCard = {
   genderMale?: number;
   genderFemale?: number;
   selects?: string[];
+  segments?: { label: string; count?: number; rate?: number }[];
+  extraFields?: { label: string; value: string }[];
   tags?: string[];
   minimumOrder?: number;
   minimumPrice?: number;
@@ -144,6 +146,9 @@ const KNOWN_SECTIONS = new Set([
   "NET NAME ARRANGEMENTS",
   "EXCHANGES",
   "COMMISSIONS",
+  "DATE",
+  "ADDITIONAL CHARGES",
+  "NET NAME POLICY",
 ]);
 
 /** A row is a section header only if col A matches a known section name AND
@@ -339,15 +344,53 @@ function parseNextMark(rows: unknown[][]): { fields: ParsedDataCard; warnings: s
     return sections.find((s) => want.includes(s.name.toUpperCase().trim()));
   };
 
-  /* SEGMENTS — postal/phone/email counts + CPMs (cols E, F) */
+  /* SEGMENTS — supports both NextMark column layouts:
+   *   (a) Excel-like:  label | … | … | … | count | rate
+   *   (b) Single line:  "425,000 Total Universe /Universe Rate $80.00/M"
+   * The count-first form is common in RTF/PDF NextMark exports.
+   *
+   * Every row (universe, postal/phone/email, product variants) goes into
+   * fields.segments, and the well-known ones also populate the named fields.
+   */
   const segments = find("SEGMENTS");
   if (segments) {
+    const collected: NonNullable<ParsedDataCard["segments"]> = [];
     for (let i = segments.start; i < segments.end; i++) {
-      const label = normalizeLabel(getCell(rows[i], 0));
-      const countRaw = getCellRaw(rows[i], 4);
-      const rateRaw = getCellRaw(rows[i], 5);
-      const count = parseNumber(countRaw);
-      const rate = parseRateOrPercent(rateRaw);
+      const colA = getCell(rows[i], 0);
+      if (!colA) continue;
+
+      // Try column layout first (Excel-style)
+      const countRawE = getCellRaw(rows[i], 4);
+      const rateRawF = getCellRaw(rows[i], 5);
+      let rawLabel = colA;
+      let count = parseNumber(countRawE);
+      let rate = parseRateOrPercent(rateRawF);
+
+      // If no count in column E, try the single-line "<count> <label> $<rate>/M" pattern
+      if (count === undefined) {
+        const m = colA.match(
+          /^([\d,]+)\s+(.+?)(?:\s+\$([\d.]+)\s*\/\s*[MmFf])?\s*$/
+        );
+        if (m) {
+          count = parseNumber(m[1]);
+          rawLabel = m[2].trim();
+          if (m[3]) rate = parseRateOrPercent(m[3]);
+        }
+      }
+
+      if (count === undefined && rate === undefined) continue;
+
+      // Skip the row that's just the column header line "Segment Name … Count Rate"
+      const normalized = normalizeLabel(rawLabel);
+      if (normalized === "segment name" || normalized.includes("count rate")) continue;
+
+      collected.push({
+        label: rawLabel,
+        ...(count !== undefined ? { count } : {}),
+        ...(rate !== undefined ? { rate } : {}),
+      });
+
+      const label = normalized;
       if (label.includes("total universe") || label.includes("universe rate")) {
         if (count !== undefined) fields.universe = count;
       } else if (label.includes("postal records") || label === "postal") {
@@ -361,8 +404,8 @@ function parseNextMark(rows: unknown[][]): { fields: ParsedDataCard; warnings: s
         if (rate !== undefined) fields.emailCpm = rate;
       }
     }
+    if (collected.length) fields.segments = collected;
     if (fields.universe === undefined) {
-      // Fallback: use postalRecords as universe when total wasn't given separately.
       fields.universe = fields.postalRecords ?? fields.emailAddresses ?? fields.phoneNumbers;
     }
   }
@@ -420,8 +463,11 @@ function parseNextMark(rows: unknown[][]): { fields: ParsedDataCard; warnings: s
     if (list.length) fields.selects = list;
   }
 
-  /* GENDER / CAN SELECT — handles both narrative string ("74% FEMALE 10% MALE")
-     and Male/Female key/value pairs (col A label, col B fraction or %). */
+  /* GENDER / CAN SELECT — handles every common layout:
+     - Narrative: "74% FEMALE 10% MALE"
+     - Standalone: "42% MALE" then "58% FEMALE"
+     - KV pairs: Male | 0.42 ; Female | 0.58
+  */
   const gender = find("GENDER");
   if (gender) {
     for (let i = gender.start; i < gender.end; i++) {
@@ -432,20 +478,31 @@ function parseNextMark(rows: unknown[][]): { fields: ParsedDataCard; warnings: s
       const a = getCell(rows[i], 0).trim();
       const b = getCellRaw(rows[i], 1);
       const labelLower = a.toLowerCase();
-      // Narrative line like "74% FEMALE 10% MALE"
-      const m = a.match(/(\d+(?:\.\d+)?)\s*%\s*female.*?(\d+(?:\.\d+)?)\s*%\s*male/i);
-      if (m) {
-        fields.genderFemale = Number(m[1]);
-        fields.genderMale = Number(m[2]);
+      // Narrative variants in one line
+      const fm = a.match(/(\d+(?:\.\d+)?)\s*%\s*female.*?(\d+(?:\.\d+)?)\s*%\s*male/i);
+      if (fm) {
+        fields.genderFemale = Number(fm[1]);
+        fields.genderMale = Number(fm[2]);
         continue;
       }
-      const m2 = a.match(/(\d+(?:\.\d+)?)\s*%\s*male.*?(\d+(?:\.\d+)?)\s*%\s*female/i);
-      if (m2) {
-        fields.genderMale = Number(m2[1]);
-        fields.genderFemale = Number(m2[2]);
+      const mf = a.match(/(\d+(?:\.\d+)?)\s*%\s*male.*?(\d+(?:\.\d+)?)\s*%\s*female/i);
+      if (mf) {
+        fields.genderMale = Number(mf[1]);
+        fields.genderFemale = Number(mf[2]);
         continue;
       }
-      // Male / Female single-key rows (fraction or percent)
+      // Standalone "42% MALE" / "58% FEMALE"
+      const standaloneMale = a.match(/(\d+(?:\.\d+)?)\s*%\s*male\b/i);
+      if (standaloneMale && !a.match(/female/i)) {
+        fields.genderMale = Number(standaloneMale[1]);
+        continue;
+      }
+      const standaloneFemale = a.match(/(\d+(?:\.\d+)?)\s*%\s*female\b/i);
+      if (standaloneFemale) {
+        fields.genderFemale = Number(standaloneFemale[1]);
+        continue;
+      }
+      // Male / Female single-key rows
       if (labelLower === "male") {
         const n = parseNumber(b);
         if (n !== undefined) fields.genderMale = n <= 1 ? Math.round(n * 1000) / 10 : n;
@@ -456,12 +513,16 @@ function parseNextMark(rows: unknown[][]): { fields: ParsedDataCard; warnings: s
     }
   }
 
-  /* MINIMUM ORDER */
+  /* MINIMUM ORDER — supports:
+     - "Minimum Quantity | 5000" (Excel col-A label, col-B value)
+     - Bare "10,000" line under the section (use first number found)
+  */
   const minOrder = find("MINIMUM ORDER");
   if (minOrder) {
     for (let i = minOrder.start; i < minOrder.end; i++) {
       if (isSectionHeader(rows[i])) break;
-      const label = normalizeLabel(getCell(rows[i], 0));
+      const colA = getCell(rows[i], 0);
+      const label = normalizeLabel(colA);
       const val = getCellRaw(rows[i], 1);
       if (label === "minimum quantity") {
         const n = parseNumber(val);
@@ -469,23 +530,60 @@ function parseNextMark(rows: unknown[][]): { fields: ParsedDataCard; warnings: s
       } else if (label === "minimum price") {
         const n = parseNumber(val);
         if (n !== undefined) fields.minimumPrice = n;
+      } else if (fields.minimumOrder === undefined && /^[\d,]+$/.test(colA)) {
+        // Bare number row — first one is the minimum order qty
+        const n = parseNumber(colA);
+        if (n !== undefined) fields.minimumOrder = n;
       }
     }
   }
 
-  /* ADDRESSING — Email / FTP delivery fees */
+  /* ADDRESSING — Email / FTP delivery fees. Supports both:
+     - "Email | $25.00/F"  (col-B value)
+     - "EMAIL $50.00/F"     (combined in col A)
+  */
   const addressing = find("ADDRESSING");
   if (addressing) {
     for (let i = addressing.start; i < addressing.end; i++) {
       if (isSectionHeader(rows[i])) break;
-      const label = normalizeLabel(getCell(rows[i], 0));
-      const val = getCellRaw(rows[i], 1);
+      const colA = getCell(rows[i], 0);
+      const colB = getCellRaw(rows[i], 1);
+      // Combined "LABEL $value/F" pattern
+      const combo = colA.match(/^(EMAIL|FTP)\b\s+(\$?[\d.]+\s*\/?\s*[MFmf]?)/i);
+      if (combo) {
+        const n = parseRateOrPercent(combo[2]);
+        if (n !== undefined) {
+          if (combo[1].toUpperCase() === "EMAIL") fields.emailDeliveryFee = n;
+          else fields.ftpDeliveryFee = n;
+        }
+        continue;
+      }
+      const label = normalizeLabel(colA);
       if (label === "email") {
-        const n = parseRateOrPercent(val);
+        const n = parseRateOrPercent(colB);
         if (n !== undefined) fields.emailDeliveryFee = n;
       } else if (label === "ftp") {
-        const n = parseRateOrPercent(val);
+        const n = parseRateOrPercent(colB);
         if (n !== undefined) fields.ftpDeliveryFee = n;
+      }
+    }
+  }
+
+  /* DATE — RTF NextMark format with "UPDATED MM/DD/YYYY" + "CONFIRMED MM/DD/YYYY" */
+  const dateSection = find("DATE");
+  if (dateSection) {
+    for (let i = dateSection.start; i < dateSection.end; i++) {
+      if (isSectionHeader(rows[i])) break;
+      const colA = getCell(rows[i], 0);
+      const m = colA.match(/^(UPDATED|CONFIRMED|MARKET ENTRY|NEXT UPDATE|LAST UPDATE)\s+(.+?)$/i);
+      if (m) {
+        const tag = m[1].toUpperCase();
+        const d = parseDate(m[2]);
+        if (d) {
+          if (tag === "UPDATED" || tag === "LAST UPDATE") fields.lastUpdated = d;
+          else if (tag === "MARKET ENTRY") fields.marketEntryDate = d;
+          else if (tag === "NEXT UPDATE") fields.nextUpdateDate = d;
+        }
       }
     }
   }
@@ -582,7 +680,50 @@ function parseNextMark(rows: unknown[][]): { fields: ParsedDataCard; warnings: s
     }
   }
 
-  /* DESCRIPTION — collected from col D (index 3) across the MEDIA TYPE → UNIT OF SALE band */
+  /* DESCRIPTION — RTF/text format: lines between DESCRIPTION header and the
+     next known section. Also harvest selects from a "Selectable by:" sub-list. */
+  const descSection = find("DESCRIPTION");
+  if (descSection) {
+    const descLines: string[] = [];
+    const selectsFromDesc: string[] = [];
+    let inSelectableBy = false;
+    for (let i = descSection.start; i < descSection.end; i++) {
+      if (isSectionHeader(rows[i])) break;
+      const v = getCell(rows[i], 0);
+      if (!v) {
+        inSelectableBy = false;
+        continue;
+      }
+      if (/^Selectable by\s*:?\s*$/i.test(v) || /^Select(?:able)?(?:\s+by)?\s*:$/i.test(v)) {
+        inSelectableBy = true;
+        descLines.push(v);
+        continue;
+      }
+      if (inSelectableBy) {
+        // A valid select is a short Title-Case label (1-4 words, each starting
+        // with a capital letter). Anything else ends the list.
+        const trimmed = v.replace(/[:;.]+$/, "").trim();
+        const words = trimmed.split(/\s+/);
+        const isTitleCase = words.every((w) => /^[A-Z][A-Za-z/&-]*$/.test(w));
+        if (words.length > 4 || !isTitleCase || words.length < 1) {
+          inSelectableBy = false;
+        } else {
+          selectsFromDesc.push(trimmed);
+        }
+      }
+      descLines.push(v);
+    }
+    if (descLines.length) {
+      const joined = descLines.join(" ").replace(/\s+/g, " ").trim();
+      if (joined.length > 20 && !fields.description) fields.description = joined;
+    }
+    if (selectsFromDesc.length && !fields.selects?.length) {
+      fields.selects = selectsFromDesc;
+    }
+  }
+
+  /* DESCRIPTION — Excel layout fallback: collected from col D across the
+     MEDIA TYPE → UNIT OF SALE band */
   const descStart = media?.start ?? 8;
   const descEndSection = sections.find(
     (s) => s.start > descStart && (s.name === "UNIT OF SALE INFORMATION" || s.name === "AVERAGE INCOME")
@@ -600,6 +741,71 @@ function parseNextMark(rows: unknown[][]): { fields: ParsedDataCard; warnings: s
       .trim();
     if (joined.length > 20) fields.description = joined;
   }
+
+  /* EXTRA FIELDS — labeled rows in any section that aren't already mapped to
+     a known field. The user can edit them on the Review page and they show
+     up on the public data card. */
+  const extras: { label: string; value: string }[] = [];
+  // Sections whose contents are already fully consumed by the structured fields
+  // above; skip them to avoid duplicating known data into extras.
+  const consumedSections = new Set([
+    "SEGMENTS",
+    "DESCRIPTION",
+    "MEDIA TYPE",
+    "GEOGRAPHY",
+    "SOURCE",
+    "SELECTS",
+    "GENDER",
+    "CAN SELECT",
+    "MINIMUM ORDER",
+    "ADDRESSING",
+    "DATE",
+    "MAINTENANCE",
+    "DATA CARD MAINTENANCE",
+    "NET NAME ARRANGEMENTS",
+    "EXCHANGES",
+    "REUSE",
+    "COMMISSIONS",
+  ]);
+  const seenExtraLabels = new Set<string>();
+  for (const section of sections) {
+    if (consumedSections.has(section.name)) continue;
+    for (let i = section.start; i < section.end; i++) {
+      if (isSectionHeader(rows[i])) break;
+      const colA = getCell(rows[i], 0).trim();
+      const colB = getCell(rows[i], 1).trim();
+      if (!colA) continue;
+
+      let label: string | undefined;
+      let value: string | undefined;
+
+      // Pattern 1: clean label + value in two columns
+      if (colB) {
+        label = colA;
+        value = colB;
+      } else {
+        // Pattern 2: "Label  Value" combined in one cell, last token is value
+        // (covers "Cancellation Fee  $125.00/F", "UPDATED 01/16/2026", etc.)
+        const m = colA.match(/^(.+?)\s{1,}([$\d][^\s].*?)$/);
+        if (m && m[1].trim().length > 1) {
+          label = m[1].trim();
+          value = m[2].trim();
+        }
+      }
+
+      if (!label || !value) continue;
+
+      // De-dup by lowercase label so the same row doesn't appear twice
+      const key = `${section.name}|${label.toLowerCase()}`;
+      if (seenExtraLabels.has(key)) continue;
+      seenExtraLabels.add(key);
+
+      // Prefix with section so the user knows context
+      const fullLabel = `${section.name} · ${label}`;
+      extras.push({ label: fullLabel, value });
+    }
+  }
+  if (extras.length) fields.extraFields = extras;
 
   return { fields, warnings };
 }
@@ -635,16 +841,21 @@ function looksLikeNextMark(rows: unknown[][]): boolean {
  * ────────────────────────────────────────────────────────────────────────── */
 
 async function extractTextFromPdf(buf: Buffer): Promise<string> {
-  // pdf-parse exposes a default in CJS and named exports in ESM. Handle both.
-  const mod = (await import("pdf-parse")) as unknown as {
-    default?: (data: Buffer) => Promise<{ text: string }>;
+  // pdf-parse v2 exposes a `PDFParse` class with an async `getText()` method.
+  // The constructor accepts `{ data }` where data is a Uint8Array/Buffer.
+  const { PDFParse } = (await import("pdf-parse")) as unknown as {
+    PDFParse: new (options: { data: Uint8Array | Buffer }) => {
+      getText: () => Promise<{ text?: string }>;
+      destroy: () => Promise<void>;
+    };
   };
-  const pdfParse =
-    typeof mod.default === "function"
-      ? mod.default
-      : (mod as unknown as (data: Buffer) => Promise<{ text: string }>);
-  const result = await pdfParse(buf);
-  return result.text || "";
+  const parser = new PDFParse({ data: new Uint8Array(buf) });
+  try {
+    const result = await parser.getText();
+    return (result && result.text) || "";
+  } finally {
+    await parser.destroy().catch(() => {});
+  }
 }
 
 async function extractTextFromDocx(buf: Buffer): Promise<string> {
@@ -653,30 +864,91 @@ async function extractTextFromDocx(buf: Buffer): Promise<string> {
   return result.value || "";
 }
 
+/** Strip an RTF group (and any nested groups) starting at index `i`, where
+ *  s[i] === "{". Returns the index immediately after the closing "}". */
+function stripGroup(s: string, i: number): number {
+  let depth = 0;
+  for (; i < s.length; i++) {
+    const c = s[i];
+    if (c === "\\" && i + 1 < s.length) {
+      i++;
+      continue;
+    }
+    if (c === "{") depth++;
+    else if (c === "}") {
+      depth--;
+      if (depth === 0) return i + 1;
+    }
+  }
+  return s.length;
+}
+
 /** Strip RTF control codes to plain text (no library — RTF is well-defined enough). */
 function extractTextFromRtf(buf: Buffer): string {
   let s = buf.toString("utf8");
-  // Convert escaped Unicode like 舗? → real character
+
+  // 1) Remove destination groups that contain non-textual data (pictures, font
+  // tables, styles, embedded objects, etc.) — properly accounting for nested
+  // braces. These leak binary noise into the text otherwise.
+  const destinations = [
+    "pict", "fonttbl", "colortbl", "stylesheet", "info", "generator",
+    "userprops", "object", "rsidtbl", "themedata", "latentstyles",
+    "datastore", "listtable", "listoverridetable", "revtbl", "ud",
+    "footnote", "endnote", "field", "shp", "shppict", "nonshppict",
+  ];
+  const dre = new RegExp(`^\\{\\\\(?:\\*\\\\)?(?:${destinations.join("|")})\\b`);
+  let out = "";
+  for (let i = 0; i < s.length; ) {
+    if (s[i] === "{") {
+      // Look at what kind of group this is
+      const tail = s.slice(i, i + 64);
+      if (dre.test(tail)) {
+        i = stripGroup(s, i);
+        continue;
+      }
+    }
+    out += s[i];
+    i++;
+  }
+  s = out;
+
+  // 2) Unicode escapes (\uNNNN?)
   s = s.replace(/\\u(-?\d+)\??/g, (_m, code: string) => {
     const n = parseInt(code, 10);
     if (Number.isNaN(n)) return "";
     return String.fromCharCode(n < 0 ? n + 65536 : n);
   });
-  // Convert hex escapes like \'e9 → character
+  // 3) Hex escapes (\'e9)
   s = s.replace(/\\'([0-9a-fA-F]{2})/g, (_m, hex: string) =>
     String.fromCharCode(parseInt(hex, 16))
   );
-  // Convert paragraph / line break control words to newlines
+  // 4) Paragraph / line break / tab → real whitespace
   s = s.replace(/\\par\b\s?/g, "\n");
   s = s.replace(/\\line\b\s?/g, "\n");
   s = s.replace(/\\tab\b\s?/g, "\t");
-  // Remove RTF groups containing fonts/colors/etc — anything starting with \fonttbl, \colortbl, \stylesheet, \info, \*\...
-  s = s.replace(/\{\\\*\\[a-zA-Z]+[^{}]*\}/g, "");
-  s = s.replace(/\{\\(?:fonttbl|colortbl|stylesheet|info|generator|userprops|pict)[^{}]*\}/g, "");
-  // Remove remaining control words (\word optional negative arg)
+  // 5) Strip any remaining control words
   s = s.replace(/\\[a-zA-Z]+-?\d* ?/g, "");
-  // Remove remaining braces
   s = s.replace(/[{}]/g, "");
+
+  // 6) Final per-line cleanup: drop hex-noise leftovers (long hex/alnum runs)
+  s = s
+    .split(/\r?\n/)
+    .filter((line) => {
+      const t = line.trim();
+      if (!t) return true; // keep blank lines for paragraph spacing
+      // Pure hex runs > 24 chars are almost certainly leaked image data
+      if (/^[0-9a-fA-F]{24,}$/.test(t)) return false;
+      // Single-letter "marker" lines RTF leaves behind
+      if (/^[*\\]+$/.test(t)) return false;
+      // Lines that are just RTF escape artifacts like "\*", "\*.\*.\*", etc.
+      if (/^[\\*().\d ]+$/.test(t) && t.length < 30) return false;
+      // Schema URLs / XML declarations
+      if (/^\\\*?https?:/.test(t)) return false;
+      if (/^\\\*?\?xml /.test(t)) return false;
+      return true;
+    })
+    .join("\n");
+
   return s;
 }
 
@@ -713,6 +985,24 @@ function textToRows(text: string): unknown[][] {
     const colon = line.match(/^([^:]{2,60}?):\s+(.+)$/);
     if (colon) {
       rows.push([colon[1].trim(), colon[2].trim(), "", "", "", ""]);
+      continue;
+    }
+
+    // "Count  Label  Rate" — NextMark RTF/PDF format
+    // e.g. "103,000  L 1 Month Auto Insurance  $85.00/M"
+    const tripleCountFirst = line.match(
+      /^([\d,]+)\s{1,}(.+?)\s{1,}(\$[\d.]+\s*\/\s*[MmFf])\s*$/
+    );
+    if (tripleCountFirst) {
+      // Pack to mirror Excel column layout: [label, "", "", "", count, rate]
+      rows.push([
+        tripleCountFirst[2].trim(),
+        "",
+        "",
+        "",
+        tripleCountFirst[1],
+        tripleCountFirst[3],
+      ]);
       continue;
     }
 
@@ -813,12 +1103,45 @@ export async function parseDataCardFile(
       };
     }
 
-    // First line that isn't a section header is likely the title.
-    const firstNonHeader = text
+    // Find the data card name by scanning the first ~30 lines for a clean title.
+    // Skip junk: section headers, URL/schema lines, lines that are all symbols/digits,
+    // generic "NextMark Data Card Recommendations" headers, etc.
+    const candidateLines = text
       .split(/\r?\n/)
       .map((l) => l.trim())
-      .find((l) => l && !KNOWN_SECTIONS.has(l.toUpperCase()));
-    if (firstNonHeader) fields.name = firstNonHeader;
+      .filter((l) => l.length > 0)
+      .slice(0, 30);
+
+    const isLikelyTitle = (l: string): boolean => {
+      if (KNOWN_SECTIONS.has(l.toUpperCase())) return false;
+      if (l.length < 5 || l.length > 200) return false;
+      if (/^[\\\/*().\d\s]+$/.test(l)) return false; // pure punctuation/digits
+      if (/^\\\*?https?:/i.test(l)) return false; // URLs
+      if (/wordml|xmlns|schemas\.microsoft/i.test(l)) return false; // XML noise
+      if (/^NextMark Data Card Recommendations/i.test(l)) return false;
+      if (/^Times New Roman|^Arial|^Calibri|^Cambria/i.test(l)) return false;
+      // Title shouldn't be a font list ("X;Y;Z;")
+      if ((l.match(/;/g)?.length ?? 0) >= 2) return false;
+      // Must have at least one letter
+      if (!/[A-Za-z]/.test(l)) return false;
+      return true;
+    };
+
+    let titleLine: string | undefined;
+    for (const line of candidateLines) {
+      if (!isLikelyTitle(line)) continue;
+      // Strip trailing NextMark page metadata like " 06/10/2026 NM683694 Page"
+      let cleaned = line
+        .replace(/\s+\d{1,2}\/\d{1,2}\/\d{2,4}\s+NM\d+.*$/i, "")
+        .replace(/\s+NM\d+\s*Page\s*\d*$/i, "")
+        .replace(/\s+Page\s*\d+$/i, "")
+        .trim();
+      // Must still have at least 2 words after stripping
+      if (cleaned.split(/\s+/).length < 2) continue;
+      titleLine = cleaned;
+      break;
+    }
+    if (titleLine) fields.name = titleLine;
 
     const rows = textToRows(text);
     if (textLooksLikeNextMark(rows)) {

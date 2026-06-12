@@ -144,6 +144,35 @@ export const dataCardSubmissionType = defineType({
         { name: "lastUpdated", title: "Last Updated", type: "date" },
         { name: "selects", title: "Selects", type: "array", of: [{ type: "string" }] },
         {
+          name: "segments",
+          title: "Segments",
+          type: "array",
+          of: [
+            {
+              type: "object",
+              fields: [
+                { name: "label", title: "Label", type: "string" },
+                { name: "count", title: "Count", type: "number" },
+                { name: "rate", title: "Rate ($/M)", type: "number" },
+              ],
+            },
+          ],
+        },
+        {
+          name: "extraFields",
+          title: "Additional Fields",
+          type: "array",
+          of: [
+            {
+              type: "object",
+              fields: [
+                { name: "label", title: "Label", type: "string" },
+                { name: "value", title: "Value", type: "string" },
+              ],
+            },
+          ],
+        },
+        {
           name: "tags",
           title: "Tags / SEO Keywords",
           type: "array",

@@ -40,6 +40,8 @@ type ParsedFields = {
   frequency?: string;
   lastUpdated?: string;
   selects?: string[];
+  segments?: { label: string; count?: number; rate?: number }[];
+  extraFields?: { label: string; value: string }[];
   tags?: string[];
 };
 
@@ -91,6 +93,8 @@ const optionalKeys: (keyof ParsedFields)[] = [
   "marketEntryDate",
   "nextUpdateDate",
   "selects",
+  "segments",
+  "extraFields",
   "tags",
 ];
 
@@ -137,7 +141,21 @@ export async function POST(_req: NextRequest, { params }: { params: { id: string
     for (const key of optionalKeys) {
       const v = parsed[key];
       if (v !== undefined && v !== null && v !== "") {
-        optionalSet[key] = v;
+        // Sanity requires every object in an array to have a unique `_key`.
+        // Decorate before writing.
+        if (key === "segments" && Array.isArray(v)) {
+          optionalSet[key] = v.map((s, i) => ({
+            _key: (s as { _key?: string })._key || `seg-${i}`,
+            ...(s as Record<string, unknown>),
+          }));
+        } else if (key === "extraFields" && Array.isArray(v)) {
+          optionalSet[key] = v.map((s, i) => ({
+            _key: (s as { _key?: string })._key || `ef-${i}`,
+            ...(s as Record<string, unknown>),
+          }));
+        } else {
+          optionalSet[key] = v;
+        }
       } else {
         optionalUnset.push(key);
       }

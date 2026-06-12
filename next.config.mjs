@@ -22,6 +22,10 @@ const nextConfig = {
   experimental: {
     // Tree-shake icon libraries — only include the icons actually imported
     optimizePackageImports: ["lucide-react", "@sanity/icons"],
+    // Don't bundle these into Server Components / API routes. They register
+    // global polyfills that break under webpack's module rewriting
+    // (manifests as "Object.defineProperty called on non-object").
+    serverComponentsExternalPackages: ["pdf-parse", "pdfjs-dist", "mammoth"],
   },
 };
 

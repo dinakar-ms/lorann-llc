@@ -100,9 +100,30 @@ export async function POST(req: NextRequest) {
 
     const nowIso = new Date().toISOString();
 
-    // Prefer the parsed name/universe/description/category over the form values,
-    // since the spreadsheet is the source of truth.
-    const finalTitle = parsed.fields.name || title;
+    // Reject obvious junk that the text-based parser sometimes picks up from
+    // file styling/metadata (e.g. "Times New Roman;Arial;" from font specs).
+    function looksLikeJunkName(s: string | undefined): boolean {
+      if (!s) return true;
+      const t = s.trim();
+      if (t.length < 3) return true;
+      // Comma/semicolon-separated font list pattern
+      if (/^([A-Z][A-Za-z ]+[;,]\s*){2,}$/.test(t)) return true;
+      if (/Times New Roman|Arial|Helvetica|Calibri|Verdana/i.test(t) && /[;,]/.test(t))
+        return true;
+      // CSS-ish lines
+      if (/^font[- ]?(family|size|weight)/i.test(t)) return true;
+      return false;
+    }
+
+    // The uploaded file is the source of truth. Parsed values win whenever the
+    // parser was able to extract them (and they pass the junk filter). The
+    // upload form's title/description/universe are fallbacks for fields the
+    // parser couldn't read. Users can correct anything on the Review & Publish
+    // page before publishing.
+    const cleanParsedName = looksLikeJunkName(parsed.fields.name)
+      ? undefined
+      : parsed.fields.name;
+    const finalTitle = cleanParsedName || title || "Untitled Data Card";
     const finalDescription = parsed.fields.description || description || undefined;
     const finalCategory = category;
     const finalUniverse =
@@ -112,10 +133,27 @@ export async function POST(req: NextRequest) {
         ? universe
         : undefined;
 
-    // Merge user-supplied tags into parsedFields so they flow through the same
-    // edit/publish pipeline as everything else.
+    // Sanity requires each item in an array of objects to carry a unique `_key`.
+    // Decorate the parsed segments / extra fields with stable index-based keys
+    // before write.
+    const segmentsWithKeys = parsed.fields.segments?.map((s, i) => ({
+      _key: `seg-${i}`,
+      ...s,
+    }));
+    const extraFieldsWithKeys = parsed.fields.extraFields?.map((f, i) => ({
+      _key: `ef-${i}`,
+      ...f,
+    }));
+
+    // Sync the effective values into parsedFields so the publish step (which
+    // reads from parsedFields) produces the dataCard the user actually expects.
     const parsedWithTags = {
       ...parsed.fields,
+      name: finalTitle,
+      ...(finalDescription !== undefined ? { description: finalDescription } : {}),
+      ...(finalUniverse !== undefined ? { universe: finalUniverse } : {}),
+      ...(segmentsWithKeys ? { segments: segmentsWithKeys } : {}),
+      ...(extraFieldsWithKeys ? { extraFields: extraFieldsWithKeys } : {}),
       ...(tags.length > 0 ? { tags } : {}),
     };
 

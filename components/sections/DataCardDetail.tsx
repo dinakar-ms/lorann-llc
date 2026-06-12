@@ -46,6 +46,8 @@ export interface FullDataCard {
   nextUpdateDate?: string;
   frequency?: string;
   tags?: string[];
+  segments?: { label?: string; count?: number; rate?: number }[];
+  extraFields?: { label?: string; value?: string }[];
 }
 
 interface RelatedCard {
@@ -311,31 +313,66 @@ export default function DataCardDetail({ card, relatedCards, totalCards }: Props
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-slate-100">
-                    <tr className="hover:bg-blue-50/40 transition-colors">
-                      <td className="py-3 px-5 font-bold text-slate-900 tabular-nums">{fmt.format(card.universe)}</td>
-                      <td className="py-3 px-5 text-slate-700">Total Universe / Base Rate</td>
-                      <td className="py-3 px-5 text-right font-semibold text-slate-800">{card.postalCpm ? fmtCurrency(card.postalCpm) + "/M" : "—"}</td>
-                    </tr>
-                    {card.postalRecords != null && (
-                      <tr className="hover:bg-blue-50/40 transition-colors">
-                        <td className="py-3 px-5 font-bold text-slate-900 tabular-nums">{fmt.format(card.postalRecords)}</td>
-                        <td className="py-3 px-5 text-slate-700 flex items-center gap-2"><Printer className="w-3.5 h-3.5 text-slate-400" />Postal Records</td>
-                        <td className="py-3 px-5 text-right font-semibold text-slate-800">{card.postalCpm ? fmtCurrency(card.postalCpm) + "/M" : "—"}</td>
-                      </tr>
-                    )}
-                    {card.phoneNumbers != null && (
-                      <tr className="hover:bg-blue-50/40 transition-colors">
-                        <td className="py-3 px-5 font-bold text-slate-900 tabular-nums">{fmt.format(card.phoneNumbers)}</td>
-                        <td className="py-3 px-5 text-slate-700 flex items-center gap-2"><Phone className="w-3.5 h-3.5 text-slate-400" />Phone Numbers</td>
-                        <td className="py-3 px-5 text-right font-semibold text-slate-800">{card.phoneCpm ? fmtCurrency(card.phoneCpm) + "/M" : "—"}</td>
-                      </tr>
-                    )}
-                    {card.emailAddresses != null && (
-                      <tr className="hover:bg-blue-50/40 transition-colors">
-                        <td className="py-3 px-5 font-bold text-slate-900 tabular-nums">{fmt.format(card.emailAddresses)}</td>
-                        <td className="py-3 px-5 text-slate-700 flex items-center gap-2"><Mail className="w-3.5 h-3.5 text-slate-400" />Email Addresses</td>
-                        <td className="py-3 px-5 text-right font-semibold text-slate-800">{card.emailCpm ? fmtCurrency(card.emailCpm) + "/M" : "—"}</td>
-                      </tr>
+                    {card.segments && card.segments.length > 0 ? (
+                      // DYNAMIC PATH — render exactly what was parsed from the file.
+                      // Every segment from the data card document is shown verbatim,
+                      // whatever its label happens to be.
+                      card.segments.map((s, i) => {
+                        const label = s.label || "—";
+                        const labelLower = label.toLowerCase();
+                        // Pick a sensible icon for the well-known segment types
+                        let Icon: React.ElementType | null = null;
+                        if (labelLower.includes("postal")) Icon = Printer;
+                        else if (labelLower.includes("phone")) Icon = Phone;
+                        else if (labelLower.includes("email")) Icon = Mail;
+                        return (
+                          <tr key={`seg-${i}`} className="hover:bg-blue-50/40 transition-colors">
+                            <td className="py-3 px-5 font-bold text-slate-900 tabular-nums">
+                              {typeof s.count === "number" ? fmt.format(s.count) : "—"}
+                            </td>
+                            <td className="py-3 px-5 text-slate-700">
+                              <span className="flex items-center gap-2">
+                                {Icon && <Icon className="w-3.5 h-3.5 text-slate-400" />}
+                                {label}
+                              </span>
+                            </td>
+                            <td className="py-3 px-5 text-right font-semibold text-slate-800">
+                              {typeof s.rate === "number" ? fmtCurrency(s.rate) + "/M" : "—"}
+                            </td>
+                          </tr>
+                        );
+                      })
+                    ) : (
+                      // FALLBACK — legacy cards without a segments array. Use the
+                      // standalone universe/postal/phone/email fields.
+                      <>
+                        <tr className="hover:bg-blue-50/40 transition-colors">
+                          <td className="py-3 px-5 font-bold text-slate-900 tabular-nums">{fmt.format(card.universe)}</td>
+                          <td className="py-3 px-5 text-slate-700">Total Universe / Base Rate</td>
+                          <td className="py-3 px-5 text-right font-semibold text-slate-800">{card.postalCpm ? fmtCurrency(card.postalCpm) + "/M" : "—"}</td>
+                        </tr>
+                        {card.postalRecords != null && (
+                          <tr className="hover:bg-blue-50/40 transition-colors">
+                            <td className="py-3 px-5 font-bold text-slate-900 tabular-nums">{fmt.format(card.postalRecords)}</td>
+                            <td className="py-3 px-5 text-slate-700 flex items-center gap-2"><Printer className="w-3.5 h-3.5 text-slate-400" />Postal Records</td>
+                            <td className="py-3 px-5 text-right font-semibold text-slate-800">{card.postalCpm ? fmtCurrency(card.postalCpm) + "/M" : "—"}</td>
+                          </tr>
+                        )}
+                        {card.phoneNumbers != null && (
+                          <tr className="hover:bg-blue-50/40 transition-colors">
+                            <td className="py-3 px-5 font-bold text-slate-900 tabular-nums">{fmt.format(card.phoneNumbers)}</td>
+                            <td className="py-3 px-5 text-slate-700 flex items-center gap-2"><Phone className="w-3.5 h-3.5 text-slate-400" />Phone Numbers</td>
+                            <td className="py-3 px-5 text-right font-semibold text-slate-800">{card.phoneCpm ? fmtCurrency(card.phoneCpm) + "/M" : "—"}</td>
+                          </tr>
+                        )}
+                        {card.emailAddresses != null && (
+                          <tr className="hover:bg-blue-50/40 transition-colors">
+                            <td className="py-3 px-5 font-bold text-slate-900 tabular-nums">{fmt.format(card.emailAddresses)}</td>
+                            <td className="py-3 px-5 text-slate-700 flex items-center gap-2"><Mail className="w-3.5 h-3.5 text-slate-400" />Email Addresses</td>
+                            <td className="py-3 px-5 text-right font-semibold text-slate-800">{card.emailCpm ? fmtCurrency(card.emailCpm) + "/M" : "—"}</td>
+                          </tr>
+                        )}
+                      </>
                     )}
                   </tbody>
                 </table>
@@ -354,6 +391,32 @@ export default function DataCardDetail({ card, relatedCards, totalCards }: Props
                       <p key={i} className={i === 0 ? "text-slate-700" : ""}>{p}</p>
                     ))}
                   </div>
+                </div>
+              )}
+
+              {/* ADDITIONAL DETAILS — fully dynamic key/value list */}
+              {card.extraFields && card.extraFields.length > 0 && (
+                <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden animate-[slideIn_0.4s_ease-out_0.18s_both]">
+                  <div className="flex items-center px-5 py-3 border-b border-slate-100 bg-slate-50/60">
+                    <h2 className="font-display font-bold text-sm text-slate-700 uppercase tracking-wider flex items-center gap-2">
+                      <FileText className="w-4 h-4 text-slate-400" /> Additional Details
+                    </h2>
+                  </div>
+                  <dl className="divide-y divide-slate-100 text-sm">
+                    {card.extraFields
+                      .filter((f) => f.label && f.value)
+                      .map((f, i) => (
+                        <div
+                          key={`extra-${i}`}
+                          className="grid grid-cols-[1fr_2fr] gap-4 px-5 py-3"
+                        >
+                          <dt className="text-slate-500 font-medium">{f.label}</dt>
+                          <dd className="text-slate-800 font-semibold break-words">
+                            {f.value}
+                          </dd>
+                        </div>
+                      ))}
+                  </dl>
                 </div>
               )}
 

@@ -5,6 +5,10 @@ import { sanityFetch } from "@/sanity/lib/fetch";
 import DataCardDetail from "@/components/sections/DataCardDetail";
 import type { FullDataCard } from "@/components/sections/DataCardDetail";
 
+// Always render fresh: deleted/unpublished cards immediately 404 instead of
+// serving the stale static HTML. revalidateTag still busts the fetch cache.
+export const dynamic = "force-dynamic";
+
 /* ── Helpers ───────────────────────────────────────────── */
 function nameToSlug(name: string) {
   return name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
@@ -23,7 +27,9 @@ const allFieldsQuery = groq`*[_type == "dataCard"] | order(name asc) {
   exchangeAvailable, reuseAvailable,
   emailDeliveryFee, ftpDeliveryFee,
   marketEntryDate, nextUpdateDate, frequency,
-  tags
+  tags,
+  segments,
+  extraFields
 }`;
 
 /* ── Static params ─────────────────────────────────────── */
