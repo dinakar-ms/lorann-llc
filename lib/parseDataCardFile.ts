@@ -868,23 +868,27 @@ async function extractTextFromDocx(buf: Buffer): Promise<string> {
   return result.value || "";
 }
 
-/** Strip an RTF group (and any nested groups) starting at index `i`, where
- *  s[i] === "{". Returns the index immediately after the closing "}". */
-function stripGroup(s: string, i: number): number {
+/** Find the matching `}` for the `{` at position `start`, accounting for
+ *  escaped braces (`\{` / `\}`) and nested groups. Returns the index after
+ *  the closing `}`, or s.length if unbalanced. */
+function findGroupEnd(s: string, start: number): number {
   let depth = 0;
-  for (; i < s.length; i++) {
-    const c = s[i];
-    if (c === "\\" && i + 1 < s.length) {
-      i++;
+  const len = s.length;
+  for (let i = start; i < len; i++) {
+    const code = s.charCodeAt(i);
+    // Backslash — skip the next char so escaped braces don't affect depth
+    if (code === 0x5c /* \ */) {
+      i += 1;
       continue;
     }
-    if (c === "{") depth++;
-    else if (c === "}") {
-      depth--;
+    if (code === 0x7b /* { */) {
+      depth += 1;
+    } else if (code === 0x7d /* } */) {
+      depth -= 1;
       if (depth === 0) return i + 1;
     }
   }
-  return s.length;
+  return len;
 }
 
 /** Strip RTF control codes to plain text (no library — RTF is well-defined enough). */
@@ -892,29 +896,65 @@ export function extractTextFromRtf(buf: Buffer): string {
   let s = buf.toString("utf8");
 
   // 1) Remove destination groups that contain non-textual data (pictures, font
-  // tables, styles, embedded objects, etc.) — properly accounting for nested
-  // braces. These leak binary noise into the text otherwise.
+  // tables, styles, embedded objects, etc.). Uses a global regex with indexOf-
+  // style scanning rather than char-by-char iteration so V8 optimization
+  // behaves consistently across environments.
   const destinations = [
-    "pict", "fonttbl", "colortbl", "stylesheet", "info", "generator",
-    "userprops", "object", "rsidtbl", "themedata", "latentstyles",
-    "datastore", "listtable", "listoverridetable", "revtbl", "ud",
-    "footnote", "endnote", "field", "shp", "shppict", "nonshppict",
+    "pict",
+    "fonttbl",
+    "colortbl",
+    "stylesheet",
+    "info",
+    "generator",
+    "userprops",
+    "object",
+    "rsidtbl",
+    "themedata",
+    "latentstyles",
+    "datastore",
+    "listtable",
+    "listoverridetable",
+    "revtbl",
+    "ud",
+    "footnote",
+    "endnote",
+    "field",
+    "shp",
+    "shppict",
+    "nonshppict",
   ];
-  const dre = new RegExp(`^\\{\\\\(?:\\*\\\\)?(?:${destinations.join("|")})\\b`);
-  let out = "";
-  for (let i = 0; i < s.length; ) {
-    if (s[i] === "{") {
-      // Look at what kind of group this is
-      const tail = s.slice(i, i + 64);
-      if (dre.test(tail)) {
-        i = stripGroup(s, i);
-        continue;
+  // Pattern: `{\<dest>` or `{\*\<dest>` followed by a non-letter (word boundary).
+  const altPattern = destinations.join("|");
+  const destStart = new RegExp(
+    `\\{\\\\(?:\\*\\\\)?(?:${altPattern})(?![a-zA-Z])`,
+    "g"
+  );
+
+  // Iterate: find every destination opener, splice out from `{` to matching `}`.
+  // Process from end to start so earlier matches' indices don't shift.
+  const matches: { start: number; end: number }[] = [];
+  let m: RegExpExecArray | null;
+  destStart.lastIndex = 0;
+  while ((m = destStart.exec(s)) !== null) {
+    const start = m.index;
+    const end = findGroupEnd(s, start);
+    matches.push({ start, end });
+    // Skip past this match so we don't re-match nested destinations of the
+    // same name (they'll be handled by findGroupEnd anyway).
+    destStart.lastIndex = end;
+  }
+  if (matches.length) {
+    const parts: string[] = [];
+    let cursor = 0;
+    for (const { start, end } of matches) {
+      if (start >= cursor) {
+        parts.push(s.slice(cursor, start));
+        cursor = end;
       }
     }
-    out += s[i];
-    i++;
+    parts.push(s.slice(cursor));
+    s = parts.join("");
   }
-  s = out;
 
   // 2) Unicode escapes (\uNNNN?)
   s = s.replace(/\\u(-?\d+)\??/g, (_m, code: string) => {
