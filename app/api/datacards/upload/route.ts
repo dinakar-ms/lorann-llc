@@ -86,6 +86,23 @@ export async function POST(req: NextRequest) {
   try {
     const buf = Buffer.from(await file.arrayBuffer());
 
+    // ── Diagnostic: capture exactly what the parser saw so we can compare
+    // local vs. production behavior post-hoc.
+    const diag = {
+      fileName: file.name,
+      fileSize: buf.length,
+      fileType: file.type,
+      fileExt: ext,
+      // First 200 bytes as a hex preview — tells us if RTF/PDF magic bytes are correct
+      head200Hex: buf.subarray(0, 200).toString("hex"),
+      // First 200 bytes interpreted as UTF-8 — quickly shows if it looks like RTF
+      head200Utf8: buf.subarray(0, 200).toString("utf8").replace(/[\x00-\x1f]/g, "."),
+      // Approximate text-extraction sanity check for RTF
+      hasSegmentsLiteral: ext === "rtf" ? buf.toString("utf8").includes("SEGMENTS") : null,
+      hasRtfHeader: ext === "rtf" ? buf.toString("utf8").startsWith("{\\rtf") : null,
+    };
+    console.log("[upload DIAG]", JSON.stringify(diag).slice(0, 1000));
+
     // Parse uploaded file (xlsx/xls/csv/pdf/docx/rtf supported; .doc unsupported).
     // Parsing is best-effort: missing/blank fields just mean admin fills them in at approval.
     const parsed = await parseDataCardFile(buf, file.name);
