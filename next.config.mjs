@@ -1,5 +1,7 @@
 /** @type {import('next').NextConfig} */
 
+import { legacyPaths } from "./lib/legacy-redirects.mjs";
+
 const securityHeaders = [
   // Prevent browsers from MIME-sniffing a response away from the declared content-type.
   // Stops certain XSS attacks where an uploaded file is served as text/html.
@@ -85,6 +87,16 @@ const nextConfig = {
         headers: securityHeaders,
       },
     ];
+  },
+  async redirects() {
+    // 301 every legacy WordPress URL to the homepage so old inbound links and
+    // search-engine results don't dead-end on a 404. Permanent: true → 308 for
+    // POST/PUT, 301 for GET (which is what Google honors for SEO).
+    return legacyPaths.map((path) => ({
+      source: path,
+      destination: "/",
+      permanent: true,
+    }));
   },
   experimental: {
     // Tree-shake icon libraries — only include the icons actually imported
