@@ -88,9 +88,18 @@ export const metadata: Metadata = {
     siteName: "lorannllc",
     type: "website",
     locale: "en_US",
+    images: [
+      {
+        url: "/og-image.png",
+        width: 1200,
+        height: 630,
+        alt: "Lorann LLC — B2B Data & Audience Intelligence",
+      },
+    ],
   },
   twitter: {
     card: "summary_large_image",
+    images: ["/og-image.png"],
   },
 };
 
@@ -107,6 +116,74 @@ export default function RootLayout({
       className={`${spaceGrotesk.variable} ${inter.variable} ${jetbrains.variable}`}
     >
       <head>
+        {/* ── JSON-LD Structured Data ───────────────────────────────────── */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "Organization",
+              name: "Lorann LLC",
+              legalName: "Lorann LLC",
+              url: "https://www.lorannllc.com",
+              logo: "https://www.lorannllc.com/lorann-logo2.png",
+              description:
+                "B2B data provider offering audience targeting, data enrichment, healthcare lists, consumer databases, and Signal eXchange™ for marketing and lead generation.",
+              foundingDate: "1996",
+              address: {
+                "@type": "PostalAddress",
+                streetAddress: "382 NE 191st St, Ste 463398",
+                addressLocality: "Miami",
+                addressRegion: "FL",
+                postalCode: "33179-3899",
+                addressCountry: "US",
+              },
+              contactPoint: [
+                {
+                  "@type": "ContactPoint",
+                  telephone: "+1-914-565-5300",
+                  contactType: "sales",
+                  areaServed: "US",
+                  availableLanguage: "English",
+                },
+                {
+                  "@type": "ContactPoint",
+                  email: "info@lorannllc.com",
+                  contactType: "customer support",
+                  areaServed: "US",
+                  availableLanguage: "English",
+                },
+              ],
+              sameAs: [
+                "https://www.linkedin.com/company/lorann-llc/",
+                "https://x.com/lorannllc1996",
+                "https://www.facebook.com/people/Lorannllc/61578075234628/",
+              ],
+            }),
+          }}
+        />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "WebSite",
+              name: "Lorann LLC",
+              url: "https://www.lorannllc.com",
+              description:
+                "B2B Data, Audience Targeting, Healthcare Lists & Signal eXchange™",
+              potentialAction: {
+                "@type": "SearchAction",
+                target: {
+                  "@type": "EntryPoint",
+                  urlTemplate:
+                    "https://www.lorannllc.com/search?q={search_term_string}",
+                },
+                "query-input": "required name=search_term_string",
+              },
+            }),
+          }}
+        />
         {/* ── Google tag (gtag.js) — Consent Mode v2 ──────────────────────
             Script loads on every page. Consent defaults to 'denied'.
             CookieConsent component calls gtag('consent','update',…)

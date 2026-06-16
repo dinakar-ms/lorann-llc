@@ -12,6 +12,6 @@ export default function robots(): MetadataRoute.Robots {
         disallow: ["/studio/", "/api/", "/_next/"],
       },
     ],
-    sitemap: "https://lorann-llc.vercel.app/sitemap.xml",
+    sitemap: "https://www.lorannllc.com/sitemap.xml",
   };
 }

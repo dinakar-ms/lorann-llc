@@ -182,7 +182,7 @@ export default function StatsSection({ content }: { content?: StatsSectionConten
                 data-count={stat.count}
                 data-suffix={stat.suffix}
               >
-                0
+                {stat.count}{stat.suffix}
               </div>
               <div className="text-sm text-slate-600 font-medium">{stat.label}</div>
 
