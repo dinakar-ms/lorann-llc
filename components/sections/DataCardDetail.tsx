@@ -386,10 +386,8 @@ export default function DataCardDetail({ card, relatedCards, totalCards }: Props
                       <FileText className="w-4 h-4 text-slate-400" /> Description
                     </h2>
                   </div>
-                  <div className="px-5 py-4 text-[14px] leading-relaxed text-slate-600 space-y-3">
-                    {card.description.split("\n\n").map((p, i) => (
-                      <p key={i} className={i === 0 ? "text-slate-700" : ""}>{p}</p>
-                    ))}
+                  <div className="px-5 py-4 text-[14px] leading-relaxed text-slate-700 whitespace-pre-line">
+                    {card.description}
                   </div>
                 </div>
               )}
