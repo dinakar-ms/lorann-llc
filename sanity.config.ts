@@ -23,6 +23,9 @@ export default defineConfig({
             ? "http://localhost:3000"
             : location.origin,
         preview: "/",
+        draftMode: {
+          enable: "/api/draft-mode/enable",
+        },
       },
       resolve: {
         // Document → URL (Open Preview from a doc)

@@ -7,12 +7,9 @@ const securityHeaders = [
     key: "X-Content-Type-Options",
     value: "nosniff",
   },
-  // Block the site from being embedded in <iframe> / <frame> on other origins (clickjacking).
-  // CSP frame-ancestors below is the modern equivalent; this covers older browsers.
-  {
-    key: "X-Frame-Options",
-    value: "DENY",
-  },
+  // X-Frame-Options intentionally omitted — CSP frame-ancestors below is the modern
+  // equivalent and is what browsers honour. Setting DENY here would break the Sanity
+  // Presentation tool, which embeds the site in an iframe for visual editing.
   // Force HTTPS for 2 years; include subdomains; allow preload submission.
   {
     key: "Strict-Transport-Security",
