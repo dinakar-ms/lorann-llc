@@ -12,10 +12,6 @@ const VisualEditing = dynamic(
   () => import("next-sanity").then((m) => m.VisualEditing),
   { ssr: false }
 );
-const DisableDraftMode = dynamic(
-  () => import("@/components/DisableDraftMode"),
-  { ssr: false }
-);
 
 // Non-critical — load after first paint
 const CookieConsent = dynamic(() => import("@/components/CookieConsent"), {
@@ -108,7 +104,7 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const isDraft = draftMode().isEnabled;
+  draftMode();
 
   return (
     <html
@@ -220,7 +216,6 @@ export default function RootLayout({
             can complete its parent ↔ iframe handshake. Loaded lazily
             (ssr: false) so it doesn't block first paint. */}
         <VisualEditing />
-        {isDraft && <DisableDraftMode />}
         <CookieConsent />
       </body>
     </html>
