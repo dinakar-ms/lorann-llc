@@ -25,6 +25,9 @@ import type { DataCard } from "@/components/sections/DataCardsTable";
 import { ArrowRight, ShieldCheck, Linkedin, Mail } from "lucide-react";
 import { getIcon } from "@/components/ui/IconByName";
 import { getHealthcareIllustration } from "@/components/ui/HealthcareHeroIllustrations";
+import HealthcareFeaturesSection from "@/components/sections/HealthcareFeaturesSection";
+import HealthcareComplianceSection from "@/components/sections/HealthcareComplianceSection";
+import HealthcareAudienceSection from "@/components/sections/HealthcareAudienceSection";
 import { getTechnologyIllustration } from "@/components/ui/TechnologyHeroIllustrations";
 import { getOtherIndustryIllustration } from "@/components/ui/OtherIndustryHeroIllustrations";
 import { getB2CDatabaseIllustration } from "@/components/ui/B2CDatabaseHeroIllustrations";
@@ -544,6 +547,18 @@ function renderComplianceBand(page: PageDoc) {
   );
 }
 
+// ─── Healthcare sections helper ──────────────────────────
+function renderHealthcareSections(slugParts: string[]) {
+  if (!slugParts.includes("healthcare")) return null;
+  return (
+    <>
+      <HealthcareFeaturesSection slugParts={slugParts} />
+      <HealthcareComplianceSection slugParts={slugParts} />
+      <HealthcareAudienceSection slugParts={slugParts} />
+    </>
+  );
+}
+
 // ─── Template renderers ──────────────────────────────────
 
 function renderLeaf(page: PageDoc, slugParts: string[]) {
@@ -587,6 +602,7 @@ function renderLeaf(page: PageDoc, slugParts: string[]) {
       />
       {renderProseSections(page.proseSections)}
       {renderFeatureGridSections(page.featureGridSections, 1)}
+      {renderHealthcareSections(slugParts)}
       {renderFaqSection(page.faqItems)}
       {renderComplianceBand(page)}
       {hasExtraSections && <FinalCTA />}
@@ -641,6 +657,7 @@ function renderHub(page: PageDoc, slugParts: string[]) {
       <HubPage {...hubProps} hideFinalCta={hasExtraSections} />
       {renderFeatureGridSections(page.featureGridSections, 1)}
       {renderProseSections(page.proseSections)}
+      {renderHealthcareSections(slugParts)}
       {renderFaqSection(page.faqItems)}
       {hasExtraSections && <FinalCTA />}
     </>
