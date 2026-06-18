@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import {
   FlaskConical, BookOpen, Newspaper, Briefcase, Users, GraduationCap,
@@ -71,6 +72,14 @@ const DEFAULT_PERSONAS: Persona[] = [
   { icon: GraduationCap, gradient: "from-blue-800 to-cyan-600",  role: "Medical Education & CME Providers",industry: "Medical Education",   desc: "CME organizations and nursing education programs promote accredited courses to license-renewal candidates. Renewal-timeline filters deliver the most time-sensitive, highest-converting audience." },
 ];
 
+/* Four generic professional photos — rotated across all personas */
+const PERSONA_PHOTOS = [
+  "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=600&q=80",
+  "https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&w=600&q=80",
+  "https://images.unsplash.com/photo-1551836022-d5d88e9218df?auto=format&fit=crop&w=600&q=80",
+  "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=600&q=80",
+];
+
 function getHubKey(slugParts: string[]): string {
   const idx = slugParts.indexOf("healthcare");
   if (idx === -1) return "default";
@@ -95,11 +104,18 @@ export default function HealthcareAudienceSection({ slugParts }: { slugParts: st
   const { plain, accent } = headlines[key] ?? headlines.default;
 
   return (
-    <section className="py-20 lg:py-28 relative overflow-hidden"
-      style={{ background: "linear-gradient(160deg,#F0F5FF 0%,#ffffff 40%,#E4EDFF 100%)" }}>
+    <section
+      className="py-20 lg:py-28 relative overflow-hidden"
+      style={{ background: "linear-gradient(160deg,#F0F5FF 0%,#ffffff 40%,#E4EDFF 100%)" }}
+    >
       {/* Decorative gradient blob */}
-      <div className="absolute top-0 right-0 w-[600px] h-[600px] pointer-events-none opacity-40"
-        style={{ background: "radial-gradient(circle,rgba(29,69,217,0.08) 0%,transparent 70%)", filter: "blur(80px)" }} />
+      <div
+        className="absolute top-0 right-0 w-[600px] h-[600px] pointer-events-none opacity-40"
+        style={{
+          background: "radial-gradient(circle,rgba(29,69,217,0.08) 0%,transparent 70%)",
+          filter: "blur(80px)",
+        }}
+      />
 
       <div className="container-custom relative">
 
@@ -107,45 +123,92 @@ export default function HealthcareAudienceSection({ slugParts }: { slugParts: st
         <div className="text-center mb-14 reveal">
           <div className="inline-flex items-center gap-2 mb-5">
             <span className="w-1.5 h-1.5 rounded-full bg-cyan-500 shadow-[0_0_8px_#22BFFF] animate-pulse-dot" />
-            <span className="font-mono text-[11px] font-semibold uppercase tracking-[0.14em] text-blue-700">Who Can Use This Data</span>
+            <span className="font-mono text-[11px] font-semibold uppercase tracking-[0.14em] text-blue-700">
+              Who Can Use This Data
+            </span>
           </div>
           <h2 className="font-display font-bold text-3xl lg:text-[2.6rem] leading-[1.12] tracking-[-0.028em] text-slate-900 max-w-3xl mx-auto">
             {plain}{" "}
-            <span style={{ background: "linear-gradient(135deg,#1D45D9 0%,#00A7EF 50%,#1736B3 100%)", WebkitBackgroundClip: "text", backgroundClip: "text", WebkitTextFillColor: "transparent" }}>
+            <span
+              style={{
+                background: "linear-gradient(135deg,#1D45D9 0%,#00A7EF 50%,#1736B3 100%)",
+                WebkitBackgroundClip: "text",
+                backgroundClip: "text",
+                WebkitTextFillColor: "transparent",
+              }}
+            >
               {accent}
             </span>
           </h2>
           <p className="mt-4 text-slate-600 text-[16px] max-w-xl mx-auto leading-relaxed">
-            Four industries that consistently drive the highest ROI from Lorann's healthcare professional data.
+            Four industries that consistently drive the highest ROI from Lorann's healthcare
+            professional data.
           </p>
         </div>
 
-        {/* Persona cards */}
+        {/* Persona photo cards */}
         <div className="grid md:grid-cols-2 gap-6 max-w-5xl mx-auto">
-          {personas.map(({ icon: Icon, gradient, role, industry, desc }) => (
-            <div key={role}
-              className="reveal group bg-white rounded-2xl border border-slate-150 overflow-hidden hover:-translate-y-1.5 hover:shadow-[0_20px_60px_-15px_rgba(29,69,217,0.15)] hover:border-blue-200 transition-all duration-500">
+          {personas.map(({ icon: Icon, gradient, role, industry, desc }, i) => (
+            <div
+              key={role}
+              className="reveal group bg-white rounded-2xl border border-slate-150 overflow-hidden hover:-translate-y-1.5 hover:shadow-[0_24px_60px_-15px_rgba(29,69,217,0.18)] hover:border-blue-200 transition-all duration-500"
+            >
+              {/* ── Photo header ── */}
+              <div className="relative h-52 overflow-hidden">
+                <Image
+                  src={PERSONA_PHOTOS[i % PERSONA_PHOTOS.length]}
+                  alt={role}
+                  fill
+                  className="object-cover transition-transform duration-700 group-hover:scale-105"
+                  sizes="(max-width: 768px) 100vw, 50vw"
+                />
 
-              {/* Card header bar */}
-              <div className={`h-1.5 w-full bg-gradient-to-r ${gradient} group-hover:h-2 transition-all duration-300`} />
+                {/* Gradient overlay */}
+                <div
+                  className="absolute inset-0"
+                  style={{
+                    background:
+                      "linear-gradient(to top, rgba(8,15,36,0.75) 0%, rgba(8,15,36,0.2) 55%, transparent 100%)",
+                  }}
+                />
 
-              <div className="p-7">
-                <div className="flex items-start gap-4 mb-4">
-                  {/* Icon badge */}
-                  <div className={`w-12 h-12 rounded-xl grid place-items-center flex-shrink-0 bg-gradient-to-br ${gradient} shadow-lg group-hover:scale-110 transition-transform duration-300`}>
-                    <Icon className="w-6 h-6 text-white" />
-                  </div>
-                  <div>
-                    <span className="font-mono text-[10px] font-semibold uppercase tracking-[0.14em] text-blue-600">{industry}</span>
-                    <h3 className="font-display font-bold text-[18px] text-slate-900 tracking-tight leading-tight mt-0.5">{role}</h3>
-                  </div>
+                {/* Industry pill — bottom of photo */}
+                <div className="absolute bottom-4 left-5">
+                  <span
+                    className="font-mono text-[10px] font-bold uppercase tracking-[0.14em] px-3 py-1.5 rounded-full text-white"
+                    style={{
+                      background: "rgba(29,69,217,0.85)",
+                      border: "1px solid rgba(99,179,237,0.4)",
+                      backdropFilter: "blur(10px)",
+                    }}
+                  >
+                    {industry}
+                  </span>
                 </div>
 
-                <p className="text-slate-600 text-[14.5px] leading-[1.7] mb-5">{desc}</p>
+                {/* Icon badge — top right */}
+                <div
+                  className={`absolute top-4 right-4 w-10 h-10 rounded-xl grid place-items-center bg-gradient-to-br ${gradient} shadow-lg opacity-90 group-hover:opacity-100 group-hover:scale-110 transition-all duration-300`}
+                >
+                  <Icon className="w-5 h-5 text-white" />
+                </div>
+              </div>
 
-                {/* CTA link */}
-                <Link href="/contact"
-                  className="inline-flex items-center gap-1.5 text-[13px] font-semibold text-blue-700 hover:text-cyan-600 transition-colors duration-200 group/link">
+              {/* ── Card body ── */}
+              <div className="p-6 pt-5">
+                {/* Gradient accent line that expands on hover */}
+                <div
+                  className={`h-[2px] w-10 group-hover:w-full rounded-full mb-4 transition-all duration-500 bg-gradient-to-r ${gradient}`}
+                />
+                <h3 className="font-display font-bold text-[18px] text-slate-900 tracking-tight leading-snug mb-2">
+                  {role}
+                </h3>
+                <p className="text-slate-600 text-[14px] leading-[1.7] mb-5">{desc}</p>
+
+                <Link
+                  href="/contact"
+                  className="inline-flex items-center gap-1.5 text-[13px] font-semibold text-blue-700 hover:text-cyan-600 transition-colors duration-200 group/link"
+                >
                   Request a sample list
                   <ChevronRight className="w-3.5 h-3.5 group-hover/link:translate-x-0.5 transition-transform duration-200" />
                 </Link>
@@ -154,14 +217,18 @@ export default function HealthcareAudienceSection({ slugParts }: { slugParts: st
           ))}
         </div>
 
-        {/* Bottom CTA strip */}
+        {/* Bottom CTA */}
         <div className="mt-14 reveal text-center">
           <p className="text-slate-600 text-[15px] mb-5">
-            Don't see your industry? Lorann serves <strong className="text-slate-900">500+ verticals</strong> across healthcare, B2B, and consumer data.
+            Don't see your industry? Lorann serves{" "}
+            <strong className="text-slate-900">500+ verticals</strong> across healthcare, B2B,
+            and consumer data.
           </p>
-          <Link href="/contact"
+          <Link
+            href="/contact"
             className="inline-flex items-center gap-2 px-7 py-3.5 rounded-full font-semibold text-[15px] text-white transition-all duration-300 hover:shadow-[0_8px_30px_-6px_rgba(29,69,217,0.5)] hover:-translate-y-0.5"
-            style={{ background: "linear-gradient(135deg,#1D45D9,#00A7EF)" }}>
+            style={{ background: "linear-gradient(135deg,#1D45D9,#00A7EF)" }}
+          >
             Talk to a data specialist
             <ChevronRight className="w-4 h-4" />
           </Link>

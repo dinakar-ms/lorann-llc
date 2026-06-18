@@ -1,3 +1,4 @@
+import Image from "next/image";
 import {
   ShieldCheck, SlidersHorizontal, FileText, Building2,
   Layers, RefreshCw, BadgeCheck, Stethoscope, Heart,
@@ -141,60 +142,195 @@ function getHubKey(slugParts: string[]): string {
   return slugParts[idx + 1] || "default";
 }
 
+const HERO_IMAGE =
+  "https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?auto=format&fit=crop&w=1400&q=80";
+
 export default function HealthcareFeaturesSection({ slugParts }: { slugParts: string[] }) {
   const key = getHubKey(slugParts);
   const { kicker, headline, accent, cards } = DATA[key] ?? DEFAULT;
 
+  const { icon: HeroIcon, title: heroTitle, desc: heroDesc } = cards[0];
+  const sideCards = cards.slice(1, 3);
+  const bottomCards = cards.slice(3);
+
   return (
-    <section className="relative py-20 lg:py-28 overflow-hidden"
-      style={{ background: "linear-gradient(160deg, #080F24 0%, #0C1847 40%, #061030 100%)" }}>
+    <section
+      className="relative py-20 lg:py-28 overflow-hidden"
+      style={{ background: "linear-gradient(160deg, #080F24 0%, #0C1847 40%, #061030 100%)" }}
+    >
       {/* Dot-grid texture */}
-      <div className="absolute inset-0 pointer-events-none opacity-[0.07]"
-        style={{ backgroundImage: "radial-gradient(circle, #6FD3FF 1px, transparent 1px)", backgroundSize: "28px 28px" }} />
+      <div
+        className="absolute inset-0 pointer-events-none opacity-[0.06]"
+        style={{
+          backgroundImage: "radial-gradient(circle, #6FD3FF 1px, transparent 1px)",
+          backgroundSize: "28px 28px",
+        }}
+      />
       {/* Glow orbs */}
-      <div className="absolute top-0 right-1/4 w-[500px] h-[500px] rounded-full pointer-events-none"
-        style={{ background: "radial-gradient(circle, rgba(0,167,239,0.12) 0%, transparent 70%)", filter: "blur(60px)" }} />
-      <div className="absolute bottom-0 left-1/4 w-[400px] h-[400px] rounded-full pointer-events-none"
-        style={{ background: "radial-gradient(circle, rgba(29,69,217,0.15) 0%, transparent 70%)", filter: "blur(60px)" }} />
+      <div
+        className="absolute top-0 right-1/4 w-[600px] h-[600px] rounded-full pointer-events-none"
+        style={{ background: "radial-gradient(circle, rgba(0,167,239,0.12) 0%, transparent 70%)", filter: "blur(60px)" }}
+      />
+      <div
+        className="absolute bottom-0 left-1/4 w-[500px] h-[500px] rounded-full pointer-events-none"
+        style={{ background: "radial-gradient(circle, rgba(29,69,217,0.15) 0%, transparent 70%)", filter: "blur(60px)" }}
+      />
 
       <div className="container-custom relative">
         {/* Header */}
         <div className="text-center mb-14 reveal">
           <div className="inline-flex items-center gap-2 mb-5">
             <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 shadow-[0_0_8px_#22BFFF] animate-pulse-dot" />
-            <span className="font-mono text-[11px] font-semibold uppercase tracking-[0.14em] text-cyan-400">{kicker}</span>
+            <span className="font-mono text-[11px] font-semibold uppercase tracking-[0.14em] text-cyan-400">
+              {kicker}
+            </span>
           </div>
           <h2 className="font-display font-bold text-3xl lg:text-[2.6rem] leading-[1.12] tracking-[-0.028em] text-white">
             {headline}{" "}
-            <span style={{ background: "linear-gradient(135deg,#1D45D9 0%,#00A7EF 50%,#22BFFF 100%)", WebkitBackgroundClip: "text", backgroundClip: "text", WebkitTextFillColor: "transparent" }}>
+            <span
+              style={{
+                background: "linear-gradient(135deg,#1D45D9 0%,#00A7EF 50%,#22BFFF 100%)",
+                WebkitBackgroundClip: "text",
+                backgroundClip: "text",
+                WebkitTextFillColor: "transparent",
+              }}
+            >
               {accent}
             </span>
           </h2>
         </div>
 
-        {/* Cards grid */}
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-5 max-w-6xl mx-auto">
-          {cards.map(({ icon: Icon, title, desc }, i) => (
-            <div key={title}
+        {/* Bento grid */}
+        <div className="grid lg:grid-cols-3 gap-5 max-w-6xl mx-auto">
+
+          {/* ── Hero card: image with content overlay (col-span-2, row-span-2) ── */}
+          <div className="reveal lg:col-span-2 lg:row-span-2 relative overflow-hidden rounded-2xl min-h-[380px] lg:min-h-[520px] group cursor-default">
+            <Image
+              src={HERO_IMAGE}
+              alt={heroTitle}
+              fill
+              className="object-cover transition-transform duration-700 group-hover:scale-105"
+              sizes="(max-width: 1024px) 100vw, 700px"
+              priority
+            />
+
+            {/* Dark gradient overlay */}
+            <div
+              className="absolute inset-0"
+              style={{
+                background:
+                  "linear-gradient(to top, rgba(6,16,48,0.97) 0%, rgba(6,16,48,0.6) 45%, rgba(6,16,48,0.18) 100%)",
+              }}
+            />
+
+            {/* Top-right: live data badge */}
+            <div
+              className="absolute top-5 right-5 flex items-center gap-2 px-3 py-1.5 rounded-full"
+              style={{
+                background: "rgba(0,167,239,0.15)",
+                border: "1px solid rgba(0,167,239,0.35)",
+                backdropFilter: "blur(12px)",
+              }}
+            >
+              <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse" />
+              <span className="font-mono text-[10px] font-semibold text-cyan-400 tracking-wider uppercase">
+                Live Data
+              </span>
+            </div>
+
+            {/* Content overlay at bottom */}
+            <div className="absolute bottom-0 left-0 right-0 p-8">
+              <span className="font-mono text-[11px] font-semibold text-white/30 tracking-[0.2em] mb-4 block">
+                01
+              </span>
+              <div
+                className="w-14 h-14 rounded-xl grid place-items-center mb-5"
+                style={{
+                  background:
+                    "linear-gradient(135deg,rgba(29,69,217,0.55),rgba(0,167,239,0.45))",
+                  border: "1px solid rgba(0,167,239,0.45)",
+                  backdropFilter: "blur(12px)",
+                }}
+              >
+                <HeroIcon className="w-7 h-7 text-cyan-400" />
+              </div>
+              <div
+                className="h-[2px] w-12 rounded-full mb-4"
+                style={{ background: "linear-gradient(90deg,#1D45D9,#00A7EF)" }}
+              />
+              <h3 className="font-display font-bold text-2xl lg:text-[1.75rem] text-white mb-3 tracking-tight">
+                {heroTitle}
+              </h3>
+              <p className="text-white/65 text-[15px] leading-relaxed max-w-lg">{heroDesc}</p>
+            </div>
+          </div>
+
+          {/* ── Right column: cards 02 & 03 (stacked, fill the 2 rows beside hero) ── */}
+          {sideCards.map(({ icon: Icon, title, desc }, i) => (
+            <div
+              key={title}
               className="reveal group relative rounded-2xl p-7 transition-all duration-500 hover:-translate-y-1.5 hover:shadow-[0_0_0_1px_rgba(0,167,239,0.4),0_20px_60px_-10px_rgba(0,167,239,0.18)] hover:bg-[rgba(0,167,239,0.06)]"
               style={{
                 background: "rgba(255,255,255,0.04)",
                 border: "1px solid rgba(255,255,255,0.08)",
                 backdropFilter: "blur(12px)",
-              }}>
-              {/* Number badge */}
+              }}
+            >
               <span className="absolute top-5 right-6 font-mono text-[11px] font-semibold text-white/20 tracking-widest">
-                {String(i + 1).padStart(2, "0")}
+                {String(i + 2).padStart(2, "0")}
               </span>
-              {/* Icon */}
-              <div className="w-12 h-12 rounded-xl grid place-items-center mb-5 transition-all duration-300"
-                style={{ background: "linear-gradient(135deg,rgba(29,69,217,0.4) 0%,rgba(0,167,239,0.3) 100%)", border: "1px solid rgba(0,167,239,0.25)" }}>
+              <div
+                className="w-12 h-12 rounded-xl grid place-items-center mb-5 transition-all duration-300 group-hover:scale-105"
+                style={{
+                  background:
+                    "linear-gradient(135deg,rgba(29,69,217,0.4),rgba(0,167,239,0.3))",
+                  border: "1px solid rgba(0,167,239,0.25)",
+                }}
+              >
                 <Icon className="w-6 h-6 text-cyan-400" />
               </div>
-              {/* Accent bar */}
-              <div className="h-[2px] w-0 group-hover:w-full rounded-full mb-4 transition-all duration-500"
-                style={{ background: "linear-gradient(90deg,#1D45D9,#00A7EF)" }} />
-              <h3 className="font-display font-semibold text-[17px] text-white mb-2 tracking-tight">{title}</h3>
+              <div
+                className="h-[2px] w-0 group-hover:w-full rounded-full mb-4 transition-all duration-500"
+                style={{ background: "linear-gradient(90deg,#1D45D9,#00A7EF)" }}
+              />
+              <h3 className="font-display font-semibold text-[17px] text-white mb-2 tracking-tight">
+                {title}
+              </h3>
+              <p className="text-white/55 text-[14px] leading-relaxed">{desc}</p>
+            </div>
+          ))}
+
+          {/* ── Bottom row: cards 04, 05, 06 ── */}
+          {bottomCards.map(({ icon: Icon, title, desc }, i) => (
+            <div
+              key={title}
+              className="reveal group relative rounded-2xl p-7 transition-all duration-500 hover:-translate-y-1.5 hover:shadow-[0_0_0_1px_rgba(0,167,239,0.4),0_20px_60px_-10px_rgba(0,167,239,0.18)] hover:bg-[rgba(0,167,239,0.06)]"
+              style={{
+                background: "rgba(255,255,255,0.04)",
+                border: "1px solid rgba(255,255,255,0.08)",
+                backdropFilter: "blur(12px)",
+              }}
+            >
+              <span className="absolute top-5 right-6 font-mono text-[11px] font-semibold text-white/20 tracking-widest">
+                {String(i + 4).padStart(2, "0")}
+              </span>
+              <div
+                className="w-12 h-12 rounded-xl grid place-items-center mb-5 transition-all duration-300 group-hover:scale-105"
+                style={{
+                  background:
+                    "linear-gradient(135deg,rgba(29,69,217,0.4),rgba(0,167,239,0.3))",
+                  border: "1px solid rgba(0,167,239,0.25)",
+                }}
+              >
+                <Icon className="w-6 h-6 text-cyan-400" />
+              </div>
+              <div
+                className="h-[2px] w-0 group-hover:w-full rounded-full mb-4 transition-all duration-500"
+                style={{ background: "linear-gradient(90deg,#1D45D9,#00A7EF)" }}
+              />
+              <h3 className="font-display font-semibold text-[17px] text-white mb-2 tracking-tight">
+                {title}
+              </h3>
               <p className="text-white/55 text-[14px] leading-relaxed">{desc}</p>
             </div>
           ))}
