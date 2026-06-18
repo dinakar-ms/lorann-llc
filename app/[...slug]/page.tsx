@@ -27,7 +27,6 @@ import { getIcon } from "@/components/ui/IconByName";
 import { getHealthcareIllustration } from "@/components/ui/HealthcareHeroIllustrations";
 import HealthcareFeaturesSection from "@/components/sections/HealthcareFeaturesSection";
 import HealthcareComplianceSection from "@/components/sections/HealthcareComplianceSection";
-import HealthcareAudienceSection from "@/components/sections/HealthcareAudienceSection";
 import { getTechnologyIllustration } from "@/components/ui/TechnologyHeroIllustrations";
 import { getOtherIndustryIllustration } from "@/components/ui/OtherIndustryHeroIllustrations";
 import { getB2CDatabaseIllustration } from "@/components/ui/B2CDatabaseHeroIllustrations";
@@ -554,7 +553,6 @@ function renderHealthcareSections(slugParts: string[]) {
     <>
       <HealthcareFeaturesSection slugParts={slugParts} />
       <HealthcareComplianceSection slugParts={slugParts} />
-      <HealthcareAudienceSection slugParts={slugParts} />
     </>
   );
 }
