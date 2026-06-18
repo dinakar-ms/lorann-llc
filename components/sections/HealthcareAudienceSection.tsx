@@ -146,7 +146,7 @@ export default function HealthcareAudienceSection({ slugParts }: { slugParts: st
             </span>
           </h2>
           <p className="mt-4 text-slate-600 text-[15px] lg:text-[16px] max-w-xl mx-auto leading-relaxed">
-            Four industries that consistently drive the highest ROI from Lorann's healthcare
+            Four industries that consistently drive the highest ROI from Lorann&apos;s healthcare
             professional data.
           </p>
         </div>
@@ -283,7 +283,7 @@ export default function HealthcareAudienceSection({ slugParts }: { slugParts: st
         {/* ── Bottom CTA ── */}
         <div className="mt-12 lg:mt-14 reveal text-center">
           <p className="text-slate-600 text-[15px] mb-5">
-            Don't see your industry? Lorann serves{" "}
+            Don&apos;t see your industry? Lorann serves{" "}
             <strong className="text-slate-900">500+ verticals</strong> across healthcare, B2B,
             and consumer data.
           </p>

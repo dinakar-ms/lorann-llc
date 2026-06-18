@@ -118,29 +118,97 @@ const HUB_COMPLIANCE: Record<string, HubCompliance> = {
 
 const COMPLIANCE_BADGES = ["HIPAA", "CCPA", "CAN-SPAM", "FCRA", "DNC"];
 
-/* Unique photo per hub — no repeating images across pages */
+/*
+ * Unique compliance photo per page — expanded pool from committed compliance section.
+ * Rule: each page's compliance photo ≠ its features hero photo.
+ * Pool: A=1576091160399  B=1576091160550  C=1559757148    D=1530026405186  E=1519494026892
+ *       F=1552196563     G=1544027993     H=1606811971618  K=1576671414121  M=1551884170
+ *       N=1454165804606  O=1559757175     P=1516574187841  Q=1538108149393  R=1584820927498
+ *  (I=1585670087094 and J=1585671773819 confirmed 404 — removed)
+ */
 const COMPLIANCE_PHOTOS: Record<string, string> = {
-  "physicians-advanced-practice":  "https://images.unsplash.com/photo-1576091160550-2173dba999ef?auto=format&fit=crop&w=900&q=80",
-  "nursing-professionals":         "https://images.unsplash.com/photo-1530026405186-ed1f139313f8?auto=format&fit=crop&w=900&q=80",
-  "hospital-decision-makers":      "https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?auto=format&fit=crop&w=900&q=80",
-  "health-therapy":                "https://images.unsplash.com/photo-1559757175-5700dde675bc?auto=format&fit=crop&w=900&q=80",
-  "behavioral-mental-health":      "https://images.unsplash.com/photo-1516574187841-cb9cc2ca948b?auto=format&fit=crop&w=900&q=80",
-  "dental-vision":                 "https://images.unsplash.com/photo-1606811971618-4486d14f3f99?auto=format&fit=crop&w=900&q=80",
-  "pharmacy-practice-management":  "https://images.unsplash.com/photo-1585671773819-bc87fcaa99ae?auto=format&fit=crop&w=900&q=80",
-  "specialty-other":               "https://images.unsplash.com/photo-1538108149393-fbbd81895907?auto=format&fit=crop&w=900&q=80",
-  "default":                       "https://images.unsplash.com/photo-1584820927498-cfe5211fd8bf?auto=format&fit=crop&w=900&q=80",
+  /* ── Hub pages — all 46 compliance photos unique; none matches the features hero on same page ── */
+  "physicians-advanced-practice":  "https://images.unsplash.com/photo-1526256262350-7da7584cf5eb?auto=format&fit=crop&w=900&q=80", // AX
+  "nursing-professionals":         "https://images.unsplash.com/photo-1580281657702-257584239a55?auto=format&fit=crop&w=900&q=80", // AY
+  "hospital-decision-makers":      "https://images.unsplash.com/photo-1603398938378-e54eab446dde?auto=format&fit=crop&w=900&q=80", // AZ
+  "health-therapy":                "https://images.unsplash.com/photo-1464863979621-258859e62245?auto=format&fit=crop&w=900&q=80", // BA
+  "behavioral-mental-health":      "https://images.unsplash.com/photo-1586773860418-d37222d8fce3?auto=format&fit=crop&w=900&q=80", // BB
+  "dental-vision":                 "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?auto=format&fit=crop&w=900&q=80", // BC
+  "pharmacy-practice-management":  "https://images.unsplash.com/photo-1607990281513-2c110a25bd8c?auto=format&fit=crop&w=900&q=80", // BD
+  "specialty-other":               "https://images.unsplash.com/photo-1519494140681-8b17d830a3e9?auto=format&fit=crop&w=900&q=80", // BE
+
+  /* ── Physicians inner pages ── */
+  "physicians-advanced-practice/physicians-doctors":      "https://images.unsplash.com/photo-1564013799919-ab600027ffc6?auto=format&fit=crop&w=900&q=80", // BF
+  "physicians-advanced-practice/podiatrists":             "https://images.unsplash.com/photo-1529156069898-49953e39b3ac?auto=format&fit=crop&w=900&q=80", // BG
+  "physicians-advanced-practice/nurse-practitioners":     "https://images.unsplash.com/photo-1547592166-23ac45744acd?auto=format&fit=crop&w=900&q=80", // BH
+  "physicians-advanced-practice/physician-assistants":    "https://images.unsplash.com/photo-1501555088652-021faa106b9b?auto=format&fit=crop&w=900&q=80", // BI
+  "physicians-advanced-practice/medical-assistants":      "https://images.unsplash.com/photo-1434030216411-0b793f4b4173?auto=format&fit=crop&w=900&q=80", // BJ
+
+  /* ── Nursing inner pages ── */
+  "nursing-professionals/registered-nurses":              "https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?auto=format&fit=crop&w=900&q=80", // BK
+  "nursing-professionals/licensed-practical-nurses":      "https://images.unsplash.com/photo-1521931961826-fe48677230a5?auto=format&fit=crop&w=900&q=80", // BL
+  "nursing-professionals/certified-nursing-assistants":   "https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?auto=format&fit=crop&w=900&q=80", // BM
+  "nursing-professionals/certified-nurse-midwives":       "https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?auto=format&fit=crop&w=900&q=80", // A
+
+  /* ── Hospital inner pages ── */
+  "hospital-decision-makers/hospital-administrators":     "https://images.unsplash.com/photo-1576091160550-2173dba999ef?auto=format&fit=crop&w=900&q=80", // B
+  "hospital-decision-makers/ceo-cfo-healthcare":          "https://images.unsplash.com/photo-1559757148-5c350d0d3c56?auto=format&fit=crop&w=900&q=80", // C
+  "hospital-decision-makers/chief-medical-officers":      "https://images.unsplash.com/photo-1530026405186-ed1f139313f8?auto=format&fit=crop&w=900&q=80", // D
+  "hospital-decision-makers/chief-nursing-officers":      "https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?auto=format&fit=crop&w=900&q=80", // E
+  "hospital-decision-makers/chief-of-staff":              "https://images.unsplash.com/photo-1552196563-55cd4e45efb3?auto=format&fit=crop&w=900&q=80", // F
+  "hospital-decision-makers/medical-directors":           "https://images.unsplash.com/photo-1544027993-37dbfe43562a?auto=format&fit=crop&w=900&q=80", // G
+
+  /* ── Health-therapy inner pages ── */
+  "health-therapy/physical-therapists":                   "https://images.unsplash.com/photo-1606811971618-4486d14f3f99?auto=format&fit=crop&w=900&q=80", // H
+  "health-therapy/occupational-therapists":               "https://images.unsplash.com/photo-1576671414121-aa2d60f2f5a7?auto=format&fit=crop&w=900&q=80", // K
+  "health-therapy/speech-language-therapists":            "https://images.unsplash.com/photo-1551884170-09fb70a3a2ed?auto=format&fit=crop&w=900&q=80", // M
+  "health-therapy/respiratory-therapists":                "https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?auto=format&fit=crop&w=900&q=80", // N
+  "health-therapy/massage-therapists":                    "https://images.unsplash.com/photo-1559757175-5700dde675bc?auto=format&fit=crop&w=900&q=80", // O
+  "health-therapy/emts-paramedics":                       "https://images.unsplash.com/photo-1516574187841-cb9cc2ca948b?auto=format&fit=crop&w=900&q=80", // P
+  "health-therapy/radiologic-technicians":                "https://images.unsplash.com/photo-1538108149393-fbbd81895907?auto=format&fit=crop&w=900&q=80", // Q
+  "health-therapy/dieticians-nutritionists":              "https://images.unsplash.com/photo-1584820927498-cfe5211fd8bf?auto=format&fit=crop&w=900&q=80", // R
+
+  /* ── Behavioral inner pages ── */
+  "behavioral-mental-health/psychologists":               "https://images.unsplash.com/photo-1579684385127-1ef15d508118?auto=format&fit=crop&w=900&q=80", // S
+  "behavioral-mental-health/psychiatrists":               "https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?auto=format&fit=crop&w=900&q=80", // T
+  "behavioral-mental-health/mental-health-counselors":    "https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?auto=format&fit=crop&w=900&q=80", // U
+  "behavioral-mental-health/social-workers":              "https://images.unsplash.com/photo-1505751172876-fa1923c5c528?auto=format&fit=crop&w=900&q=80", // V
+  "behavioral-mental-health/marriage-family-therapists":  "https://images.unsplash.com/photo-1593073862407-a3ce22748763?auto=format&fit=crop&w=900&q=80", // W
+
+  /* ── Dental inner pages ── */
+  "dental-vision/dentists":                               "https://images.unsplash.com/photo-1532938911079-1b06ac7ceec7?auto=format&fit=crop&w=900&q=80", // X
+  "dental-vision/dental-hygienists":                      "https://images.unsplash.com/photo-1505253468034-514d2507d914?auto=format&fit=crop&w=900&q=80", // Y
+  "dental-vision/dental-assistants":                      "https://images.unsplash.com/photo-1477468572316-36979010099d?auto=format&fit=crop&w=900&q=80", // Z
+  "dental-vision/optometrists":                           "https://images.unsplash.com/photo-1516549655169-df83a0774514?auto=format&fit=crop&w=900&q=80", // AA
+  "dental-vision/opticians":                              "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=900&q=80", // AB
+
+  /* ── Pharmacy inner pages ── */
+  "pharmacy-practice-management/pharmacists":             "https://images.unsplash.com/photo-1504813184591-01572f98c85f?auto=format&fit=crop&w=900&q=80", // AC
+  "pharmacy-practice-management/physician-practice-managers": "https://images.unsplash.com/photo-1571772996211-2f02c9727629?auto=format&fit=crop&w=900&q=80", // AD
+
+  /* ── Specialty inner pages ── */
+  "specialty-other/chiropractors":                        "https://images.unsplash.com/photo-1596541223130-5d31a73fb6c6?auto=format&fit=crop&w=900&q=80", // AE
+  "specialty-other/veterinarians":                        "https://images.unsplash.com/photo-1534536281715-e28d76689b4d?auto=format&fit=crop&w=900&q=80", // AF
+  "specialty-other/allied-healthcare-professionals":      "https://images.unsplash.com/photo-1560264280-88b68371db39?auto=format&fit=crop&w=900&q=80", // AG
+
+  "default": "https://images.unsplash.com/photo-1551884170-09fb70a3a2ed?auto=format&fit=crop&w=900&q=80", // M
 };
 
-function getHubKey(slugParts: string[]): string {
+/* Returns "hub" for hub pages, "hub/sub" for inner pages */
+function getPageKey(slugParts: string[]): string {
   const idx = slugParts.indexOf("healthcare");
   if (idx === -1) return "default";
-  return slugParts[idx + 1] || "default";
+  const hub = slugParts[idx + 1] || "default";
+  const sub = slugParts[idx + 2];
+  return sub ? `${hub}/${sub}` : hub;
 }
 
 export default function HealthcareComplianceSection({ slugParts }: { slugParts: string[] }) {
-  const key = getHubKey(slugParts);
-  const photo = COMPLIANCE_PHOTOS[key] ?? COMPLIANCE_PHOTOS["default"];
-  const { intro, items } = HUB_COMPLIANCE[key] ?? HUB_COMPLIANCE["default"];
+  const key = getPageKey(slugParts);
+  const hubKey = key.split("/")[0];
+  const photo = COMPLIANCE_PHOTOS[key] ?? COMPLIANCE_PHOTOS[hubKey] ?? COMPLIANCE_PHOTOS["default"];
+  /* Inner pages fall back to hub-level compliance text */
+  const { intro, items } = HUB_COMPLIANCE[key] ?? HUB_COMPLIANCE[hubKey] ?? HUB_COMPLIANCE["default"];
 
   return (
     <section className="py-16 lg:py-24 bg-white relative overflow-hidden">
