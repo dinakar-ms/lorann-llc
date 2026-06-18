@@ -142,13 +142,24 @@ function getHubKey(slugParts: string[]): string {
   return slugParts[idx + 1] || "default";
 }
 
-const HERO_IMAGE =
-  "https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?auto=format&fit=crop&w=1400&q=80";
+/* Unique hero image per hub — no repeating photos across pages */
+const FEATURE_HERO_IMAGES: Record<string, string> = {
+  "physicians-advanced-practice":   "https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?auto=format&fit=crop&w=1400&q=80",
+  "nursing-professionals":          "https://images.unsplash.com/photo-1559757148-5c350d0d3c56?auto=format&fit=crop&w=1400&q=80",
+  "hospital-decision-makers":       "https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?auto=format&fit=crop&w=1400&q=80",
+  "health-therapy":                 "https://images.unsplash.com/photo-1552196563-55cd4e45efb3?auto=format&fit=crop&w=1400&q=80",
+  "behavioral-mental-health":       "https://images.unsplash.com/photo-1544027993-37dbfe43562a?auto=format&fit=crop&w=1400&q=80",
+  "dental-vision":                  "https://images.unsplash.com/photo-1588776814546-1ffbb172f1e9?auto=format&fit=crop&w=1400&q=80",
+  "pharmacy-practice-management":   "https://images.unsplash.com/photo-1585670087094-249564eb7a4a?auto=format&fit=crop&w=1400&q=80",
+  "specialty-other":                "https://images.unsplash.com/photo-1576671414121-aa2d60f2f5a7?auto=format&fit=crop&w=1400&q=80",
+  "default":                        "https://images.unsplash.com/photo-1551884170-09fb70a3a2ed?auto=format&fit=crop&w=1400&q=80",
+};
 
 export default function HealthcareFeaturesSection({ slugParts }: { slugParts: string[] }) {
   const key = getHubKey(slugParts);
   const { kicker, headline, accent, cards } = DATA[key] ?? DEFAULT;
 
+  const heroImage = FEATURE_HERO_IMAGES[key] ?? FEATURE_HERO_IMAGES["default"];
   const { icon: HeroIcon, title: heroTitle, desc: heroDesc } = cards[0];
   const sideCards = cards.slice(1, 3);
   const bottomCards = cards.slice(3);
@@ -206,7 +217,7 @@ export default function HealthcareFeaturesSection({ slugParts }: { slugParts: st
           {/* ── Hero card: image with content overlay (col-span-2, row-span-2) ── */}
           <div className="reveal lg:col-span-2 lg:row-span-2 relative overflow-hidden rounded-2xl min-h-[380px] lg:min-h-[520px] group cursor-default">
             <Image
-              src={HERO_IMAGE}
+              src={heroImage}
               alt={heroTitle}
               fill
               className="object-cover transition-transform duration-700 group-hover:scale-105"
