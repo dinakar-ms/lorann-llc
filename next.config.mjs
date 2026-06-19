@@ -92,6 +92,7 @@ const nextConfig = {
             value: [
               '</.well-known/api-catalog>; rel="api-catalog"',
               '</.well-known/mcp>; rel="mcp"',
+              '</.well-known/mcp/server-card.json>; rel="mcp-server-card"',
               '</.well-known/agent-skills/index.json>; rel="agent-skills-index"',
               '</llms.txt>; rel="describedby"; type="text/plain"',
             ].join(", "),
@@ -109,10 +110,13 @@ const nextConfig = {
     return [
       // Map /.well-known/* agent discovery paths to API route handlers
       { source: "/.well-known/api-catalog",               destination: "/api/agent/api-catalog" },
-      { source: "/.well-known/mcp",                        destination: "/api/agent/mcp" },
-      { source: "/.well-known/agent-skills/index.json",    destination: "/api/agent/skills" },
-      { source: "/.well-known/openid-configuration",       destination: "/api/agent/openid-configuration" },
-      { source: "/.well-known/oauth-protected-resource",   destination: "/api/agent/oauth-protected-resource" },
+      { source: "/.well-known/mcp",                       destination: "/api/agent/mcp" },
+      { source: "/.well-known/mcp/server-card.json",      destination: "/api/agent/mcp" },
+      { source: "/.well-known/agent-skills/index.json",   destination: "/api/agent/skills" },
+      { source: "/.well-known/openid-configuration",      destination: "/api/agent/openid-configuration" },
+      { source: "/.well-known/oauth-protected-resource",  destination: "/api/agent/oauth-protected-resource" },
+      // RFC 7591 — OAuth Dynamic Client Registration
+      { source: "/oauth/register",                        destination: "/api/agent/oauth-register" },
     ];
   },
   async redirects() {

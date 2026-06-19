@@ -46,9 +46,8 @@ Allow: /
 
 Sitemap: https://www.lorannllc.com/sitemap.xml
 
-# Content-Signals
-# LLMs-Txt: https://www.lorannllc.com/llms.txt
-# API-Catalog: https://www.lorannllc.com/.well-known/api-catalog
-# MCP-Server: https://www.lorannllc.com/.well-known/mcp
-# Agent-Skills: https://www.lorannllc.com/.well-known/agent-skills/index.json
-# X-Robots-Markdown: https://www.lorannllc.com/llms.txt
+# Content Signals for AI agents (Cloudflare spec)
+content-signal: llms-txt=https://www.lorannllc.com/llms.txt
+content-signal: api-catalog=https://www.lorannllc.com/.well-known/api-catalog
+content-signal: mcp-server=https://www.lorannllc.com/.well-known/mcp/server-card.json
+content-signal: agent-skills=https://www.lorannllc.com/.well-known/agent-skills/index.json

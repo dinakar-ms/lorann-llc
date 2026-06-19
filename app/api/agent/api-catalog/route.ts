@@ -1,37 +1,48 @@
 import { NextResponse } from "next/server";
 
+// RFC 9727 — API Catalog as application/linkset+json
 const catalog = {
-  "$schema": "https://spec.openapis.org/oas/3.1/meta/base",
-  "apis": [
+  "linkset": [
     {
-      "id": "lorann-data-request",
-      "title": "Lorann B2B Data Request",
-      "description": "Request verified B2B contact lists for healthcare professionals, real estate agents, financial advisors, and business executives. Supports filtering by specialty, geography, credential type, and practice setting.",
-      "type": "REST",
-      "contact": {
-        "name": "Lorann Data Team",
-        "email": "support@lorannllc.com",
-        "url": "https://www.lorannllc.com/contact-us"
-      },
-      "documentation": "https://www.lorannllc.com/contact-us",
-      "categories": ["healthcare", "real-estate", "financial-services", "business"],
-      "formats": ["csv", "xlsx", "json"],
-      "authentication": "contact-for-access"
+      "anchor": "https://www.lorannllc.com/.well-known/api-catalog",
+      "item": [
+        {
+          "href": "https://www.lorannllc.com/contact-us",
+          "type": "text/html",
+          "title": "B2B Data Request — Healthcare, Real Estate, Financial, Business"
+        }
+      ]
+    },
+    {
+      "anchor": "https://www.lorannllc.com",
+      "describedby": [
+        {
+          "href": "https://www.lorannllc.com/llms.txt",
+          "type": "text/plain",
+          "title": "Lorann LLMs.txt — site description for AI agents"
+        }
+      ],
+      "service-doc": [
+        {
+          "href": "https://www.lorannllc.com/contact-us",
+          "title": "Data Request & Sample Form"
+        }
+      ],
+      "service-meta": [
+        {
+          "href": "https://www.lorannllc.com/.well-known/mcp/server-card.json",
+          "type": "application/json",
+          "title": "MCP Server Card"
+        }
+      ]
     }
-  ],
-  "contact": {
-    "name": "Lorann LLC",
-    "url": "https://www.lorannllc.com",
-    "email": "support@lorannllc.com"
-  },
-  "version": "1.0.0",
-  "published": "2024-01-01T00:00:00Z"
+  ]
 };
 
 export async function GET() {
   return NextResponse.json(catalog, {
     headers: {
-      "Content-Type": "application/json",
+      "Content-Type": 'application/linkset+json; profile="https://www.rfc-editor.org/info/rfc9727"',
       "Access-Control-Allow-Origin": "*",
       "Cache-Control": "public, max-age=86400",
     },

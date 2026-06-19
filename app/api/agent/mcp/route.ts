@@ -1,15 +1,16 @@
 import { NextResponse } from "next/server";
 
+// MCP Server Card — served at /.well-known/mcp AND /.well-known/mcp/server-card.json
 const mcpCard = {
   "name": "Lorann B2B Data",
   "version": "1.0.0",
+  "protocolVersion": "2025-03-26",
   "description": "MCP server providing access to Lorann's verified B2B contact databases. Query healthcare professionals, real estate agents, financial advisors, and business decision-makers with specialty and geographic filters.",
-  "url": "https://www.lorannllc.com",
-  "transport": "https",
+  "endpoint": "https://www.lorannllc.com/api/mcp",
+  "transport": ["streamable-http"],
   "capabilities": {
-    "tools": true,
-    "resources": false,
-    "prompts": false
+    "tools": {},
+    "resources": {}
   },
   "tools": [
     {
