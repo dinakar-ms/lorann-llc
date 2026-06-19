@@ -1,6 +1,18 @@
 import { NextResponse, type NextRequest } from "next/server";
 
 export function middleware(request: NextRequest) {
+  // Markdown content negotiation — when agents request text/markdown, serve our markdown endpoint
+  const accept = request.headers.get("accept") || "";
+  if (accept.includes("text/markdown")) {
+    const { pathname } = request.nextUrl;
+    const url = request.nextUrl.clone();
+    url.pathname = "/api/agent/markdown";
+    url.searchParams.set("path", pathname);
+    return NextResponse.rewrite(url, {
+      headers: { "Vary": "Accept" },
+    });
+  }
+
   const secFetchDest = request.headers.get("sec-fetch-dest");
   const isIframe = secFetchDest === "iframe";
   const hasCookie = request.cookies.has("sanity-preview");

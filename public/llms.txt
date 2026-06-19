@@ -1,0 +1,71 @@
+# Lorann — B2B Data & Marketing Lists
+
+> Lorann provides verified B2B contact databases for healthcare professionals, real estate agents, financial advisors, and business decision-makers across the United States.
+
+## What Lorann Does
+
+Lorann sources, verifies, and delivers B2B marketing lists to help companies reach licensed professionals and business contacts through email, direct mail, phone, and digital advertising channels.
+
+## Key Data Categories
+
+### Healthcare
+- Physicians & Doctors (NPI-verified, 850,000+ records)
+- Registered Nurses, LPNs, CNAs, Nurse Practitioners
+- Hospital Administrators, CEOs, CFOs, CMOs, CNOs
+- Dentists, Dental Hygienists, Optometrists
+- Pharmacists, Physical Therapists, Occupational Therapists
+- Psychologists, Psychiatrists, Licensed Counselors
+- Veterinarians, Chiropractors, Allied Health Professionals
+
+### Real Estate
+- Licensed Realtors and Real Estate Agents
+- Real Estate Brokers
+- Property Managers
+
+### Financial Services
+- Financial Advisors and Planners
+- Insurance Agents and Brokers
+- Accountants and CPAs
+- Mortgage Brokers
+
+### Business
+- Small Business Owners
+- Corporate Executives and C-Suite
+- IT Decision Makers
+- HR Professionals
+
+## Data Quality
+
+- Records verified against official registries (NPPES, state license boards, NAR)
+- Weekly hygiene cycles against USPS NCOA and opt-out databases
+- Email deliverability validated via SMTP verification
+- Bounce rates consistently under 2%
+- Phone numbers scrubbed against National DNC Registry
+
+## Compliance
+
+All data is supplied for B2B marketing purposes only. Lorann complies with:
+- HIPAA (professional contact data only — no PHI)
+- CAN-SPAM
+- CCPA and state privacy laws
+- FCRA exemption for B2B marketing use
+- National Do Not Call Registry
+
+## Delivery Formats
+
+- CSV, Excel (.xlsx), pipe-delimited
+- CRM-ready imports (Salesforce, HubSpot, Veeva, Zoho)
+- Email broadcast-ready list format
+- Programmatic digital audience segments
+
+## Contact
+
+- Website: https://www.lorannllc.com
+- Contact form: https://www.lorannllc.com/contact-us
+- Request sample: https://www.lorannllc.com/contact-us
+
+## API & Agent Access
+
+- API Catalog: https://www.lorannllc.com/.well-known/api-catalog
+- MCP Server: https://www.lorannllc.com/.well-known/mcp
+- Agent Skills: https://www.lorannllc.com/.well-known/agent-skills/index.json

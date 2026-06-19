@@ -217,6 +217,34 @@ export default function RootLayout({
             (ssr: false) so it doesn't block first paint. */}
         <VisualEditing />
         <CookieConsent />
+        {/* WebMCP — expose key site actions to in-browser AI agents */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              if (typeof navigator !== 'undefined' && navigator.mediaContext && navigator.mediaContext.provideContext) {
+                navigator.mediaContext.provideContext({
+                  name: "Lorann B2B Data",
+                  description: "Verified B2B contact databases for healthcare, real estate, financial, and business professionals.",
+                  url: "https://www.lorannllc.com",
+                  tools: [
+                    {
+                      name: "search_contacts",
+                      description: "Search Lorann's B2B contact database by profession, specialty, and geography",
+                      url: "https://www.lorannllc.com/contact-us",
+                      inputSchema: { type: "object", properties: { profession: { type: "string" }, state: { type: "string" }, specialty: { type: "string" } }, required: ["profession"] }
+                    },
+                    {
+                      name: "request_sample",
+                      description: "Request a free data sample from Lorann",
+                      url: "https://www.lorannllc.com/contact-us",
+                      inputSchema: { type: "object", properties: { category: { type: "string" }, email: { type: "string" } }, required: ["category", "email"] }
+                    }
+                  ]
+                });
+              }
+            `,
+          }}
+        />
       </body>
     </html>
   );

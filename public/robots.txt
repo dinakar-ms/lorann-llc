@@ -1,0 +1,54 @@
+User-agent: *
+Allow: /
+Disallow: /studio/
+Disallow: /api/
+Disallow: /_next/
+
+# AI crawler access — full public content permitted
+User-agent: GPTBot
+Allow: /
+
+User-agent: ChatGPT-User
+Allow: /
+
+User-agent: OAI-SearchBot
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: anthropic-ai
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: Google-Extended
+Allow: /
+
+User-agent: Gemini-Extended
+Allow: /
+
+User-agent: Applebot-Extended
+Allow: /
+
+User-agent: CCBot
+Allow: /
+
+User-agent: Bytespider
+Allow: /
+
+User-agent: Diffbot
+Allow: /
+
+User-agent: FacebookBot
+Allow: /
+
+Sitemap: https://www.lorannllc.com/sitemap.xml
+
+# Content-Signals
+# LLMs-Txt: https://www.lorannllc.com/llms.txt
+# API-Catalog: https://www.lorannllc.com/.well-known/api-catalog
+# MCP-Server: https://www.lorannllc.com/.well-known/mcp
+# Agent-Skills: https://www.lorannllc.com/.well-known/agent-skills/index.json
+# X-Robots-Markdown: https://www.lorannllc.com/llms.txt

@@ -84,8 +84,35 @@ const nextConfig = {
       {
         // Apply security headers to every route
         source: "/(.*)",
-        headers: securityHeaders,
+        headers: [
+          ...securityHeaders,
+          // Agent discovery link headers (RFC 8288 / isitagentready.com)
+          {
+            key: "Link",
+            value: [
+              '</.well-known/api-catalog>; rel="api-catalog"',
+              '</.well-known/mcp>; rel="mcp"',
+              '</.well-known/agent-skills/index.json>; rel="agent-skills-index"',
+              '</llms.txt>; rel="describedby"; type="text/plain"',
+            ].join(", "),
+          },
+          // Content negotiation — signal that text/markdown is supported
+          {
+            key: "Vary",
+            value: "Accept",
+          },
+        ],
       },
+    ];
+  },
+  async rewrites() {
+    return [
+      // Map /.well-known/* agent discovery paths to API route handlers
+      { source: "/.well-known/api-catalog",               destination: "/api/agent/api-catalog" },
+      { source: "/.well-known/mcp",                        destination: "/api/agent/mcp" },
+      { source: "/.well-known/agent-skills/index.json",    destination: "/api/agent/skills" },
+      { source: "/.well-known/openid-configuration",       destination: "/api/agent/openid-configuration" },
+      { source: "/.well-known/oauth-protected-resource",   destination: "/api/agent/oauth-protected-resource" },
     ];
   },
   async redirects() {
