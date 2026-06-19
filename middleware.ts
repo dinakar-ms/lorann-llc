@@ -1,10 +1,12 @@
 import { NextResponse, type NextRequest } from "next/server";
 
 export function middleware(request: NextRequest) {
-  // Markdown content negotiation — when agents request text/markdown, serve our markdown endpoint
+  // Markdown content negotiation — when agents request text/markdown, serve our markdown endpoint.
+  // Exclude static .md files (auth.md, llms.txt) so they are served as-is from public/.
   const accept = request.headers.get("accept") || "";
-  if (accept.includes("text/markdown")) {
-    const { pathname } = request.nextUrl;
+  const { pathname } = request.nextUrl;
+  const isStaticMarkdown = pathname.endsWith(".md") || pathname === "/llms.txt" || pathname === "/auth.md";
+  if (accept.includes("text/markdown") && !isStaticMarkdown) {
     const url = request.nextUrl.clone();
     url.pathname = "/api/agent/markdown";
     url.searchParams.set("path", pathname);
