@@ -46,8 +46,5 @@ Allow: /
 
 Sitemap: https://www.lorannllc.com/sitemap.xml
 
-# Content Signals for AI agents (Cloudflare spec)
-content-signal: llms-txt=https://www.lorannllc.com/llms.txt
-content-signal: api-catalog=https://www.lorannllc.com/.well-known/api-catalog
-content-signal: mcp-server=https://www.lorannllc.com/.well-known/mcp/server-card.json
-content-signal: agent-skills=https://www.lorannllc.com/.well-known/agent-skills/index.json
+# Content Signals for AI agents (contentsignals.org spec)
+Content-Signal: ai-train=no, search=yes, ai-input=yes

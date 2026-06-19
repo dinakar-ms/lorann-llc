@@ -221,8 +221,8 @@ export default function RootLayout({
         <script
           dangerouslySetInnerHTML={{
             __html: `
-              if (typeof navigator !== 'undefined' && navigator.mediaContext && navigator.mediaContext.provideContext) {
-                navigator.mediaContext.provideContext({
+              if (typeof navigator !== 'undefined' && navigator.modelContext && navigator.modelContext.provideContext) {
+                navigator.modelContext.provideContext({
                   name: "Lorann B2B Data",
                   description: "Verified B2B contact databases for healthcare, real estate, financial, and business professionals.",
                   url: "https://www.lorannllc.com",

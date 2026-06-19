@@ -117,6 +117,8 @@ const nextConfig = {
       { source: "/.well-known/oauth-protected-resource",  destination: "/api/agent/oauth-protected-resource" },
       // RFC 7591 — OAuth Dynamic Client Registration
       { source: "/oauth/register",                        destination: "/api/agent/oauth-register" },
+      // RFC 8414 — OAuth Authorization Server Metadata + agent_auth block
+      { source: "/.well-known/oauth-authorization-server", destination: "/api/agent/oauth-authorization-server" },
     ];
   },
   async redirects() {
