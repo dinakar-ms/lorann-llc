@@ -160,7 +160,7 @@ const COMPLIANCE_PHOTOS: Record<string, string> = {
 
   /* ── Health-therapy inner pages ── */
   "health-therapy/physical-therapists":                   "https://images.unsplash.com/photo-1606811971618-4486d14f3f99?auto=format&fit=crop&w=900&q=80", // H
-  "health-therapy/occupational-therapists":               "https://images.unsplash.com/photo-1576671414121-aa2d60f2f5a7?auto=format&fit=crop&w=900&q=80", // K
+  "health-therapy/occupational-therapists":               "https://images.unsplash.com/photo-1576765608535-5f04d1e3f289?auto=format&fit=crop&w=900&q=80", // KK2
   "health-therapy/speech-language-therapists":            "https://images.unsplash.com/photo-1551884170-09fb70a3a2ed?auto=format&fit=crop&w=900&q=80", // M
   "health-therapy/respiratory-therapists":                "https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?auto=format&fit=crop&w=900&q=80", // N
   "health-therapy/massage-therapists":                    "https://images.unsplash.com/photo-1559757175-5700dde675bc?auto=format&fit=crop&w=900&q=80", // O

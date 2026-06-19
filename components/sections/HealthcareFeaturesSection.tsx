@@ -38,7 +38,7 @@ const HERO_IMAGES: Record<string, string> = {
   "specialty-other":                "https://images.unsplash.com/photo-1606811971618-4486d14f3f99?auto=format&fit=crop&w=1400&q=80", // H
 
   /* ── Physicians inner pages ── */
-  "physicians-advanced-practice/physicians-doctors":      "https://images.unsplash.com/photo-1576671414121-aa2d60f2f5a7?auto=format&fit=crop&w=1400&q=80", // K
+  "physicians-advanced-practice/physicians-doctors":      "https://images.unsplash.com/photo-1559839734-2b71ea197ec2?auto=format&fit=crop&w=1400&q=80", // KK
   "physicians-advanced-practice/podiatrists":             "https://images.unsplash.com/photo-1551884170-09fb70a3a2ed?auto=format&fit=crop&w=1400&q=80", // M
   "physicians-advanced-practice/nurse-practitioners":     "https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?auto=format&fit=crop&w=1400&q=80", // N
   "physicians-advanced-practice/physician-assistants":    "https://images.unsplash.com/photo-1559757175-5700dde675bc?auto=format&fit=crop&w=1400&q=80", // O
