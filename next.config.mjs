@@ -76,10 +76,11 @@ const nextConfig = {
         hostname: "plus.unsplash.com",
       },
     ],
-    // Cap device sizes at 1440px (QHD) — removes 1920/2048/3840 breakpoints that
-    // Next.js includes by default. 1440px covers all practical monitor sizes on a
-    // marketing site; removing 1920 prevents unnecessarily large image variants.
-    deviceSizes: [640, 750, 828, 1080, 1200, 1440],
+    // Cap device sizes at 1080px — removes larger breakpoints that Next.js adds by
+    // default. Marketing site containers are ≤1152px wide (max-w-6xl) with padding,
+    // so 1080px covers every practical use case without generating over-sized srcset
+    // entries that inflate page weight for crawlers.
+    deviceSizes: [640, 750, 828, 1080],
     // Serve modern image formats for smaller file sizes
     formats: ["image/avif", "image/webp"],
   },

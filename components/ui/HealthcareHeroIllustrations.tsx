@@ -30,6 +30,7 @@ function HeroPhoto({ src, alt }: HeroPhotoProps) {
         fill
         className="object-cover object-top"
         sizes="(max-width: 1024px) 0px, 44vw"
+        quality={65}
         priority
       />
       {/* subtle brand overlay */}

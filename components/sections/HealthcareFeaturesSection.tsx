@@ -848,7 +848,7 @@ export default function HealthcareFeaturesSection({
 
           {/* Hero card */}
           <div className="reveal lg:col-span-2 lg:row-span-2 relative overflow-hidden rounded-2xl min-h-[380px] lg:min-h-[520px] group cursor-default">
-            <Image src={heroImage} alt={heroTitle} fill className="object-cover transition-transform duration-700 group-hover:scale-105" sizes="(max-width: 1024px) 100vw, 700px" priority />
+            <Image src={heroImage} alt={heroTitle} fill className="object-cover transition-transform duration-700 group-hover:scale-105" sizes="(max-width: 1024px) 100vw, 700px" quality={55} priority />
             <div className="absolute inset-0" style={{ background: "linear-gradient(to top, rgba(6,16,48,0.97) 0%, rgba(6,16,48,0.6) 45%, rgba(6,16,48,0.18) 100%)" }} />
             <div className="absolute top-5 right-5 flex items-center gap-2 px-3 py-1.5 rounded-full" style={{ background: "rgba(0,167,239,0.15)", border: "1px solid rgba(0,167,239,0.35)", backdropFilter: "blur(12px)" }}>
               <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse" />

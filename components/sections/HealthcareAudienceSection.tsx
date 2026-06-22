@@ -162,6 +162,7 @@ export default function HealthcareAudienceSection({ slugParts }: { slugParts: st
               fill
               className="object-cover object-top transition-transform duration-700 group-hover:scale-105"
               sizes="(max-width: 1280px) 100vw, 1280px"
+              quality={55}
               priority
             />
             <div className="absolute inset-0" style={{ background: DARK_OVERLAY }} />
@@ -228,6 +229,7 @@ export default function HealthcareAudienceSection({ slugParts }: { slugParts: st
                     fill
                     className="object-cover transition-transform duration-700 group-hover:scale-105"
                     sizes="(max-width: 768px) 100vw, 33vw"
+                    quality={55}
                   />
                   <div className="absolute inset-0" style={{ background: DARK_OVERLAY }} />
 

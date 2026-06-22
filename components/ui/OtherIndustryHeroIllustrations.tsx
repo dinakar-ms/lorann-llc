@@ -25,6 +25,7 @@ function HeroPhoto({ src, alt, hasPeople }: HeroPhotoProps) {
         fill
         className={`object-cover ${hasPeople ? "object-top" : "object-center"}`}
         sizes="(max-width: 1024px) 0px, 44vw"
+        quality={65}
         priority
       />
       <div className="absolute inset-0 bg-gradient-to-br from-blue-900/5 via-transparent to-cyan-500/8 pointer-events-none" />

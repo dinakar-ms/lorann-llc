@@ -318,6 +318,7 @@ export default function HealthcareComplianceSection({
                   fill
                   className="object-cover"
                   sizes="(max-width: 1024px) 100vw, 400px"
+                  quality={60}
                 />
 
                 {/* Bottom gradient overlay */}
