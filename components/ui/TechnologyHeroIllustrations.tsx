@@ -20,7 +20,7 @@ interface HeroPhotoProps {
 
 function HeroPhoto({ src, alt, hasPeople }: HeroPhotoProps) {
   const crop = hasPeople ? "crop=faces,top&" : "crop=entropy&";
-  const url = `${src}?auto=format&fit=crop&${crop}w=800&q=85`;
+  const url = `${src}?auto=format&fit=crop&${crop}w=700&q=80`;
   return (
     <div className="relative w-full aspect-[4/3]">
       <Image
@@ -29,7 +29,7 @@ function HeroPhoto({ src, alt, hasPeople }: HeroPhotoProps) {
         fill
         className={`object-cover ${hasPeople ? "object-top" : "object-center"}`}
         sizes="(max-width: 1024px) 0px, 44vw"
-        quality={65}
+        quality={60}
         priority
       />
       <div className="absolute inset-0 bg-gradient-to-br from-blue-900/5 via-transparent to-cyan-500/8 pointer-events-none" />
