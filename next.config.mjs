@@ -76,11 +76,12 @@ const nextConfig = {
         hostname: "plus.unsplash.com",
       },
     ],
-    // Cap device sizes at 1080px — removes larger breakpoints that Next.js adds by
-    // default. Marketing site containers are ≤1152px wide (max-w-6xl) with padding,
-    // so 1080px covers every practical use case without generating over-sized srcset
-    // entries that inflate page weight for crawlers.
-    deviceSizes: [640, 750, 828, 1080],
+    // Cap device sizes at 828px — containers on this site are ≤768px for articles
+    // and hero illustrations display at ≤44vw (~634px), so 828px covers every
+    // practical viewport without generating heavier srcset entries.
+    // Full-bleed images that need more width use quality 55 with overlays so
+    // resolution difference is imperceptible.
+    deviceSizes: [640, 750, 828],
     // Serve modern image formats for smaller file sizes
     formats: ["image/avif", "image/webp"],
   },
