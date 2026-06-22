@@ -161,7 +161,7 @@ export default function HealthcareAudienceSection({ slugParts }: { slugParts: st
               alt={personas[0].role}
               fill
               className="object-cover object-top transition-transform duration-700 group-hover:scale-105"
-              sizes="100vw"
+              sizes="(max-width: 1280px) 100vw, 1280px"
               priority
             />
             <div className="absolute inset-0" style={{ background: DARK_OVERLAY }} />

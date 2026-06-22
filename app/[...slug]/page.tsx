@@ -890,10 +890,11 @@ function renderCustom(page: PageDoc, slugParts: string[], dataCards?: DataCard[]
                   >
                     {m.photo ? (
                       <Image
-                        src={m.photo}
+                        src={(m.photo ?? '').replace(/\/team\/(.+)\.png$/, '/team/$1.jpg')}
                         alt={`${m.name}, ${m.title}`}
                         fill
                         sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                        quality={70}
                         className="object-cover"
                         style={{ objectPosition: m.objectPosition ?? "center 20%" }}
                         priority
@@ -1091,11 +1092,12 @@ function renderFallback(page: PageDoc, slugParts: string[], finalCta: FinalCTACo
             {page.heroImage?.asset && (
               <div className="mb-10">
                 <Image
-                  src={urlForImage(page.heroImage).width(1600).url()}
+                  src={urlForImage(page.heroImage).width(1200).url()}
                   alt={page.heroImage.alt || ""}
-                  width={1600}
-                  height={900}
+                  width={1200}
+                  height={675}
                   priority
+                  sizes="(max-width: 768px) 100vw, 768px"
                   className="rounded-xl w-full h-auto"
                 />
               </div>
