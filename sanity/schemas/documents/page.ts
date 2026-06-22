@@ -554,7 +554,7 @@ export const pageType = defineType({
       rows: 8,
       fieldset: "seo",
       description:
-        "Optional JSON-LD structured data. Leave blank to auto-generate.",
+        "Auto-generated from page content (Article + BreadcrumbList + FAQPage). Edit only to override with custom JSON-LD. Re-run scripts/populate-jsonld.mjs to refresh.",
       validation: (Rule) =>
         Rule.custom((value) => {
           if (!value) return true;

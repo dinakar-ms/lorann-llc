@@ -158,11 +158,42 @@ export async function generateMetadata(): Promise<Metadata> {
   };
 }
 
+function buildHomepageJsonLd(doc: HomepageDoc | null) {
+  const description =
+    doc?.metaDescription ||
+    "Build, enrich, and activate high-performing audiences across B2B, consumer, and healthcare datasets. Powered by Signal eXchange™.";
+  const title = doc?.metaTitle || "Lorann — List Smarter · Data-Driven Audience Intelligence";
+
+  if (doc?.schemaMarkup) {
+    try { return JSON.parse(doc.schemaMarkup); } catch {}
+  }
+
+  return [
+    {
+      "@context": "https://schema.org",
+      "@type": "Organization",
+      "name": "Lorann LLC",
+      "url": "https://www.lorannllc.com",
+      "description": description,
+      "contactPoint": { "@type": "ContactPoint", "contactType": "sales", "url": "https://www.lorannllc.com/contact" },
+    },
+    {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      "name": title,
+      "url": "https://www.lorannllc.com",
+      "description": description,
+    },
+  ];
+}
+
 export default async function HomePage() {
   const doc = await sanityFetch<HomepageDoc | null>({
     query: homepageQuery,
     tags: ["homepage"],
   });
+
+  const jsonLd = buildHomepageJsonLd(doc);
 
   const heroContent: HeroContent = {
     badgeLabel: doc?.heroBadgeLabel,
@@ -244,6 +275,13 @@ export default async function HomePage() {
 
   return (
     <>
+      {(Array.isArray(jsonLd) ? jsonLd : [jsonLd]).map((schema, i) => (
+        <script
+          key={i}
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
+        />
+      ))}
       <ScrollReveal />
       <Hero content={heroContent} />
       <StatsStripAndTrust content={statsStrip} />

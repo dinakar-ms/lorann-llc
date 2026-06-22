@@ -281,7 +281,14 @@ export const homepageType = defineType({
       fieldset: "seo",
       validation: (Rule) => Rule.uri({ scheme: ["http", "https"], allowRelative: false }),
     }),
-    defineField({ name: "schemaMarkup", title: "Schema Markup (JSON-LD)", type: "text", rows: 6, fieldset: "seo" }),
+    defineField({
+      name: "schemaMarkup",
+      title: "Schema Markup (JSON-LD)",
+      type: "text",
+      rows: 6,
+      fieldset: "seo",
+      description: "Auto-generated (Organization + WebSite schema). Edit only to override. Re-run scripts/populate-jsonld.mjs to refresh.",
+    }),
     defineField({
       name: "ogTitle",
       title: "Open Graph Title",
