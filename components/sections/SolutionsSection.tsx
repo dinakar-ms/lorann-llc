@@ -173,9 +173,9 @@ function VizB() {
       <circle cx="160" cy="90" r="6" fill="#fff" stroke="#00A7EF" strokeWidth="2.5" />
       <circle cx="210" cy="60" r="6" fill="#fff" stroke="#00A7EF" strokeWidth="2.5" />
       <circle cx="260" cy="30" r="8" fill="#00A7EF"><animate attributeName="r" values="6;10;6" dur="1.5s" repeatCount="indefinite" /></circle>
-      <g transform="translate(232, 50)">
-        <rect x="0" y="0" width="64" height="30" rx="15" fill="#1D45D9" />
-        <text x="32" y="20" fill="#fff" fontFamily="Inter" fontSize="13" fontWeight="700" textAnchor="middle">+40%</text>
+      <g transform="translate(263, 44)">
+        <rect x="0" y="0" width="53" height="24" rx="12" fill="#1D45D9" />
+        <text x="26" y="16" fill="#fff" fontFamily="Inter" fontSize="12" fontWeight="700" textAnchor="middle">+40%</text>
       </g>
     </svg>
   );
