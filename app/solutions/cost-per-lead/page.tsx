@@ -417,16 +417,16 @@ export default function CostPerLeadPage() {
                 </div>
 
                 <div className="bg-white/10 backdrop-blur-md rounded-2xl border border-white/15 p-6 mb-6">
-                  <div className="text-center">
-                    <span className="font-display font-bold text-2xl lg:text-3xl tracking-[-0.02em] text-cyan-200">
+                  <div className="flex flex-wrap justify-center items-baseline gap-x-2 gap-y-1">
+                    <span className="font-display font-bold text-2xl lg:text-3xl tracking-[-0.02em] text-cyan-200 whitespace-nowrap">
                       CPL
                     </span>
-                    <span className="text-white/60 text-2xl mx-3">=</span>
-                    <span className="font-display font-bold text-lg lg:text-xl text-white/90">
+                    <span className="text-white/60 text-2xl whitespace-nowrap">=</span>
+                    <span className="font-display font-bold text-lg lg:text-xl text-white/90 whitespace-nowrap">
                       Total Campaign Spend
                     </span>
-                    <span className="text-white/60 text-xl mx-3">÷</span>
-                    <span className="font-display font-bold text-lg lg:text-xl text-white/90">
+                    <span className="text-white/60 text-xl whitespace-nowrap">÷</span>
+                    <span className="font-display font-bold text-lg lg:text-xl text-white/90 whitespace-nowrap">
                       Leads Generated
                     </span>
                   </div>

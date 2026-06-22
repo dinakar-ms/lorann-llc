@@ -81,7 +81,7 @@ function FaqCard({
         }`}
       >
         <div className="overflow-hidden">
-          <div className="px-7 pb-7 pl-[4.5rem]">
+          <div className="px-5 pb-6 pl-10 sm:px-7 sm:pb-7 sm:pl-[4.5rem]">
             <div className="text-slate-600 text-[15px] leading-[1.75] prose-p:mb-3 last:prose-p:mb-0">
               <RichText value={item.answer} />
             </div>

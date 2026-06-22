@@ -110,10 +110,10 @@ export default function LeafPage({
             >
               {stats.map((s) => (
                 <div key={s.label} className="text-center">
-                  <div className="font-display font-bold text-3xl lg:text-4xl tracking-[-0.02em] text-slate-900 mb-1">
+                  <div className="font-display font-bold text-xl sm:text-3xl lg:text-4xl tracking-[-0.02em] text-slate-900 mb-1 leading-tight">
                     {s.value}
                   </div>
-                  <div className="font-mono text-[11px] uppercase tracking-[0.12em] text-slate-500">
+                  <div className="font-mono text-[10px] sm:text-[11px] uppercase tracking-[0.12em] text-slate-500">
                     {s.label}
                   </div>
                 </div>

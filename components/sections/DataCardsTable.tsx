@@ -211,7 +211,7 @@ export default function DataCardsTable({ cards }: Props) {
           <div className="animate-pulse space-y-6">
             <div className="h-10 bg-slate-200 rounded-xl w-2/3 mx-auto" />
             <div className="h-6 bg-slate-200 rounded-lg w-1/2 mx-auto" />
-            <div className="grid grid-cols-4 gap-4">
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
               {[...Array(4)].map((_, i) => <div key={i} className="h-24 bg-slate-200 rounded-2xl" />)}
             </div>
             <div className="h-14 bg-slate-200 rounded-2xl" />

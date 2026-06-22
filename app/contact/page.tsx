@@ -211,7 +211,7 @@ export default async function ContactPage() {
                     <div className="text-[12px] font-mono uppercase tracking-wider text-slate-500 mb-1">
                       {c.infoEmailLabel}
                     </div>
-                    <div className="font-semibold text-slate-900 group-hover:text-blue-700 transition-colors">
+                    <div className="font-semibold text-slate-900 group-hover:text-blue-700 transition-colors break-all">
                       {c.infoEmailValue}
                     </div>
                   </div>
