@@ -76,6 +76,10 @@ const nextConfig = {
         hostname: "plus.unsplash.com",
       },
     ],
+    // Cap device sizes at 1920px (Full HD) — removes the 2048/3840 breakpoints
+    // that Next.js includes by default, preventing 4K images from being generated.
+    // 1920px is sufficient for all screen sizes on a marketing site.
+    deviceSizes: [640, 750, 828, 1080, 1200, 1920],
     // Serve modern image formats for smaller file sizes
     formats: ["image/avif", "image/webp"],
   },
