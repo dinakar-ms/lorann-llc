@@ -230,13 +230,13 @@ export default function RootLayout({
                     {
                       name: "search_contacts",
                       description: "Search Lorann's B2B contact database by profession, specialty, and geography",
-                      url: "https://www.lorannllc.com/contact-us",
+                      url: "https://www.lorannllc.com/contact",
                       inputSchema: { type: "object", properties: { profession: { type: "string" }, state: { type: "string" }, specialty: { type: "string" } }, required: ["profession"] }
                     },
                     {
                       name: "request_sample",
                       description: "Request a free data sample from Lorann",
-                      url: "https://www.lorannllc.com/contact-us",
+                      url: "https://www.lorannllc.com/contact",
                       inputSchema: { type: "object", properties: { category: { type: "string" }, email: { type: "string" } }, required: ["category", "email"] }
                     }
                   ]

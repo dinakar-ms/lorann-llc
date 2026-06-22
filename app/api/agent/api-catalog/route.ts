@@ -7,7 +7,7 @@ const catalog = {
       "anchor": "https://www.lorannllc.com/.well-known/api-catalog",
       "item": [
         {
-          "href": "https://www.lorannllc.com/contact-us",
+          "href": "https://www.lorannllc.com/contact",
           "type": "text/html",
           "title": "B2B Data Request — Healthcare, Real Estate, Financial, Business"
         }
@@ -24,7 +24,7 @@ const catalog = {
       ],
       "service-doc": [
         {
-          "href": "https://www.lorannllc.com/contact-us",
+          "href": "https://www.lorannllc.com/contact",
           "title": "Data Request & Sample Form"
         }
       ],

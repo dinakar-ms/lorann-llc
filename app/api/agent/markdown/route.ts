@@ -58,7 +58,7 @@ Lorann provides verified B2B contact databases for healthcare professionals, rea
 ## Contact
 
 - Website: https://www.lorannllc.com
-- Request a sample or count: https://www.lorannllc.com/contact-us
+- Request a sample or count: https://www.lorannllc.com/contact
 - Email: support@lorannllc.com
 `;
 

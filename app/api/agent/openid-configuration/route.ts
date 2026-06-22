@@ -14,7 +14,7 @@ const oidcConfig = {
   "token_endpoint_auth_methods_supported": ["client_secret_basic", "client_secret_post"],
   "claims_supported": ["sub", "name", "email", "email_verified"],
   "grant_types_supported": ["authorization_code", "client_credentials"],
-  "service_documentation": "https://www.lorannllc.com/contact-us",
+  "service_documentation": "https://www.lorannllc.com/contact",
   "op_policy_uri": "https://www.lorannllc.com/privacy-policy",
   "op_tos_uri": "https://www.lorannllc.com/terms-of-service"
 };

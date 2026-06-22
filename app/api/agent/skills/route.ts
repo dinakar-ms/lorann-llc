@@ -11,7 +11,7 @@ const skillsIndex = {
       "name": "Search B2B Contacts",
       "description": "Search and filter Lorann's verified B2B contact databases by profession, specialty, geography, and credential type",
       "type": "action",
-      "url": "https://www.lorannllc.com/contact-us",
+      "url": "https://www.lorannllc.com/contact",
       "inputSchema": {
         "type": "object",
         "properties": {
@@ -35,14 +35,14 @@ const skillsIndex = {
       "name": "Request Free Data Sample",
       "description": "Request a free sample of Lorann's B2B contact data for a given professional category",
       "type": "action",
-      "url": "https://www.lorannllc.com/contact-us"
+      "url": "https://www.lorannllc.com/contact"
     },
     {
       "id": "get-record-counts",
       "name": "Get Record Counts",
       "description": "Get estimated record counts for a B2B contact list by profession and geography",
       "type": "query",
-      "url": "https://www.lorannllc.com/contact-us"
+      "url": "https://www.lorannllc.com/contact"
     },
     {
       "id": "check-compliance",

@@ -6,7 +6,7 @@ const oauthResource = {
   "scopes_supported": ["openid", "profile", "email", "data:read", "data:request"],
   "bearer_methods_supported": ["header"],
   "resource_signing_alg_values_supported": ["RS256"],
-  "resource_documentation": "https://www.lorannllc.com/contact-us",
+  "resource_documentation": "https://www.lorannllc.com/contact",
   "resource_policy_uri": "https://www.lorannllc.com/privacy-policy",
   "resource_tos_uri": "https://www.lorannllc.com/terms-of-service"
 };

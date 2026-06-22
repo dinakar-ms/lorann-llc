@@ -57,7 +57,7 @@ const mcpCard = {
   "contact": {
     "name": "Lorann LLC",
     "email": "support@lorannllc.com",
-    "url": "https://www.lorannllc.com/contact-us"
+    "url": "https://www.lorannllc.com/contact"
   },
   "legal": {
     "privacy": "https://www.lorannllc.com/privacy-policy",
