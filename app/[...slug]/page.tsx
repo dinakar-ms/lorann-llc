@@ -132,6 +132,19 @@ type PageDoc = {
   featureGridSections?: GridSectionDoc[];
   proseSections?: ProseSectionData[];
   faqItems?: FaqItemDoc[];
+  // Healthcare CMS sections
+  healthcareFeaturesSection?: {
+    heroImageUrl?: string;
+    kicker?: string;
+    headlinePlain?: string;
+    headlineAccent?: string;
+    cards?: { iconName?: string; title?: string; desc?: string }[];
+  } | null;
+  healthcareComplianceSection?: {
+    photoUrl?: string;
+    intro?: string;
+    items?: { badge?: string; title?: string; desc?: string }[];
+  } | null;
   // Custom
   ctaBannerData?: BannerDoc;
   teamMembers?: TeamMemberDoc[];
@@ -166,7 +179,9 @@ const fullPageQuery = groq`*[_type == "page" && slug.current == $slug][0]{
   hubAttributesSectionKicker, hubAttributesSectionTitlePlain,
   hubAttributesSectionTitleAccent, hubAttributesSectionDescription,
   hubAttributesSectionColumns, hubAttributesItems,
-  featureGridSections, proseSections, faqItems, ctaBannerData,
+  featureGridSections, proseSections, faqItems,
+  healthcareFeaturesSection, healthcareComplianceSection,
+  ctaBannerData,
   teamMembers, caseStudies,
   newsletterHeadlinePlain, newsletterHeadlineAccent, newsletterBody, newsletterBullets,
   focusKeyphrase, metaTitle, metaDescription, canonicalUrl, schemaMarkup, ogTitle, ogDescription, noIndex
@@ -547,12 +562,16 @@ function renderComplianceBand(page: PageDoc) {
 }
 
 // ─── Healthcare sections helper ──────────────────────────
-function renderHealthcareSections(slugParts: string[]) {
+function renderHealthcareSections(
+  slugParts: string[],
+  sanityFeatures?: PageDoc["healthcareFeaturesSection"],
+  sanityCompliance?: PageDoc["healthcareComplianceSection"],
+) {
   if (!slugParts.includes("healthcare")) return null;
   return (
     <>
-      <HealthcareFeaturesSection slugParts={slugParts} />
-      <HealthcareComplianceSection slugParts={slugParts} />
+      <HealthcareFeaturesSection slugParts={slugParts} sanityData={sanityFeatures} />
+      <HealthcareComplianceSection slugParts={slugParts} sanityData={sanityCompliance} />
     </>
   );
 }
@@ -600,7 +619,7 @@ function renderLeaf(page: PageDoc, slugParts: string[]) {
       />
       {renderProseSections(page.proseSections)}
       {renderFeatureGridSections(page.featureGridSections, 1)}
-      {renderHealthcareSections(slugParts)}
+      {renderHealthcareSections(slugParts, page.healthcareFeaturesSection, page.healthcareComplianceSection)}
       {renderFaqSection(page.faqItems)}
       {renderComplianceBand(page)}
       {hasExtraSections && <FinalCTA />}
@@ -655,7 +674,7 @@ function renderHub(page: PageDoc, slugParts: string[]) {
       <HubPage {...hubProps} hideFinalCta={hasExtraSections} />
       {renderFeatureGridSections(page.featureGridSections, 1)}
       {renderProseSections(page.proseSections)}
-      {renderHealthcareSections(slugParts)}
+      {renderHealthcareSections(slugParts, page.healthcareFeaturesSection, page.healthcareComplianceSection)}
       {renderFaqSection(page.faqItems)}
       {hasExtraSections && <FinalCTA />}
     </>

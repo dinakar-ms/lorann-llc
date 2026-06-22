@@ -12,6 +12,10 @@ import {
   proseSectionType,
   faqItemType,
 } from "./objects/templateObjects";
+import {
+  healthcareFeaturesSectionType,
+  healthcareComplianceSectionType,
+} from "./objects/healthcareSectionTypes";
 import { pageType } from "./documents/page";
 import { industryTrendsPageType } from "./documents/industryTrendsPage";
 import { homepageType } from "./documents/homepage";
@@ -42,6 +46,8 @@ export const schema: { types: SchemaTypeDefinition[] } = {
     caseStudyType,
     proseSectionType,
     faqItemType,
+    healthcareFeaturesSectionType,
+    healthcareComplianceSectionType,
     pageType,
     industryTrendsPageType,
     homepageType,

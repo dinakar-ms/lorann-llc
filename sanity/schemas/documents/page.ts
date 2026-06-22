@@ -452,6 +452,20 @@ export const pageType = defineType({
       of: [{ type: "faqItem" }],
     }),
 
+    // ─── Healthcare CMS Sections ────────────────────────
+    defineField({
+      name: "healthcareFeaturesSection",
+      title: "Healthcare Features Section",
+      description: "Feature cards grid rendered on healthcare pages. When populated, overrides the hardcoded default for this page.",
+      type: "healthcareFeaturesSection",
+    }),
+    defineField({
+      name: "healthcareComplianceSection",
+      title: "Healthcare Compliance Section",
+      description: "Compliance badges section (HIPAA/CCPA/etc.) rendered on healthcare pages. When populated, overrides the hardcoded default for this page.",
+      type: "healthcareComplianceSection",
+    }),
+
     // ─── Custom Page Fields ──────────────────────────────
     defineField({
       name: "ctaBannerData",

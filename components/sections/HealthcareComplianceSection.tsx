@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { ShieldCheck, Lock, Mail, Scale, PhoneOff } from "lucide-react";
+import { ShieldCheck, Lock, Mail, Scale, PhoneOff, type LucideIcon } from "lucide-react";
 
 type ComplianceItem = {
   icon: typeof ShieldCheck;
@@ -194,6 +194,28 @@ const COMPLIANCE_PHOTOS: Record<string, string> = {
   "default": "https://images.unsplash.com/photo-1551884170-09fb70a3a2ed?auto=format&fit=crop&w=900&q=80", // M
 };
 
+const BADGE_ICON: Record<string, LucideIcon> = {
+  HIPAA: ShieldCheck,
+  CCPA: Lock,
+  "CAN-SPAM": Mail,
+  FCRA: Scale,
+  DNC: PhoneOff,
+};
+
+const BADGE_COLOR: Record<string, string> = {
+  HIPAA: COLORS.hipaa,
+  CCPA: COLORS.ccpa,
+  "CAN-SPAM": COLORS.canspam,
+  FCRA: COLORS.fcra,
+  DNC: COLORS.dnc,
+};
+
+type SanityComplianceData = {
+  photoUrl?: string;
+  intro?: string;
+  items?: { badge?: string; title?: string; desc?: string }[];
+} | null | undefined;
+
 /* Returns "hub" for hub pages, "hub/sub" for inner pages */
 function getPageKey(slugParts: string[]): string {
   const idx = slugParts.indexOf("healthcare");
@@ -203,12 +225,44 @@ function getPageKey(slugParts: string[]): string {
   return sub ? `${hub}/${sub}` : hub;
 }
 
-export default function HealthcareComplianceSection({ slugParts }: { slugParts: string[] }) {
+export default function HealthcareComplianceSection({
+  slugParts,
+  sanityData,
+}: {
+  slugParts: string[];
+  sanityData?: SanityComplianceData;
+}) {
   const key = getPageKey(slugParts);
   const hubKey = key.split("/")[0];
-  const photo = COMPLIANCE_PHOTOS[key] ?? COMPLIANCE_PHOTOS[hubKey] ?? COMPLIANCE_PHOTOS["default"];
-  /* Inner pages fall back to hub-level compliance text */
-  const { intro, items } = HUB_COMPLIANCE[key] ?? HUB_COMPLIANCE[hubKey] ?? HUB_COMPLIANCE["default"];
+
+  let photo: string;
+  let intro: string;
+  let items: ComplianceItem[];
+
+  if (sanityData?.items && sanityData.items.length > 0) {
+    /* Use Sanity CMS data */
+    photo = sanityData.photoUrl
+      ?? COMPLIANCE_PHOTOS[key]
+      ?? COMPLIANCE_PHOTOS[hubKey]
+      ?? COMPLIANCE_PHOTOS["default"];
+    intro = sanityData.intro ?? "";
+    items = sanityData.items.map((it) => {
+      const badge = it.badge ?? "HIPAA";
+      return {
+        icon: BADGE_ICON[badge] ?? ShieldCheck,
+        badge,
+        title: it.title ?? "",
+        desc: it.desc ?? "",
+        color: BADGE_COLOR[badge] ?? COLORS.hipaa,
+      };
+    });
+  } else {
+    /* Fallback to hardcoded HUB_COMPLIANCE */
+    photo = COMPLIANCE_PHOTOS[key] ?? COMPLIANCE_PHOTOS[hubKey] ?? COMPLIANCE_PHOTOS["default"];
+    const entry = HUB_COMPLIANCE[key] ?? HUB_COMPLIANCE[hubKey] ?? HUB_COMPLIANCE["default"];
+    intro = entry.intro;
+    items = entry.items;
+  }
 
   return (
     <section className="py-16 lg:py-24 bg-white relative overflow-hidden">

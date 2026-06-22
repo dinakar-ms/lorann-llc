@@ -7,6 +7,12 @@ import {
   type LucideIcon,
 } from "lucide-react";
 
+const ICON_MAP: Record<string, LucideIcon> = {
+  ShieldCheck, SlidersHorizontal, FileText, Building2, Layers, RefreshCw,
+  BadgeCheck, Stethoscope, Heart, Brain, Smile, Pill, PawPrint, Users, Cpu,
+  Eye, Award, Activity, ClipboardList, Star, Zap,
+};
+
 type FeatureCard = { icon: LucideIcon; title: string; desc: string };
 type HubFeatures = { kicker: string; headline: string; accent: string; cards: FeatureCard[] };
 
@@ -763,13 +769,50 @@ const DEFAULT: HubFeatures = {
   ],
 };
 
-export default function HealthcareFeaturesSection({ slugParts }: { slugParts: string[] }) {
+type SanityFeaturesData = {
+  heroImageUrl?: string;
+  kicker?: string;
+  headlinePlain?: string;
+  headlineAccent?: string;
+  cards?: { iconName?: string; title?: string; desc?: string }[];
+} | null | undefined;
+
+export default function HealthcareFeaturesSection({
+  slugParts,
+  sanityData,
+}: {
+  slugParts: string[];
+  sanityData?: SanityFeaturesData;
+}) {
   const key = getPageKey(slugParts);
   const hubKey = key.split("/")[0];
 
-  /* Look up: exact sub-page → hub → DEFAULT */
-  const { kicker, headline, accent, cards } = DATA[key] ?? DATA[hubKey] ?? DEFAULT;
-  const heroImage = HERO_IMAGES[key] ?? HERO_IMAGES[hubKey] ?? HERO_IMAGES["default"];
+  let kicker: string;
+  let headline: string;
+  let accent: string;
+  let cards: FeatureCard[];
+  let heroImage: string;
+
+  if (sanityData?.cards && sanityData.cards.length > 0) {
+    /* Use Sanity CMS data */
+    kicker   = sanityData.kicker ?? "";
+    headline = sanityData.headlinePlain ?? "";
+    accent   = sanityData.headlineAccent ?? "";
+    heroImage = sanityData.heroImageUrl ?? HERO_IMAGES[key] ?? HERO_IMAGES[hubKey] ?? HERO_IMAGES["default"];
+    cards = sanityData.cards.map((c) => ({
+      icon: ICON_MAP[c.iconName ?? ""] ?? ShieldCheck,
+      title: c.title ?? "",
+      desc: c.desc ?? "",
+    }));
+  } else {
+    /* Fallback to hardcoded DATA */
+    const entry = DATA[key] ?? DATA[hubKey] ?? DEFAULT;
+    kicker   = entry.kicker;
+    headline = entry.headline;
+    accent   = entry.accent;
+    cards    = entry.cards;
+    heroImage = HERO_IMAGES[key] ?? HERO_IMAGES[hubKey] ?? HERO_IMAGES["default"];
+  }
 
   const { icon: HeroIcon, title: heroTitle, desc: heroDesc } = cards[0];
   const sideCards   = cards.slice(1, 3);
