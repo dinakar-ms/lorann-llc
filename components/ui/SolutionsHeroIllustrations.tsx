@@ -61,8 +61,8 @@ const PHOTOS: Record<string, { src: string; alt: string; hasPeople?: boolean }> 
     hasPeople: true,
   },
   "signal-exchange": {
-    src: "https://plus.unsplash.com/premium_photo-1681399975135-252eab5fd2db",
-    alt: "Abstract 3D network of glowing nodes and connecting lines representing digital data exchange and intent signal transmission across platforms",
+    src: "https://images.unsplash.com/photo-1460925895917-afdab827c52f",
+    alt: "Business analytics dashboard with charts and performance graphs on laptop screen representing real-time intent signal data",
   },
   "data-activation": {
     src: "https://plus.unsplash.com/premium_photo-1733306503329-7a8c701fa9ad",

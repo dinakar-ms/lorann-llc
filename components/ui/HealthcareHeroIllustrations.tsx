@@ -45,8 +45,8 @@ const PHOTOS: Record<string, { src: string; alt: string }> = {
 
   /* ── Healthcare hub ───────────────────────────────────────────────────── */
   "healthcare": {
-    src: "https://images.unsplash.com/photo-1770836037330-9184ab261ed0",
-    alt: "Surgical team in operating room with professional clinical lighting",
+    src: "https://images.unsplash.com/photo-1666214280557-f1b5022eb634",
+    alt: "Doctor performing manual physical examination on patient with stethoscope in clinic",
   },
 
   /* ── Physicians & Advanced Practice ─────────────────────────────────── */
