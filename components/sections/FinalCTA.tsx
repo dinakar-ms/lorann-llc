@@ -30,7 +30,7 @@ function renderLines(text: string) {
 export default function FinalCTA({ content }: { content?: FinalCTAContent }) {
   const kicker = content?.kicker || "Let's Build Together";
   const titleStart = content?.titleStart || "Build the right audience\nfor your";
-  const titleHighlight = content?.titleHighlight || "business.";
+  const titleHighlight = content?.titleHighlight || "business";
   const description =
     content?.description ||
     "Tell us your goals — we'll develop a data strategy aligned to your targeting, activation, and performance needs.";
