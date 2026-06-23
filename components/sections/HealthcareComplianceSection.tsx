@@ -1,5 +1,6 @@
 import Image from "next/image";
 import { ShieldCheck, Lock, Mail, Scale, PhoneOff, type LucideIcon } from "lucide-react";
+import RichText from "@/components/RichText";
 
 type ComplianceItem = {
   icon: typeof ShieldCheck;
@@ -212,7 +213,8 @@ const BADGE_COLOR: Record<string, string> = {
 
 type SanityComplianceData = {
   photoUrl?: string;
-  intro?: string;
+  intro?: any;
+  introRich?: any;
   items?: { badge?: string; title?: string; desc?: string }[];
 } | null | undefined;
 
@@ -236,7 +238,7 @@ export default function HealthcareComplianceSection({
   const hubKey = key.split("/")[0];
 
   let photo: string;
-  let intro: string;
+  let intro: any;
   let items: ComplianceItem[];
 
   if (sanityData?.items && sanityData.items.length > 0) {
@@ -245,7 +247,7 @@ export default function HealthcareComplianceSection({
       ?? COMPLIANCE_PHOTOS[key]
       ?? COMPLIANCE_PHOTOS[hubKey]
       ?? COMPLIANCE_PHOTOS["default"];
-    intro = sanityData.intro ?? "";
+    intro = sanityData.introRich ?? sanityData.intro ?? "";
     items = sanityData.items.map((it) => {
       const badge = it.badge ?? "HIPAA";
       return {
@@ -303,7 +305,9 @@ export default function HealthcareComplianceSection({
                 </span>
               </h2>
             </div>
-            <p className="text-slate-600 text-[16px] lg:text-[17px] leading-[1.8] lg:pt-2">{intro}</p>
+            <div className="text-slate-600 text-[16px] lg:text-[17px] leading-[1.8] lg:pt-2">
+              {Array.isArray(intro) ? <RichText value={intro} /> : intro}
+            </div>
           </div>
 
           {/* Two-column: photo left (stretches to match content height) + items right */}
