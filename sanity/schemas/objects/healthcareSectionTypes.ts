@@ -67,10 +67,15 @@ export const healthcareComplianceSectionType = defineType({
     }),
     defineField({
       name: "intro",
-      title: "Intro Text",
+      title: "Intro Text (legacy)",
       type: "text",
-      rows: 3,
-      description: "Opening paragraph explaining the compliance posture for this page.",
+      hidden: true,
+    }),
+    defineField({
+      name: "introRich",
+      title: "Intro Text",
+      type: "richText",
+      description: "Opening paragraph for the compliance section. Supports bold, italic, underline, and links.",
     }),
     defineField({
       name: "items",
@@ -109,9 +114,10 @@ export const healthcareComplianceSectionType = defineType({
     }),
   ],
   preview: {
-    select: { title: "intro" },
+    select: { title: "introRich" },
     prepare({ title }) {
-      return { title: title?.slice(0, 60) || "Compliance Section" };
+      const text = Array.isArray(title) ? title[0]?.children?.[0]?.text : title;
+      return { title: text?.slice(0, 60) || "Compliance Section" };
     },
   },
 });
