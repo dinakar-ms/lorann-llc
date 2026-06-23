@@ -118,7 +118,7 @@ export default function FaqAccordion({ items }: { items: FaqItem[] }) {
           </div>
           <h2 className="font-display font-bold text-3xl lg:text-[2.6rem] leading-[1.1] tracking-[-0.028em] text-slate-900">
             Frequently asked{" "}
-            <span className="text-gradient">questions.</span>
+            <span className="text-gradient">questions</span>
           </h2>
         </div>
 
