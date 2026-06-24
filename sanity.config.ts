@@ -45,20 +45,21 @@ const PUBLISHER_ALLOWLIST: string[] = (
   .map((e) => e.trim().toLowerCase())
   .filter(Boolean);
 
-const approvalGuardedActions = ["publish", "unpublish"];
-
 function isPublisher(currentUser: { email?: string | null } | null | undefined) {
   const email = (currentUser?.email || "").toLowerCase();
   return email.length > 0 && PUBLISHER_ALLOWLIST.includes(email);
 }
 
-function gatePublishForNonAdmins(
-  prev: Array<{ action?: string }>,
+// Generic over Sanity's action type so the return value satisfies the strict
+// `DocumentActionComponent[]` signature defineConfig() expects. We don't need
+// to import Sanity's exact action type — the generic just preserves it.
+function gatePublishForNonAdmins<T extends { action?: string | undefined }>(
+  prev: T[],
   context: { currentUser?: { email?: string | null } | null }
-) {
+): T[] {
   if (isPublisher(context.currentUser)) return prev;
   return prev.filter(
-    (a) => !approvalGuardedActions.includes(a?.action || "")
+    (a) => a.action !== "publish" && a.action !== "unpublish"
   );
 }
 
