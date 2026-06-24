@@ -37,7 +37,7 @@ interface Props {
   cards: DataCard[];
 }
 
-type SortKey = "name" | "universe" | "lastUpdated";
+type SortKey = "name" | "universe";
 type SortDir = "asc" | "desc";
 
 /* ────────────────────────────────────────────────────────
@@ -45,21 +45,13 @@ type SortDir = "asc" | "desc";
    ──────────────────────────────────────────────────────── */
 const fmt = new Intl.NumberFormat("en-US");
 
-function parseDate(d: string) {
-  const [m, dd, y] = d.split("/").map(Number);
-  return new Date(y, m - 1, dd);
-}
-
-function fmtDate(d: string) {
-  try {
-    return parseDate(d).toLocaleDateString("en-US", {
-      month: "short",
-      day: "numeric",
-      year: "numeric",
-    });
-  } catch {
-    return d;
-  }
+/* Compact "always-3-digit" rendering: 852,048 → "852K+", 1,234,567 → "1.2M+",
+   12,345 → "12.3K+". Matches the formatter used on the detail page so the
+   site reads consistently. */
+function formatUniverse(n: number): string {
+  if (n >= 1_000_000) return (n / 1_000_000).toFixed(1).replace(/\.0$/, "") + "M+";
+  if (n >= 1_000) return (n / 1_000).toFixed(1).replace(/\.0$/, "") + "K+";
+  return fmt.format(n);
 }
 
 function nameToSlug(name: string) {
@@ -73,22 +65,9 @@ const PAGE_OPTIONS = [10, 25, 50, 100] as const;
    ──────────────────────────────────────────────────────── */
 function useCountUp(target: number, duration = 1800) {
   const [count, setCount] = useState(0);
-  const [started, setStarted] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-    const obs = new IntersectionObserver(
-      ([e]) => { if (e.isIntersecting) { setStarted(true); obs.disconnect(); } },
-      { threshold: 0.3 }
-    );
-    obs.observe(el);
-    return () => obs.disconnect();
-  }, []);
-
-  useEffect(() => {
-    if (!started) return;
     let raf: number;
     const start = performance.now();
     const tick = (now: number) => {
@@ -99,7 +78,7 @@ function useCountUp(target: number, duration = 1800) {
     };
     raf = requestAnimationFrame(tick);
     return () => cancelAnimationFrame(raf);
-  }, [started, target, duration]);
+  }, [target, duration]);
 
   return { count, ref };
 }
@@ -144,8 +123,7 @@ export default function DataCardsTable({ cards }: Props) {
     result = [...result].sort((a, b) => {
       let cmp = 0;
       if (sortKey === "name") cmp = a.name.localeCompare(b.name);
-      else if (sortKey === "universe") cmp = a.universe - b.universe;
-      else cmp = parseDate(a.lastUpdated).getTime() - parseDate(b.lastUpdated).getTime();
+      else cmp = a.universe - b.universe;
       return sortDir === "asc" ? cmp : -cmp;
     });
     return result;
@@ -186,8 +164,7 @@ export default function DataCardsTable({ cards }: Props) {
   /* Stats */
   const totalUniverse = useMemo(() => cards.reduce((s, c) => s + c.universe, 0), [cards]);
   const stat1 = useCountUp(cards.length, 1200);
-  const stat2Val = totalUniverse >= 1_000_000 ? Math.round(totalUniverse / 1_000_000) : totalUniverse;
-  const stat2 = useCountUp(stat2Val, 1800);
+  const stat2 = useCountUp(totalUniverse, 1800);
   const stat3 = useCountUp(categories.length - 1, 1000);
 
   /* Pagination range */
@@ -270,7 +247,7 @@ export default function DataCardsTable({ cards }: Props) {
             {
               icon: TrendingUp,
               label: "Total Universe",
-              displayValue: fmt.format(stat2.count) + "M+",
+              displayValue: formatUniverse(stat2.count),
               ref: stat2.ref,
               gradient: "from-cyan-500 to-blue-500",
               bgGlow: "bg-cyan-500/10",
@@ -436,11 +413,6 @@ export default function DataCardsTable({ cards }: Props) {
                   <th className="text-left px-5 py-4 hidden lg:table-cell">
                     <div className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Reach</div>
                   </th>
-                  <th onClick={() => toggleSort("lastUpdated")} className="text-right px-5 py-4 cursor-pointer group select-none">
-                    <div className="flex items-center justify-end gap-2 text-[10px] font-bold text-slate-500 uppercase tracking-widest group-hover:text-blue-600 transition-colors">
-                      Updated <SortIcon col="lastUpdated" />
-                    </div>
-                  </th>
                   <th className="text-center px-5 py-4 text-[10px] font-bold text-slate-400 uppercase tracking-widest">
                     Action
                   </th>
@@ -449,7 +421,7 @@ export default function DataCardsTable({ cards }: Props) {
               <tbody>
                 {paged.length === 0 ? (
                   <tr>
-                    <td colSpan={6} className="text-center py-20">
+                    <td colSpan={5} className="text-center py-20">
                       <div className="inline-flex flex-col items-center">
                         <div className="w-16 h-16 rounded-2xl bg-slate-100 flex items-center justify-center mb-4">
                           <Search className="w-7 h-7 text-slate-300" />
@@ -520,14 +492,6 @@ export default function DataCardsTable({ cards }: Props) {
                               style={{ width: `${barWidth}%` }}
                             />
                           </div>
-                        </td>
-
-                        {/* Updated date */}
-                        <td className="px-5 py-4 text-right">
-                          <span className="inline-flex items-center gap-1.5 text-xs text-slate-500 font-medium">
-                            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse flex-shrink-0" />
-                            {fmtDate(card.lastUpdated)}
-                          </span>
                         </td>
 
                         {/* Action button */}

@@ -1,4 +1,4 @@
-#!/usr/bin/env node
+﻿#!/usr/bin/env node
 /**
  * Check if any proseSections.highlights[].text values are NOT plain strings.
  */
@@ -9,7 +9,7 @@ const TOKEN =
 
 const client = createClient({
   projectId: "a694bsry",
-  dataset: "production",
+  dataset: process.env.NEXT_PUBLIC_SANITY_DATASET || "production",
   apiVersion: "2024-01-01",
   token: TOKEN,
   useCdn: false,

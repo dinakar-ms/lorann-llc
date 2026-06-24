@@ -1,4 +1,4 @@
-#!/usr/bin/env node
+﻿#!/usr/bin/env node
 /**
  * Fix the Solutions page:
  * 1. Set templateType to "hub" so heroDescription renders
@@ -14,7 +14,7 @@ const TOKEN =
 
 const client = createClient({
   projectId: "a694bsry",
-  dataset: "production",
+  dataset: process.env.NEXT_PUBLIC_SANITY_DATASET || "production",
   apiVersion: "2024-01-01",
   token: TOKEN,
   useCdn: false,

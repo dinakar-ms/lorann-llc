@@ -45,13 +45,12 @@ const PARSED_FIELDS: FieldDef[] = [
   { key: "dataType", label: "Data type", type: "text" },
   { key: "source", label: "Source", type: "text" },
   { key: "geo", label: "Geo", type: "text" },
-  { key: "cardQuality", label: "Card quality", type: "text" },
-  { key: "popularity", label: "Popularity (1-100)", type: "number" },
   { key: "genderMale", label: "Gender % male", type: "number" },
   { key: "genderFemale", label: "Gender % female", type: "number" },
   { key: "minimumOrder", label: "Minimum order", type: "number" },
   { key: "minimumPrice", label: "Minimum price ($)", type: "number" },
   { key: "netNamePercent", label: "Net name %", type: "number" },
+  { key: "runCharge", label: "Run charge ($/M)", type: "number" },
   { key: "brokerCommission", label: "Broker commission %", type: "number" },
   { key: "agencyCommission", label: "Agency commission %", type: "number" },
   { key: "exchangeAvailable", label: "Exchange available", type: "boolean" },
@@ -148,6 +147,17 @@ export default function ReviewForm({ submission }: { submission: ReviewSubmissio
     : [];
   const [extras, setExtras] = useState<ExtraRow[]>(initialExtras);
 
+  // Editable per-channel minimums (Postal/Phone/Email, Postal, Postal+Phone…)
+  type MinRow = { label: string; count: string };
+  const initialMins: MinRow[] = Array.isArray(
+    (submission.parsedFields as Record<string, unknown>)?.minimums
+  )
+    ? ((submission.parsedFields as Record<string, unknown>).minimums as { label?: string; count?: number }[]).map(
+        (m) => ({ label: m?.label || "", count: m?.count != null ? String(m.count) : "" })
+      )
+    : [];
+  const [minimums, setMinimums] = useState<MinRow[]>(initialMins);
+
   async function save(): Promise<boolean> {
     setMsg(null);
     setBusy("save");
@@ -167,6 +177,16 @@ export default function ReviewForm({ submission }: { submission: ReviewSubmissio
       .map((e) => ({ label: (e.label || "").trim(), value: (e.value || "").trim() }))
       .filter((e) => e.label.length > 0);
     if (cleanExtras.length) parsedBody.extraFields = cleanExtras;
+
+    // Collect the per-channel minimums. Drop any row missing a label or count.
+    const cleanMins = minimums
+      .map((m) => {
+        const label = (m.label || "").trim();
+        const count = Number((m.count || "").replace(/[, ]/g, ""));
+        return { label, count };
+      })
+      .filter((m) => m.label.length > 0 && Number.isFinite(m.count));
+    if (cleanMins.length) parsedBody.minimums = cleanMins;
     // Also mirror the dataCard's name/description/category/universe to the
     // submission top-level fields so list views stay in sync.
     const topBody = {
@@ -385,6 +405,64 @@ export default function ReviewForm({ submission }: { submission: ReviewSubmissio
               onChange={(v) => setParsedVals((s) => ({ ...s, [f.key]: v }))}
             />
           ))}
+        </div>
+      </section>
+
+      <section className="bg-white border border-slate-200 rounded-2xl p-6 lg:p-8">
+        <h2 className="font-display font-semibold text-lg text-slate-900 mb-1">
+          Minimums
+        </h2>
+        <p className="text-sm text-slate-600 mb-5">
+          One row per channel or combination. E.g. <em>Postal/Phone/Email = 3,000</em>,
+          <em> Postal = 5,000</em>. Leave blank if a single &ldquo;Minimum order&rdquo;
+          above is enough.
+        </p>
+        <div className="space-y-3">
+          {minimums.length === 0 && (
+            <p className="text-sm text-slate-500 italic">No per-channel minimums yet.</p>
+          )}
+          {minimums.map((row, i) => (
+            <div
+              key={`min-${i}`}
+              className="grid grid-cols-1 md:grid-cols-[1fr_1fr_auto] gap-3 items-start"
+            >
+              <input
+                type="text"
+                placeholder="Label (e.g. Postal/Phone/Email Minimum)"
+                value={row.label}
+                onChange={(e) => {
+                  const v = e.target.value;
+                  setMinimums((arr) => arr.map((r, j) => (j === i ? { ...r, label: v } : r)));
+                }}
+                className="w-full px-3 py-2.5 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:border-blue-500 focus:ring-2 focus:ring-blue-100 outline-none text-slate-900 text-sm"
+              />
+              <input
+                type="text"
+                inputMode="numeric"
+                placeholder="Count (e.g. 3000)"
+                value={row.count}
+                onChange={(e) => {
+                  const v = e.target.value;
+                  setMinimums((arr) => arr.map((r, j) => (j === i ? { ...r, count: v } : r)));
+                }}
+                className="w-full px-3 py-2.5 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:border-blue-500 focus:ring-2 focus:ring-blue-100 outline-none text-slate-900 text-sm"
+              />
+              <button
+                type="button"
+                onClick={() => setMinimums((arr) => arr.filter((_, j) => j !== i))}
+                className="px-3 py-2.5 rounded-xl border border-red-200 text-red-700 hover:bg-red-50 text-xs font-semibold"
+              >
+                Remove
+              </button>
+            </div>
+          ))}
+          <button
+            type="button"
+            onClick={() => setMinimums((arr) => [...arr, { label: "", count: "" }])}
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-xl border border-dashed border-slate-300 text-slate-700 hover:border-blue-400 hover:text-blue-700 text-sm font-semibold transition-colors"
+          >
+            + Add minimum
+          </button>
         </div>
       </section>
 

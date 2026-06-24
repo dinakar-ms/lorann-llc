@@ -29,6 +29,7 @@ type ParsedFields = {
   minimumOrder?: number;
   minimumPrice?: number;
   netNamePercent?: number;
+  runCharge?: number;
   brokerCommission?: number;
   agencyCommission?: number;
   exchangeAvailable?: boolean;
@@ -42,6 +43,7 @@ type ParsedFields = {
   selects?: string[];
   segments?: { label: string; count?: number; rate?: number }[];
   extraFields?: { label: string; value: string }[];
+  minimums?: { label: string; count?: number }[];
   tags?: string[];
 };
 
@@ -52,12 +54,19 @@ type Submission = {
   category?: string;
   universe?: number;
   uploader?: { _ref: string };
+  uploaderEmail?: string;
+  uploaderName?: string;
   publishedDataCard?: { _ref: string };
   parsedFields?: ParsedFields;
 };
 
 const submissionQuery = `*[_type == "dataCardSubmission" && _id == $id][0]{
-  _id, title, description, category, universe, uploader, publishedDataCard, parsedFields
+  _id, title, description, category, universe,
+  uploader,
+  uploaderEmail,
+  "uploaderName": uploader->name,
+  publishedDataCard,
+  parsedFields
 }`;
 
 const categoryMap: Record<string, string> = {
@@ -84,6 +93,7 @@ const optionalKeys: (keyof ParsedFields)[] = [
   "minimumOrder",
   "minimumPrice",
   "netNamePercent",
+  "runCharge",
   "brokerCommission",
   "agencyCommission",
   "exchangeAvailable",
@@ -95,6 +105,7 @@ const optionalKeys: (keyof ParsedFields)[] = [
   "selects",
   "segments",
   "extraFields",
+  "minimums",
   "tags",
 ];
 
@@ -135,6 +146,8 @@ export async function POST(_req: NextRequest, { params }: { params: { id: string
       lastUpdated: parsed.lastUpdated ?? todayDate,
       frequency: parsed.frequency ?? "Monthly",
       geo: parsed.geo ?? "USA",
+      uploaderName: submission.uploaderName ?? session.user.name ?? "",
+      uploaderEmail: submission.uploaderEmail ?? session.user.email ?? "",
     };
     const optionalSet: Record<string, unknown> = {};
     const optionalUnset: string[] = [];
@@ -151,6 +164,11 @@ export async function POST(_req: NextRequest, { params }: { params: { id: string
         } else if (key === "extraFields" && Array.isArray(v)) {
           optionalSet[key] = v.map((s, i) => ({
             _key: (s as { _key?: string })._key || `ef-${i}`,
+            ...(s as Record<string, unknown>),
+          }));
+        } else if (key === "minimums" && Array.isArray(v)) {
+          optionalSet[key] = v.map((s, i) => ({
+            _key: (s as { _key?: string })._key || `min-${i}`,
             ...(s as Record<string, unknown>),
           }));
         } else {

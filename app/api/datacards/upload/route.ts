@@ -144,6 +144,10 @@ export async function POST(req: NextRequest) {
       _key: `ef-${i}`,
       ...f,
     }));
+    const minimumsWithKeys = parsed.fields.minimums?.map((m, i) => ({
+      _key: `min-${i}`,
+      ...m,
+    }));
 
     // Sync the effective values into parsedFields so the publish step (which
     // reads from parsedFields) produces the dataCard the user actually expects.
@@ -154,6 +158,7 @@ export async function POST(req: NextRequest) {
       ...(finalUniverse !== undefined ? { universe: finalUniverse } : {}),
       ...(segmentsWithKeys ? { segments: segmentsWithKeys } : {}),
       ...(extraFieldsWithKeys ? { extraFields: extraFieldsWithKeys } : {}),
+      ...(minimumsWithKeys ? { minimums: minimumsWithKeys } : {}),
       ...(tags.length > 0 ? { tags } : {}),
     };
 

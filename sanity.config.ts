@@ -9,11 +9,68 @@ import { apiVersion, dataset, projectId, studioUrl } from "./sanity/env";
 import { schema } from "./sanity/schemas";
 import { structure } from "./sanity/structure";
 
+/**
+ * Approval-workflow gate.
+ *
+ * Sanity already separates "draft" docs from "published" docs and the public
+ * site's GROQ queries only return published ones — so a draft is invisible to
+ * end users until someone publishes it. To make that publish step an admin
+ * approval, we hide the Publish (and Unpublish) actions from anyone whose
+ * email is NOT in our publisher allowlist. Everyone else can save drafts
+ * freely; only allowlisted publishers can promote a draft to live.
+ *
+ * Why email-based (not role-based): Sanity's free plan only exposes the
+ * Administrator and Viewer roles — there's no Editor role to gate against.
+ * Listing the publishers explicitly works on every plan and stays in version
+ * control. To grant publish rights to a new admin, add their email below
+ * (or set NEXT_PUBLIC_SANITY_PUBLISHERS as a comma-separated env var).
+ *
+ * Covers every document type — pages, sections, homepage, etc. — in one
+ * place. Add a new doc type later? No changes needed here.
+ */
+/**
+ * Comma-separated list of emails who can publish/unpublish in Studio. Set in
+ *   - `.env.local` for local dev
+ *   - Vercel env vars for production
+ *
+ * Example: `NEXT_PUBLIC_SANITY_PUBLISHERS=lakshmi@example.com,bob@example.com`
+ *
+ * Empty / unset list = nobody can publish (everyone sees Save only). Useful
+ * during onboarding to lock down the live site while admins set themselves up.
+ */
+const PUBLISHER_ALLOWLIST: string[] = (
+  process.env.NEXT_PUBLIC_SANITY_PUBLISHERS || ""
+)
+  .split(",")
+  .map((e) => e.trim().toLowerCase())
+  .filter(Boolean);
+
+const approvalGuardedActions = ["publish", "unpublish"];
+
+function isPublisher(currentUser: { email?: string | null } | null | undefined) {
+  const email = (currentUser?.email || "").toLowerCase();
+  return email.length > 0 && PUBLISHER_ALLOWLIST.includes(email);
+}
+
+function gatePublishForNonAdmins(
+  prev: Array<{ action?: string }>,
+  context: { currentUser?: { email?: string | null } | null }
+) {
+  if (isPublisher(context.currentUser)) return prev;
+  return prev.filter(
+    (a) => !approvalGuardedActions.includes(a?.action || "")
+  );
+}
+
+
 export default defineConfig({
   basePath: "/studio",
   projectId,
   dataset,
   schema,
+  document: {
+    actions: (prev, context) => gatePublishForNonAdmins(prev, context),
+  },
   plugins: [
     structureTool({ structure }),
     presentationTool({

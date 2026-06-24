@@ -13,8 +13,8 @@ import { createClient } from "@sanity/client";
 const BASE_URL = "https://www.lorannllc.com";
 
 const sanity = createClient({
-  projectId: "a694bsry",
-  dataset: "production",
+  projectId: process.env.NEXT_PUBLIC_SANITY_PROJECT_ID || "a694bsry",
+  dataset: process.env.NEXT_PUBLIC_SANITY_DATASET || "production",
   apiVersion: "2024-01-01",
   useCdn: true,
 });

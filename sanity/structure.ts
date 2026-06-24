@@ -1,4 +1,5 @@
 import type { StructureResolver } from "sanity/structure";
+import PendingApprovalList from "./components/PendingApprovalList";
 
 const SINGLETONS = [
   "homepage",
@@ -44,6 +45,20 @@ export const structure: StructureResolver = (S) =>
   S.list()
     .title("Content")
     .items([
+      // ---- Pending Approval — every document with an unpublished draft ----
+      // Custom component because Studio's documentList won't render rows whose
+      // _id starts with "drafts.". This one queries drafts directly via the
+      // Sanity client and lets the admin click through to the editor.
+      S.listItem()
+        .title("⏳ Pending Approval")
+        .id("pendingApproval")
+        .child(
+          S.component(PendingApprovalList)
+            .title("Pending Approval")
+            .id("pendingApprovalView")
+        ),
+      S.divider(),
+
       // ---- Singletons (fully click-editable in Presentation) ----
       S.listItem()
         .title("Homepage")

@@ -1,4 +1,4 @@
-#!/usr/bin/env node
+﻿#!/usr/bin/env node
 /**
  * Migrate plain string fields to Portable Text blocks for:
  *  - introParagraphs (array of strings → array of blocks)
@@ -20,7 +20,7 @@ const TOKEN =
 
 const client = createClient({
   projectId: "a694bsry",
-  dataset: "production",
+  dataset: process.env.NEXT_PUBLIC_SANITY_DATASET || "production",
   apiVersion: "2024-01-01",
   token: TOKEN,
   useCdn: false,

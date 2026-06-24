@@ -31,9 +31,11 @@ export type ParsedDataCard = {
   segments?: { label: string; count?: number; rate?: number }[];
   extraFields?: { label: string; value: string }[];
   tags?: string[];
+  minimums?: { label: string; count?: number }[];
   minimumOrder?: number;
   minimumPrice?: number;
   netNamePercent?: number;
+  runCharge?: number;
   brokerCommission?: number;
   agencyCommission?: number;
   exchangeAvailable?: boolean;
@@ -213,6 +215,8 @@ const FIELD_ALIASES: Record<string, keyof ParsedDataCard> = {
   "minimum price": "minimumPrice",
   "net name percentage": "netNamePercent",
   "net name percent": "netNamePercent",
+  "run charge": "runCharge",
+  "running charge": "runCharge",
   "broker commission": "brokerCommission",
   "agency commission": "agencyCommission",
   "exchange available": "exchangeAvailable",
@@ -242,6 +246,7 @@ const NUMBER_FIELDS = new Set<keyof ParsedDataCard>([
   "minimumOrder",
   "minimumPrice",
   "netNamePercent",
+  "runCharge",
   "brokerCommission",
   "agencyCommission",
   "emailDeliveryFee",
@@ -455,14 +460,29 @@ function parseNextMark(rows: unknown[][]): { fields: ParsedDataCard; warnings: s
     }
   }
 
-  /* SELECTS — every col-A value until next section */
+  /* SELECTS — keep only category labels (Age, Income, Gender, Geography…),
+     drop the per-bucket count rows ("18 to 29  25,622"). Any line containing
+     a digit is treated as a count row and skipped. Trailing colons and stray
+     punctuation are stripped, and the result is Title-cased so the public
+     page reads cleanly regardless of how the source file capitalized it. */
   const selects = find("SELECTS");
   if (selects) {
     const list: string[] = [];
+    const seen = new Set<string>();
     for (let i = selects.start; i < selects.end; i++) {
       if (isSectionHeader(rows[i])) break;
-      const v = getCell(rows[i], 0);
-      if (v) list.push(v);
+      const raw = getCell(rows[i], 0);
+      if (!raw) continue;
+      const cleaned = raw.replace(/[:\-–—]+\s*$/, "").trim();
+      if (!cleaned) continue;
+      if (/\d/.test(cleaned)) continue;
+      const titled = cleaned
+        .toLowerCase()
+        .replace(/\b\w/g, (c) => c.toUpperCase());
+      const key = titled.toLowerCase();
+      if (seen.has(key)) continue;
+      seen.add(key);
+      list.push(titled);
     }
     if (list.length) fields.selects = list;
   }
@@ -517,27 +537,47 @@ function parseNextMark(rows: unknown[][]): { fields: ParsedDataCard; warnings: s
     }
   }
 
-  /* MINIMUM ORDER — supports:
+  /* MINIMUM ORDER — supports several layouts:
      - "Minimum Quantity | 5000" (Excel col-A label, col-B value)
+     - "Minimum Price | $250" (col-B value)
+     - "Postal/Phone/Email Minimum | 3,000" (labeled per-channel minimum)
+     - "Postal Minimum | 5,000"
      - Bare "10,000" line under the section (use first number found)
+     Labeled per-channel minimums collect into `fields.minimums` so the public
+     page can render them as separate rows. The legacy `minimumOrder` is also
+     filled with the first labeled count so older cards still display.
   */
   const minOrder = find("MINIMUM ORDER");
   if (minOrder) {
+    const collectedMins: { label: string; count: number }[] = [];
     for (let i = minOrder.start; i < minOrder.end; i++) {
       if (isSectionHeader(rows[i])) break;
-      const colA = getCell(rows[i], 0);
+      const colA = getCell(rows[i], 0).trim();
+      const colB = getCellRaw(rows[i], 1);
       const label = normalizeLabel(colA);
-      const val = getCellRaw(rows[i], 1);
       if (label === "minimum quantity") {
-        const n = parseNumber(val);
+        const n = parseNumber(colB);
         if (n !== undefined) fields.minimumOrder = n;
       } else if (label === "minimum price") {
-        const n = parseNumber(val);
+        const n = parseNumber(colB);
         if (n !== undefined) fields.minimumPrice = n;
+      } else if (/minimum/i.test(colA) && colB) {
+        // Labeled per-channel minimum, e.g. "Postal/Phone/Email Minimum | 3,000"
+        const n = parseNumber(colB);
+        if (n !== undefined) {
+          const cleanLabel = colA.replace(/\s*minimum\s*:?\s*$/i, "").trim() || colA;
+          collectedMins.push({ label: cleanLabel, count: n });
+        }
       } else if (fields.minimumOrder === undefined && /^[\d,]+$/.test(colA)) {
         // Bare number row — first one is the minimum order qty
         const n = parseNumber(colA);
         if (n !== undefined) fields.minimumOrder = n;
+      }
+    }
+    if (collectedMins.length) {
+      fields.minimums = collectedMins;
+      if (fields.minimumOrder === undefined) {
+        fields.minimumOrder = collectedMins[0].count;
       }
     }
   }
@@ -629,7 +669,8 @@ function parseNextMark(rows: unknown[][]): { fields: ParsedDataCard; warnings: s
     }
   }
 
-  /* NET NAME ARRANGEMENTS — "Floor" → netNamePercent (e.g. "85%") */
+  /* NET NAME ARRANGEMENTS — "Floor" → netNamePercent (e.g. "85%"),
+     "Run Charge" → runCharge (e.g. "$5.00/M"). */
   const netName = find("NET NAME ARRANGEMENTS");
   if (netName) {
     for (let i = netName.start; i < netName.end; i++) {
@@ -639,6 +680,9 @@ function parseNextMark(rows: unknown[][]): { fields: ParsedDataCard; warnings: s
       if (label === "floor") {
         const n = parseRateOrPercent(val);
         if (n !== undefined) fields.netNamePercent = n;
+      } else if (label === "run charge" || label === "running charge") {
+        const n = parseRateOrPercent(val);
+        if (n !== undefined) fields.runCharge = n;
       }
     }
   }

@@ -86,9 +86,14 @@ const nextConfig = {
     formats: ["image/avif", "image/webp"],
   },
   async headers() {
+    // Strict CSP / HSTS / Permissions-Policy headers are production-only.
+    // In dev they actively break Sanity's Presentation tool (the iframe gets
+    // blocked because `upgrade-insecure-requests` tries to load
+    // http://localhost:3000 over https). Localhost doesn't need these
+    // protections during local development.
+    if (process.env.NODE_ENV !== "production") return [];
     return [
       {
-        // Apply security headers to every route
         source: "/(.*)",
         headers: [
           ...securityHeaders,

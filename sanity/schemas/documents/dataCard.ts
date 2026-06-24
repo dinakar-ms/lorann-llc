@@ -146,9 +146,32 @@ export const dataCardType = defineType({
 
     /* ── Ordering ─────────────────────────────────────── */
     defineField({
+      name: "minimums",
+      title: "Minimums",
+      type: "array",
+      description: "One row per channel/combination, e.g. Postal/Phone/Email = 3,000.",
+      of: [
+        {
+          type: "object",
+          fields: [
+            { name: "label", title: "Label", type: "string" },
+            { name: "count", title: "Count", type: "number" },
+          ],
+          preview: {
+            select: { title: "label", count: "count" },
+            prepare({ title, count }) {
+              const countStr = typeof count === "number" ? count.toLocaleString() : "?";
+              return { title: `${title || "(unlabeled)"} — ${countStr}` };
+            },
+          },
+        },
+      ],
+    }),
+    defineField({
       name: "minimumOrder",
-      title: "Minimum Order Quantity",
+      title: "Minimum Order Quantity (legacy)",
       type: "number",
+      description: "Legacy single-minimum field; prefer Minimums above.",
     }),
     defineField({
       name: "minimumPrice",
@@ -160,6 +183,12 @@ export const dataCardType = defineType({
       title: "Net Name Percentage",
       type: "number",
       description: "e.g. 85 for 85%",
+    }),
+    defineField({
+      name: "runCharge",
+      title: "Run Charge ($/M)",
+      type: "number",
+      description: "Per-thousand surcharge on net-name orders, e.g. 5 for $5.00/M.",
     }),
     defineField({
       name: "brokerCommission",
@@ -263,6 +292,20 @@ export const dataCardType = defineType({
       type: "string",
       options: { list: ["Monthly", "Quarterly", "Semi-Annually", "Annually", "Daily", "Weekly"] },
       initialValue: "Monthly",
+    }),
+
+    /* ── Uploader (snapshot at publish time) ──────────── */
+    defineField({
+      name: "uploaderName",
+      title: "Uploaded By (Name)",
+      type: "string",
+      readOnly: true,
+    }),
+    defineField({
+      name: "uploaderEmail",
+      title: "Uploaded By (Email)",
+      type: "string",
+      readOnly: true,
     }),
   ],
   preview: {

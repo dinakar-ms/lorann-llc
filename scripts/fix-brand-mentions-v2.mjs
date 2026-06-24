@@ -1,4 +1,4 @@
-#!/usr/bin/env node
+﻿#!/usr/bin/env node
 /**
  * Second pass: fix remaining pages with 5+ Lorann mentions.
  *
@@ -16,7 +16,7 @@ const TOKEN =
 
 const client = createClient({
   projectId: "a694bsry",
-  dataset: "production",
+  dataset: process.env.NEXT_PUBLIC_SANITY_DATASET || "production",
   apiVersion: "2024-01-01",
   token: TOKEN,
   useCdn: false,

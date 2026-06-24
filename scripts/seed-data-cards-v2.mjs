@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Seed Data Cards v2 — Full fields
  * Run: node scripts/seed-data-cards-v2.mjs
  */
@@ -6,7 +6,7 @@ import { createClient } from "@sanity/client";
 
 const client = createClient({
   projectId: "a694bsry",
-  dataset: "production",
+  dataset: process.env.NEXT_PUBLIC_SANITY_DATASET || "production",
   apiVersion: "2024-10-01",
   useCdn: false,
   token: "skSSRwRIB9hhK9GBYtQpEpyP4LAq7LEpHuGmoxQ51tn1puS9HTD8PLF2qmz9wdFuSARPyDYyvoBrfJkcAOIcY2n1mptvra97217aT7fllBwRU8mRKYShNzJuWqMDpcBn7eEXqFZZWvOBfZgY6olCwO3AJkxUQ2yj13w1d7MNhqSvdEIcZ4gx",

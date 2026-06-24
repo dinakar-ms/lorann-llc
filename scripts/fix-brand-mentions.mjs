@@ -1,4 +1,4 @@
-#!/usr/bin/env node
+﻿#!/usr/bin/env node
 /**
  * Fix Lorann brand mention consistency across ALL pages:
  *   1. REMOVE "Lorann" from all heading/title fields
@@ -15,7 +15,7 @@ const TOKEN =
 
 const client = createClient({
   projectId: "a694bsry",
-  dataset: "production",
+  dataset: process.env.NEXT_PUBLIC_SANITY_DATASET || "production",
   apiVersion: "2024-01-01",
   token: TOKEN,
   useCdn: false,
