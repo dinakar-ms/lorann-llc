@@ -68,7 +68,15 @@ export const healthcareComplianceSectionType = defineType({
     defineField({
       name: "intro",
       title: "Intro Text (legacy)",
-      type: "text",
+      type: "array",
+      of: [
+        {
+          type: "block",
+          styles: [{ title: "Normal", value: "normal" }],
+          lists: [],
+          marks: { decorators: [{ title: "Bold", value: "strong" }, { title: "Italic", value: "em" }] },
+        },
+      ],
       hidden: true,
     }),
     defineField({
