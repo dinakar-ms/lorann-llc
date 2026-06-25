@@ -72,6 +72,25 @@ export const healthcareComplianceSectionType = defineType({
       hidden: true,
     }),
     defineField({
+      name: "introContent",
+      title: "Intro Content (deprecated — use Intro Text below)",
+      type: "array",
+      of: [
+        {
+          type: "block",
+          styles: [{ title: "Normal", value: "normal" }],
+          lists: [],
+          marks: {
+            decorators: [
+              { title: "Bold", value: "strong" },
+              { title: "Italic", value: "em" },
+            ],
+          },
+        },
+      ],
+      readOnly: true,
+    }),
+    defineField({
       name: "introRich",
       title: "Intro Text",
       type: "richText",
