@@ -53,16 +53,17 @@ const PHOTOS: Record<string, { src: string; alt: string; hasPeople?: boolean }> 
     alt: "Data center corridor with glass-enclosed server infrastructure",
   },
   "ms-customers-list": {
-    src: "https://images.unsplash.com/photo-1619597455322-4fbbd820250a",
-    alt: "Modern desktop computer monitor and keyboard workstation setup",
+    src: "https://images.unsplash.com/photo-1498050108023-c5249f4df085",
+    alt: "Enterprise IT professional managing Microsoft Windows Server, Azure Active Directory, and Microsoft 365 deployment on laptop",
+    hasPeople: true,
   },
   "linux-users-email-list": {
     src: "https://plus.unsplash.com/premium_photo-1764541331325-90603301ea1c",
     alt: "Laptop screen displaying Linux network ping and terminal command-line statistics",
   },
   "unix-users-mailing-data": {
-    src: "https://images.unsplash.com/photo-1762163516269-3c143e04175c",
-    alt: "Enterprise server rack with blinking green status lights in data center",
+    src: "https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5",
+    alt: "Unix terminal command-line interface showing system administration scripts used in AIX, HP-UX, and Solaris enterprise environments",
   },
 
   /* ── Network Users Data List (direct leaf) ──────────────────────────── */
@@ -78,9 +79,8 @@ const PHOTOS: Record<string, { src: string; alt: string; hasPeople?: boolean }> 
     hasPeople: true,
   },
   "broadvision-erp-users-lists": {
-    src: "https://images.unsplash.com/photo-1563013544-824ae1b704d3",
-    alt: "Person holding credit card while using laptop for online e-commerce shopping",
-    hasPeople: true,
+    src: "https://images.unsplash.com/photo-1460925895917-afdab827c52f",
+    alt: "E-commerce analytics dashboard showing digital sales performance and B2B commerce metrics",
   },
   "epicor-erp-users-list": {
     src: "https://images.unsplash.com/photo-1647427060118-4911c9821b82",
@@ -95,13 +95,13 @@ const PHOTOS: Record<string, { src: string; alt: string; hasPeople?: boolean }> 
     alt: "Low-angle view of tall tower crane at construction site",
   },
   "upside-software-erp-users-lists": {
-    src: "https://images.unsplash.com/photo-1778791979650-7f23360c1b0a",
-    alt: "Customers interacting with cashier at modern point-of-sale system",
+    src: "https://images.unsplash.com/photo-1454165804606-c3d57bc86b40",
+    alt: "Procurement manager and contract administrator reviewing enterprise sourcing agreements and vendor contracts at desk",
     hasPeople: true,
   },
   "i4a-erp-users-lists": {
-    src: "https://images.unsplash.com/photo-1541746972996-4e0b0f43e02a",
-    alt: "Professional team meeting in modern conference room",
+    src: "https://images.unsplash.com/photo-1568992687947-868a62a9f521",
+    alt: "Professional trade association executive team meeting in boardroom managing membership and organizational operations",
     hasPeople: true,
   },
   "ibm-erp-users-lists": {
@@ -109,9 +109,8 @@ const PHOTOS: Record<string, { src: string; alt: string; hasPeople?: boolean }> 
     alt: "Large array of enterprise IBM mainframe and server equipment",
   },
   "ibs-enterprise-erp-users-lists": {
-    src: "https://images.unsplash.com/photo-1606857521015-7f9fcf423740",
-    alt: "Enterprise business professionals working at computer workstations",
-    hasPeople: true,
+    src: "https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d",
+    alt: "Supply chain distribution center with organized logistics and warehouse management operations",
   },
 
   /* ── CRM Users Mailing Data ─────────────────────────────────────────── */
@@ -161,22 +160,22 @@ const PHOTOS: Record<string, { src: string; alt: string; hasPeople?: boolean }> 
     alt: "Software performance analytics graphs displayed on laptop screen",
   },
   "quickbooks-email-list": {
-    src: "https://plus.unsplash.com/premium_photo-1661326350444-8d0e57e4cdad",
-    alt: "Businesswoman using calculator for financial accounting and QuickBooks data",
+    src: "https://images.unsplash.com/photo-1556742393-d75f468bfcb0",
+    alt: "Small business owner and accountant using QuickBooks accounting software for invoicing, bookkeeping, and financial management",
     hasPeople: true,
   },
   "vmware-users-email-list": {
-    src: "https://images.unsplash.com/photo-1506399558188-acca6f8cbf41",
-    alt: "Dense server and virtualization hardware infrastructure in data center room",
+    src: "https://images.unsplash.com/photo-1467232004584-a241de8bcf5d",
+    alt: "Enterprise data center server infrastructure managed by VMware vSphere virtualization platform for cloud and virtual machine operations",
   },
   "tibco-user-email-list": {
-    src: "https://images.unsplash.com/photo-1758518730264-9235a1e5416b",
-    alt: "Business analyst reviewing TIBCO data integration reports and documentation",
+    src: "https://images.unsplash.com/photo-1519389950473-47ba0277781c",
+    alt: "Enterprise integration architects and middleware engineers collaborating on TIBCO platform deployment across financial services and manufacturing systems",
     hasPeople: true,
   },
   "tableau-users-list": {
-    src: "https://images.unsplash.com/photo-1686061592689-312bbfb5c055",
-    alt: "Tableau-style interactive bar chart data visualization on computer screen",
+    src: "https://images.unsplash.com/photo-1543286386-2e659306cd6c",
+    alt: "Data analyst reviewing Tableau business intelligence dashboard with multiple interactive charts, bar graphs, and KPI visualizations on screen",
   },
   "plm-software-user-list": {
     src: "https://plus.unsplash.com/premium_photo-1682140914933-f9704d7bc14f",
@@ -184,8 +183,8 @@ const PHOTOS: Record<string, { src: string; alt: string; hasPeople?: boolean }> 
     hasPeople: true,
   },
   "esri-mailing-list": {
-    src: "https://images.unsplash.com/photo-1461183479101-6c14cd5299c4",
-    alt: "Close-up of geographic map used in GIS and spatial data analysis",
+    src: "https://images.unsplash.com/photo-1524661135-423995f22d0b",
+    alt: "Aerial satellite view of urban landscape used in Esri ArcGIS spatial data analysis and geographic information systems mapping",
   },
   "cogz-cmms-contact-database": {
     src: "https://plus.unsplash.com/premium_photo-1678766819678-35fc6c1f1170",
@@ -193,13 +192,13 @@ const PHOTOS: Record<string, { src: string; alt: string; hasPeople?: boolean }> 
     hasPeople: true,
   },
   "paycom-users-lists": {
-    src: "https://plus.unsplash.com/premium_photo-1723579302123-38ae4449292b",
-    alt: "Corporate HR and payroll professionals in modern business office environment",
+    src: "https://images.unsplash.com/photo-1573497620053-ea5300f94f21",
+    alt: "HR director and payroll manager using Paycom HCM software to process employee payroll, manage talent, and administer benefits",
     hasPeople: true,
   },
   "cisco-resellers-email-database": {
     src: "https://images.unsplash.com/photo-1484557052118-f32bd25b45b5",
-    alt: "Network infrastructure computer cables and Cisco-style IT equipment",
+    alt: "Enterprise network switch and cabling infrastructure deployed by Cisco certified reseller and channel partner",
   },
 
   /* ── DBMS Users Email Data ───────────────────────────────────────────── */
@@ -208,12 +207,12 @@ const PHOTOS: Record<string, { src: string; alt: string; hasPeople?: boolean }> 
     alt: "Enterprise database server rack in professional data center",
   },
   "mongodb-users-list": {
-    src: "https://images.unsplash.com/photo-1740908900846-4bbd4f22c975",
-    alt: "Wooden block spelling DATA representing MongoDB document database concept",
+    src: "https://images.unsplash.com/photo-1504639725590-34d0984388bd",
+    alt: "Backend engineer at workstation with multiple monitors showing database queries and code for MongoDB deployment",
   },
   "ibm-users-email-list": {
-    src: "https://images.unsplash.com/photo-1683322499436-f4383dd59f5a",
-    alt: "Blue network cables connected in IBM database infrastructure",
+    src: "https://images.unsplash.com/photo-1588508065123-287b28e013da",
+    alt: "IBM enterprise server rack with blinking status lights in professional data center",
   },
 
   /* ── Business Technology Email Lists ─────────────────────────────────── */
