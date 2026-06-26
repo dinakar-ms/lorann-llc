@@ -65,38 +65,38 @@ function ParticleCanvas() {
 function Globe() {
   return (
     <div className="relative mx-auto flex items-center justify-center"
-      style={{ width: 160, height: 160 }}>
+      style={{ width: 120, height: 120 }}>
       {/* Core glow */}
       <div className="absolute rounded-full"
-        style={{ width: 48, height: 48,
+        style={{ width: 36, height: 36,
           background: "radial-gradient(circle,rgba(56,189,248,.4) 0%,transparent 70%)",
           animation: "lp-core 2.8s ease-in-out infinite" }} />
       {/* Rings */}
       {[
-        { s: 90,  c: "rgba(56,189,248,.75)", d: "3.4s", rx: "70deg", rz: "0deg"   },
-        { s: 118, c: "rgba(139,92,246,.65)", d: "5.8s", rx: "65deg", rz: "58deg"  },
-        { s: 148, c: "rgba(6,182,212,.5)",   d: "9s",   rx: "68deg", rz: "-35deg" },
+        { s: 68,  c: "rgba(56,189,248,.75)", d: "3.4s", rx: "70deg", rz: "0deg"   },
+        { s: 90,  c: "rgba(139,92,246,.65)", d: "5.8s", rx: "65deg", rz: "58deg"  },
+        { s: 112, c: "rgba(6,182,212,.5)",   d: "9s",   rx: "68deg", rz: "-35deg" },
       ].map(({ s, c, d, rx, rz }, i) => (
         <div key={i} className="absolute rounded-full border"
-          style={{ width: s, height: s, borderColor: c, borderWidth: "1.5px",
+          style={{ width: s, height: s, borderColor: c, borderWidth: "1px",
             animation: `lp-ring-${i + 1} ${d} linear infinite`,
             transform: `rotateX(${rx}) rotateZ(${rz})` }} />
       ))}
       {/* Orbiting dots */}
-      <div className="absolute h-2.5 w-2.5 rounded-full"
-        style={{ background: "#38bdf8", boxShadow: "0 0 14px 4px rgba(56,189,248,.7)",
-          animation: "lp-dot1 3.4s linear infinite", transformOrigin: "0 45px" }} />
       <div className="absolute h-2 w-2 rounded-full"
-        style={{ background: "#c084fc", boxShadow: "0 0 10px 3px rgba(192,132,252,.7)",
-          animation: "lp-dot2 5.8s linear infinite", transformOrigin: "0 59px" }} />
+        style={{ background: "#38bdf8", boxShadow: "0 0 10px 3px rgba(56,189,248,.7)",
+          animation: "lp-dot1 3.4s linear infinite", transformOrigin: "0 34px" }} />
+      <div className="absolute h-1.5 w-1.5 rounded-full"
+        style={{ background: "#c084fc", boxShadow: "0 0 8px 2px rgba(192,132,252,.7)",
+          animation: "lp-dot2 5.8s linear infinite", transformOrigin: "0 45px" }} />
       {/* Center label */}
       <div className="relative z-10 text-center select-none">
         <div style={{
-          fontFamily: "var(--font-space-grotesk)", fontSize: 22, fontWeight: 900, lineHeight: 1,
+          fontFamily: "var(--font-space-grotesk)", fontSize: 17, fontWeight: 900, lineHeight: 1,
           background: "linear-gradient(135deg,#38bdf8,#818cf8,#c084fc)",
           WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text",
         }}>95M+</div>
-        <div style={{ fontSize: 7, letterSpacing: ".18em", color: "rgba(148,163,184,.65)", marginTop: 2 }}>
+        <div style={{ fontSize: 6, letterSpacing: ".18em", color: "rgba(148,163,184,.65)", marginTop: 2 }}>
           RECORDS
         </div>
       </div>
@@ -134,7 +134,7 @@ const SEGS = [
    LEAD POPUP
 ══════════════════════════════════════════════════════════════════ */
 export default function LeadPopup() {
-  const [phase,      setPhase]      = useState<"hidden"|"entering"|"visible"|"closing"|"done">("hidden");
+  const [phase,      setPhase]      = useState<"hidden"|"entering"|"visible"|"closing"|"minimized"|"done">("hidden");
   const [submitted,  setSubmitted]  = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [err,        setErr]        = useState("");
@@ -163,8 +163,18 @@ export default function LeadPopup() {
 
   const dismiss = () => {
     setPhase("closing");
+    setTimeout(() => setPhase("minimized"), 480);
+  };
+
+  const dismissForever = () => {
+    setPhase("closing");
     localStorage.setItem(STORAGE_KEY, "1");
     setTimeout(() => setPhase("done"), 480);
+  };
+
+  const reopen = () => {
+    setPhase("entering");
+    requestAnimationFrame(() => requestAnimationFrame(() => setPhase("visible")));
   };
 
   const submit = async (e: React.FormEvent) => {
@@ -177,12 +187,64 @@ export default function LeadPopup() {
       if (!r.ok) throw new Error();
       setSubmitted(true);
       localStorage.setItem(STORAGE_KEY, "1");
-      setTimeout(dismiss, 3500);
+      setTimeout(dismissForever, 3500);
     } catch { setErr("Something went wrong — please try again."); }
     finally { setSubmitting(false); }
   };
 
   if (phase === "hidden" || phase === "done") return null;
+
+  /* ── Minimized floating widget ─────────────────────────────────── */
+  if (phase === "minimized") {
+    return (
+      <>
+        <style>{`
+          @keyframes lp-widget-in {
+            from { transform:translateY(-50%) translateX(110%); opacity:0; }
+            to   { transform:translateY(-50%) translateX(0);    opacity:1; }
+          }
+          @keyframes lp-widget-pulse {
+            0%,100% { box-shadow:-4px 4px 20px rgba(29,69,217,.45),0 0 0 0 rgba(99,102,241,.0); }
+            50%     { box-shadow:-4px 4px 28px rgba(29,69,217,.65),0 0 0 6px rgba(99,102,241,.18); }
+          }
+          .lp-widget-btn:hover { transform:translateY(-50%) translateX(-4px) !important; }
+        `}</style>
+        <button
+          onClick={reopen}
+          className="lp-widget-btn fixed right-0 z-[9998] flex flex-col items-center"
+          aria-label="Open free data sample form"
+          style={{
+            top: "50%",
+            transform: "translateY(-50%)",
+            animation: "lp-widget-in .5s cubic-bezier(.34,1.56,.64,1) both, lp-widget-pulse 2.8s ease-in-out 1s infinite",
+            background: "linear-gradient(160deg,#1D45D9 0%,#4f46e5 55%,#7c3aed 100%)",
+            borderRadius: "12px 0 0 12px",
+            padding: "22px 11px",
+            gap: 10,
+            color: "#fff",
+            border: "none",
+            cursor: "pointer",
+            transition: "transform .3s cubic-bezier(.34,1.56,.64,1)",
+          }}
+        >
+          <span style={{ fontSize: 17, lineHeight: 1 }}>⭐</span>
+          <span style={{
+            writingMode: "vertical-rl",
+            transform: "rotate(180deg)",
+            fontSize: 10,
+            fontWeight: 800,
+            letterSpacing: ".1em",
+            textTransform: "uppercase",
+            lineHeight: 1.3,
+            whiteSpace: "nowrap",
+          }}>
+            Free Sample
+          </span>
+          <span style={{ fontSize: 13, opacity: .75 }}>↑</span>
+        </button>
+      </>
+    );
+  }
 
   const seg = SEGS[tidx];
 
@@ -193,8 +255,8 @@ export default function LeadPopup() {
         @keyframes lp-ring-1  { to{transform:rotateX(70deg) rotateZ(360deg);} }
         @keyframes lp-ring-2  { to{transform:rotateX(65deg) rotateZ(calc(58deg + 360deg));} }
         @keyframes lp-ring-3  { to{transform:rotateX(68deg) rotateZ(calc(-35deg + 360deg));} }
-        @keyframes lp-dot1    { to{transform:rotate(360deg) translateX(45px);} }
-        @keyframes lp-dot2    { to{transform:rotate(-360deg) translateX(59px);} }
+        @keyframes lp-dot1    { to{transform:rotate(360deg) translateX(34px);} }
+        @keyframes lp-dot2    { to{transform:rotate(-360deg) translateX(45px);} }
         @keyframes lp-core    { 0%,100%{opacity:.7;transform:scale(1);}  50%{opacity:1;transform:scale(1.2);} }
         @keyframes lp-float   { 0%,100%{transform:translateY(0);}        50%{transform:translateY(-9px);} }
         @keyframes lp-scan    { 0%{top:-1%;opacity:.8;} 100%{top:101%;opacity:0;} }
@@ -246,7 +308,7 @@ export default function LeadPopup() {
         .lp-cta {
           position:relative; overflow:hidden;
           background: linear-gradient(135deg, #1D45D9 0%, #4f46e5 50%, #7c3aed 100%);
-          border-radius:14px; padding:15px; font-size:15px;
+          border-radius:12px; padding:12px; font-size:14px;
           font-weight:700; color:#fff; width:100%; cursor:pointer;
           border:none; transition:transform .25s ease, box-shadow .25s ease;
           box-shadow: 0 6px 28px rgba(79,70,229,.55), 0 0 0 1px rgba(129,140,248,.2);
@@ -265,9 +327,9 @@ export default function LeadPopup() {
 
         /* Input */
         .lp-input {
-          width:100%; padding:12px 14px;
+          width:100%; padding:9px 12px;
           background:#fff; border:1.5px solid #e2e8f0; border-radius:10px;
-          font-size:14px; color:#1e293b; transition:border-color .2s,box-shadow .2s;
+          font-size:13px; color:#1e293b; transition:border-color .2s,box-shadow .2s;
         }
         .lp-input::placeholder { color:#94a3b8; }
         .lp-input:focus {
@@ -308,29 +370,30 @@ export default function LeadPopup() {
 
       {/* ── Backdrop ───────────────────────────────────────────── */}
       <div
-        className="fixed inset-0 z-[9999] flex items-center justify-center p-4 sm:p-6"
+        className="fixed inset-0 z-[9999] flex items-center justify-center p-3 sm:p-5"
         style={{ background:"rgba(2,6,23,.45)", backdropFilter:"blur(14px)", WebkitBackdropFilter:"blur(14px)" }}
         onClick={e => { if (e.target === e.currentTarget) dismiss(); }}
         role="dialog" aria-modal="true"
       >
         {/* ── Glow border wrapper ─────────────────────────────── */}
         <div className={`lp-border-wrap relative w-full ${phase === "closing" ? "lp-exit" : "lp-enter"}`}
-          style={{ maxWidth: 900 }}>
+          style={{ maxWidth: 820 }}>
 
           {/* ════ CLOSE BUTTON ════ */}
           <button className="lp-x" onClick={dismiss} aria-label="Close popup">✕</button>
 
           {/* ── Inner card ──────────────────────────────────────── */}
-          <div className="relative overflow-hidden rounded-[22px] shadow-2xl">
+          <div className="relative overflow-hidden rounded-[22px] shadow-2xl"
+            style={{ maxHeight: "92vh", overflowY: "auto" }}>
 
             <div className="flex flex-col md:flex-row">
 
               {/* ══════════════════════════════════════
                   LEFT — Dark visualization panel
               ══════════════════════════════════════ */}
-              <div className="relative flex flex-col overflow-hidden md:w-[43%]"
+              <div className="relative flex flex-col overflow-hidden md:w-[42%]"
                 style={{ background:"linear-gradient(160deg,#030b1a 0%,#060d21 60%,#050a1c 100%)",
-                  padding:"28px 24px", borderRight:"1px solid rgba(255,255,255,.07)" }}>
+                  padding:"20px 18px", borderRight:"1px solid rgba(255,255,255,.07)" }}>
 
                 <ParticleCanvas />
 
@@ -340,7 +403,7 @@ export default function LeadPopup() {
                     animation:"lp-scan 3.8s linear infinite" }} />
 
                 {/* LIVE badge */}
-                <div className="relative z-10 mb-4 flex items-center gap-2.5"
+                <div className="relative z-10 mb-2 flex items-center gap-2"
                   style={{ animation:"lp-fade-up .45s ease .08s both" }}>
                   <span className="relative flex h-2.5 w-2.5">
                     <span className="absolute h-full w-full rounded-full bg-cyan-400"
@@ -354,7 +417,7 @@ export default function LeadPopup() {
                 </div>
 
                 {/* Globe — floats */}
-                <div className="relative z-10 mb-3"
+                <div className="relative z-10 mb-1"
                   style={{ animation:"lp-float 4.2s ease-in-out infinite" }}>
                   <Globe />
                 </div>
@@ -363,7 +426,7 @@ export default function LeadPopup() {
                 <div className="relative z-10 mb-1 text-center select-none"
                   style={{ animation:"lp-counter-pop .6s ease .5s both" }}>
                   <div style={{
-                    fontFamily:"var(--font-space-grotesk)", fontSize:56, fontWeight:900, lineHeight:1,
+                    fontFamily:"var(--font-space-grotesk)", fontSize:42, fontWeight:900, lineHeight:1,
                     background:"linear-gradient(120deg,#38bdf8 0%,#818cf8 48%,#c084fc 100%)",
                     backgroundSize:"180% auto",
                     WebkitBackgroundClip:"text", WebkitTextFillColor:"transparent", backgroundClip:"text",
@@ -371,12 +434,12 @@ export default function LeadPopup() {
                   }}>
                     {countVal}M+
                   </div>
-                  <div className="text-sm font-bold text-white/70">Verified B2B Contacts</div>
-                  <div className="mt-0.5 text-[10px] text-slate-600">Scrubbed · Compliant · Ready</div>
+                  <div className="text-xs font-bold text-white/70">Verified B2B Contacts</div>
+                  <div className="mt-0.5 text-[9px] text-slate-600">Scrubbed · Compliant · Ready</div>
                 </div>
 
                 {/* Segment ticker card */}
-                <div className="relative z-10 mt-4 rounded-xl p-3.5"
+                <div className="relative z-10 mt-3 rounded-xl p-2.5"
                   style={{ background:"rgba(255,255,255,.04)",
                     border:"1px solid rgba(56,189,248,.13)",
                     backdropFilter:"blur(6px)",
@@ -393,29 +456,29 @@ export default function LeadPopup() {
                   </div>
                   <div className={`lp-tick ${tin ? "in" : "out"}`}>
                     <div className="flex items-center gap-2">
-                      <span className="text-xl">{seg.icon}</span>
+                      <span className="text-lg">{seg.icon}</span>
                       <span style={{
-                        fontFamily:"var(--font-space-grotesk)", fontSize:26, fontWeight:900, color:"#f1f5f9",
+                        fontFamily:"var(--font-space-grotesk)", fontSize:20, fontWeight:900, color:"#f1f5f9",
                       }}>{seg.val}</span>
                     </div>
-                    <div className="mt-0.5 text-xs text-slate-500">{seg.label}</div>
+                    <div className="mt-0.5 text-[10px] text-slate-500">{seg.label}</div>
                   </div>
                 </div>
 
                 {/* Stats grid */}
-                <div className="relative z-10 mt-3 grid grid-cols-2 gap-2"
+                <div className="relative z-10 mt-2 grid grid-cols-2 gap-1.5"
                   style={{ animation:"lp-fade-up .45s ease .46s both" }}>
                   {[["98%","Accuracy Rate"],["500+","Industries"],["Weekly","Data Refresh"],["DNC ✓","Suppressed"]].map(([v, l]) => (
-                    <div key={l} className="rounded-xl px-2.5 py-2 text-center"
+                    <div key={l} className="rounded-lg px-2 py-1.5 text-center"
                       style={{ background:"rgba(56,189,248,.06)", border:"1px solid rgba(56,189,248,.13)" }}>
-                      <div className="text-[13px] font-extrabold text-cyan-300">{v}</div>
+                      <div className="text-[12px] font-extrabold text-cyan-300">{v}</div>
                       <div className="text-[8px] text-slate-600">{l}</div>
                     </div>
                   ))}
                 </div>
 
                 {/* Compliance badges */}
-                <div className="relative z-10 mt-3 flex flex-wrap gap-1.5">
+                <div className="relative z-10 mt-2 flex flex-wrap gap-1">
                   {["HIPAA","CCPA","CAN-SPAM","FCRA","DNC"].map((b, i) => (
                     <span key={b} className="rounded-full px-2.5 py-0.5 text-[8px] font-bold uppercase tracking-wide"
                       style={{ border:"1px solid rgba(139,92,246,.35)", color:"#a78bfa",
@@ -430,8 +493,8 @@ export default function LeadPopup() {
               {/* ══════════════════════════════════════
                   RIGHT — White form panel
               ══════════════════════════════════════ */}
-              <div className="relative flex flex-col justify-center overflow-hidden bg-white md:w-[57%]"
-                style={{ padding:"36px 32px" }}>
+              <div className="relative flex flex-col justify-center overflow-hidden bg-white md:w-[58%]"
+                style={{ padding:"24px 26px" }}>
 
                 {/* Decorative corner orbs — subtle */}
                 <div className="pointer-events-none absolute -right-16 -top-16 h-48 w-48 rounded-full"
@@ -466,7 +529,7 @@ export default function LeadPopup() {
                   <div className="relative z-10">
 
                     {/* Tagline */}
-                    <div className="mb-4 text-center"
+                    <div className="mb-2 text-center"
                       style={{ animation:"lp-fade-up .42s ease .12s both" }}>
                       <span style={{ fontSize:12, fontWeight:700, color:"#7c3aed", letterSpacing:".01em" }}>
                         ⭐ Better Data. Better Decisions. Better Growth.
@@ -487,16 +550,16 @@ export default function LeadPopup() {
                       </h2>
                     </div>
 
-                    <p className="mb-5 text-sm leading-relaxed text-slate-500"
+                    <p className="mb-3 text-sm leading-relaxed text-slate-500"
                       style={{ animation:"lp-fade-up .42s ease .25s both" }}>
                       Preview accurate and compliant data from{" "}
-                      <strong style={{ color:"#1D45D9" }}>Lorann LLC</strong>
+                      <strong style={{ color:"#1D45D9" }}>Lorann</strong>
                       {" "}and experience the quality that helps businesses connect,{" "}
                       <strong className="text-slate-700">engage, and grow.</strong>
                     </p>
 
                     {/* Trust badges */}
-                    <div className="mb-5 flex flex-wrap gap-2"
+                    <div className="mb-3 flex flex-wrap gap-2"
                       style={{ animation:"lp-fade-up .42s ease .3s both" }}>
                       {[
                         { icon:"🔒", label:"Data Privacy First" },
@@ -511,7 +574,7 @@ export default function LeadPopup() {
                     </div>
 
                     {/* Form */}
-                    <form onSubmit={submit} className="space-y-3">
+                    <form onSubmit={submit} className="space-y-2">
                       {([
                         { k:"name",    t:"text",  ph:"Full Name *",      req:true  },
                         { k:"email",   t:"email", ph:"Business Email *", req:true  },
@@ -550,7 +613,7 @@ export default function LeadPopup() {
                     </form>
 
                     {/* Bottom trust indicators */}
-                    <div className="mt-5 grid grid-cols-3 gap-2 text-center"
+                    <div className="mt-3 grid grid-cols-3 gap-2 text-center"
                       style={{ animation:"lp-fade-up .42s ease .64s both" }}>
                       {[
                         { icon:"⚡", title:"Rapid Delivery",           sub:"Within 1 Business Day"     },
