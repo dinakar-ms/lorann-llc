@@ -579,30 +579,35 @@ export default function HealthcareComplianceSection({
   const key = getPageKey(slugParts);
   const hubKey = key.split("/")[0];
 
-  let intro: any;
-  let items: ComplianceItem[];
+  // Resolve the hardcoded fallback once. The heading (kicker + H2) is always
+  // hardcoded; only intro + items are sourced from Sanity when populated.
+  const fallback =
+    HUB_COMPLIANCE[key] ||
+    HUB_COMPLIANCE[hubKey] ||
+    HUB_COMPLIANCE["default"];
 
-  if (HUB_COMPLIANCE[key]) {
-    const entry = HUB_COMPLIANCE[key];
-    intro = entry.intro;
-    items = entry.items;
-  } else if (sanityData?.items && sanityData.items.length > 0) {
-    intro = sanityData.introRich ?? sanityData.intro ?? "";
-    items = sanityData.items.map((it) => {
-      const badge = it.badge ?? "HIPAA";
-      return {
-        icon: BADGE_ICON[badge] ?? ShieldCheck,
-        badge,
-        title: it.title ?? "",
-        desc: it.desc ?? "",
-        color: BADGE_COLOR[badge] ?? COLORS.hipaa,
-      };
-    });
-  } else {
-    const entry = HUB_COMPLIANCE[hubKey] ?? HUB_COMPLIANCE["default"];
-    intro = entry.intro;
-    items = entry.items;
-  }
+  // Intro — prefer Sanity rich content, then plain field, then hardcoded.
+  const sanityIntro = sanityData?.introRich ?? sanityData?.intro;
+  const intro: any =
+    (Array.isArray(sanityIntro) && sanityIntro.length > 0) ||
+    (typeof sanityIntro === "string" && sanityIntro.trim().length > 0)
+      ? sanityIntro
+      : fallback.intro;
+
+  // Items — prefer Sanity items if at least one is provided, else hardcoded.
+  const items: ComplianceItem[] =
+    sanityData?.items && sanityData.items.length > 0
+      ? sanityData.items.map((it) => {
+          const badge = it.badge ?? "HIPAA";
+          return {
+            icon: BADGE_ICON[badge] ?? ShieldCheck,
+            badge,
+            title: it.title ?? "",
+            desc: it.desc ?? "",
+            color: BADGE_COLOR[badge] ?? COLORS.hipaa,
+          };
+        })
+      : fallback.items;
 
   return (
     <section className="py-16 lg:py-24 bg-white relative overflow-hidden">

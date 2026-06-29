@@ -68,6 +68,7 @@ export async function generateMetadata({ params }: { params: { slug: string } })
     title: `${card.name} Data Card · Lorann LLC`,
     description: `Access ${new Intl.NumberFormat("en-US").format(card.universe)}+ verified ${card.name.toLowerCase()} contacts. Explore universe size, selects, and activation channels.`,
     keywords,
+    alternates: { canonical: `/data-assets/data-cards/${params.slug}` },
   };
 }
 
