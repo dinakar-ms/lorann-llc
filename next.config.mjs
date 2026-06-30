@@ -50,8 +50,9 @@ const securityHeaders = [
       "connect-src 'self' https://*.sanity.io https://www.google-analytics.com https://www.googletagmanager.com https://analytics.google.com https://www.google.com/recaptcha/",
       // Frames the page may embed: reCAPTCHA challenge iframe
       "frame-src https://www.google.com/recaptcha/",
-      // Frames: only Sanity Presentation tool embeds this site
-      "frame-ancestors 'self' https://*.sanity.io",
+      // Frames: Sanity Presentation tool + apex domain (so Studio loaded
+      // at lorannllc.com/studio can still embed the www-origin preview pages)
+      "frame-ancestors 'self' https://lorannllc.com https://*.sanity.io",
       // No plugins (Flash etc.)
       "object-src 'none'",
       // Force all requests to HTTPS
