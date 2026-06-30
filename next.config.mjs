@@ -48,8 +48,9 @@ const securityHeaders = [
       "img-src 'self' data: blob: https://cdn.sanity.io https://images.unsplash.com https://plus.unsplash.com https://www.google-analytics.com https://www.googletagmanager.com https://www.gstatic.com/recaptcha/",
       // Fetch / XHR: self + Sanity API + GA + reCAPTCHA verification
       "connect-src 'self' https://*.sanity.io https://www.google-analytics.com https://www.googletagmanager.com https://analytics.google.com https://www.google.com/recaptcha/",
-      // Frames the page may embed: reCAPTCHA challenge iframe
-      "frame-src https://www.google.com/recaptcha/",
+      // Frames the page may embed: self (Sanity Presentation draft-mode iframe)
+      // + reCAPTCHA challenge iframe
+      "frame-src 'self' https://www.google.com/recaptcha/",
       // Frames: Sanity Presentation tool + apex domain (so Studio loaded
       // at lorannllc.com/studio can still embed the www-origin preview pages)
       "frame-ancestors 'self' https://lorannllc.com https://*.sanity.io",
