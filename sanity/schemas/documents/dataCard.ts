@@ -279,6 +279,48 @@ export const dataCardType = defineType({
       ],
     }),
     defineField({
+      name: "fileSections",
+      title: "Original File Sections",
+      description:
+        "Every section from the uploaded file (SEGMENTS, DATE, GENDER, AGE, INCOME, etc.), rendered on the public page as a two-column table so the card mirrors the source document.",
+      type: "array",
+      of: [
+        {
+          type: "object",
+          fields: [
+            { name: "title", title: "Section Title", type: "string" },
+            {
+              name: "rows",
+              title: "Rows",
+              type: "array",
+              of: [
+                {
+                  type: "object",
+                  fields: [
+                    { name: "label", title: "Label", type: "string" },
+                    { name: "value", title: "Value", type: "string" },
+                  ],
+                  preview: {
+                    select: { title: "label", subtitle: "value" },
+                  },
+                },
+              ],
+            },
+          ],
+          preview: {
+            select: { title: "title", rows: "rows" },
+            prepare({ title, rows }) {
+              const count = Array.isArray(rows) ? rows.length : 0;
+              return {
+                title: title || "(untitled section)",
+                subtitle: `${count} row${count === 1 ? "" : "s"}`,
+              };
+            },
+          },
+        },
+      ],
+    }),
+    defineField({
       name: "tags",
       title: "Tags / SEO Keywords",
       type: "array",

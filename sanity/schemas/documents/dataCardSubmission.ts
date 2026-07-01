@@ -173,6 +173,35 @@ export const dataCardSubmissionType = defineType({
           ],
         },
         {
+          name: "fileSections",
+          title: "Original File Sections",
+          description:
+            "Every section header the parser found in the uploaded file, with its rows verbatim. Rendered on the public data-card page so it mirrors the source document.",
+          type: "array",
+          of: [
+            {
+              type: "object",
+              fields: [
+                { name: "title", title: "Section Title", type: "string" },
+                {
+                  name: "rows",
+                  title: "Rows",
+                  type: "array",
+                  of: [
+                    {
+                      type: "object",
+                      fields: [
+                        { name: "label", title: "Label", type: "string" },
+                        { name: "value", title: "Value", type: "string" },
+                      ],
+                    },
+                  ],
+                },
+              ],
+            },
+          ],
+        },
+        {
           name: "tags",
           title: "Tags / SEO Keywords",
           type: "array",

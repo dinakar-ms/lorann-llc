@@ -31,6 +31,7 @@ const allFieldsQuery = groq`*[_type == "dataCard"] | order(name asc) {
   segments,
   extraFields,
   minimums,
+  fileSections,
   uploaderName, uploaderEmail
 }`;
 

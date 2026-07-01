@@ -10,17 +10,26 @@ import {
   ExternalLink,
   ArrowLeft,
   Save,
+  FileText,
 } from "lucide-react";
 import type { ReviewSubmission } from "./page";
 
 type FieldDef = {
   key: string;
   label: string;
-  type: "text" | "number" | "textarea" | "boolean" | "select" | "csv";
+  type: "text" | "number" | "textarea" | "boolean" | "select" | "csv" | "lines";
   options?: string[];
   span?: 1 | 2 | 3;
+  placeholder?: string;
+  help?: string;
 };
 
+// The public data card mirrors the uploaded file 1:1 via fileSections. These
+// are the ONLY two fields the file can't provide:
+//   - `name` powers the URL slug and page <title>
+//   - `category` powers the /data-assets/data-cards filter/listing
+// Everything else (universe, gender, source, prices, minimums, dates, …) is
+// rendered directly from the parsed file — admins update by re-uploading.
 const PARSED_FIELDS: FieldDef[] = [
   { key: "name", label: "Data card name", type: "text", span: 2 },
   {
@@ -34,47 +43,13 @@ const PARSED_FIELDS: FieldDef[] = [
       "Manufacturing", "Non-Profit", "Retail", "Travel", "Agriculture",
     ],
   },
-  { key: "universe", label: "Universe", type: "number" },
-  { key: "postalRecords", label: "Postal records", type: "number" },
-  { key: "phoneNumbers", label: "Phone numbers", type: "number" },
-  { key: "emailAddresses", label: "Email addresses", type: "number" },
-  { key: "postalCpm", label: "Postal CPM ($)", type: "number" },
-  { key: "phoneCpm", label: "Phone CPM ($)", type: "number" },
-  { key: "emailCpm", label: "Email CPM ($)", type: "number" },
-  { key: "market", label: "Market", type: "text" },
-  { key: "dataType", label: "Data type", type: "text" },
-  { key: "source", label: "Source", type: "text" },
-  { key: "geo", label: "Geo", type: "text" },
-  { key: "genderMale", label: "Gender % male", type: "number" },
-  { key: "genderFemale", label: "Gender % female", type: "number" },
-  { key: "minimumOrder", label: "Minimum order", type: "number" },
-  { key: "minimumPrice", label: "Minimum price ($)", type: "number" },
-  { key: "netNamePercent", label: "Net name %", type: "number" },
-  { key: "runCharge", label: "Run charge ($/M)", type: "number" },
-  { key: "brokerCommission", label: "Broker commission %", type: "number" },
-  { key: "agencyCommission", label: "Agency commission %", type: "number" },
-  { key: "exchangeAvailable", label: "Exchange available", type: "boolean" },
-  { key: "reuseAvailable", label: "Reuse available", type: "boolean" },
-  { key: "emailDeliveryFee", label: "Email delivery fee ($)", type: "number" },
-  { key: "ftpDeliveryFee", label: "FTP delivery fee ($)", type: "number" },
-  { key: "marketEntryDate", label: "Market entry date", type: "text" },
-  { key: "lastUpdated", label: "Last updated", type: "text" },
-  { key: "nextUpdateDate", label: "Next update date", type: "text" },
-  { key: "frequency", label: "Update frequency", type: "text" },
-  { key: "selects", label: "Selects (comma separated)", type: "csv", span: 3 },
-  {
-    key: "tags",
-    label: "Tags / SEO keywords (comma separated)",
-    type: "csv",
-    span: 3,
-  },
-  { key: "description", label: "Public description", type: "textarea", span: 3 },
 ];
 
 function toFormValue(raw: unknown, type: FieldDef["type"]): string {
   if (raw === null || raw === undefined) return "";
   if (type === "boolean") return raw === true ? "true" : raw === false ? "false" : "";
   if (type === "csv" && Array.isArray(raw)) return raw.join(", ");
+  if (type === "lines" && Array.isArray(raw)) return raw.join("\n");
   return String(raw);
 }
 
@@ -93,6 +68,15 @@ function fromFormValue(raw: string, type: FieldDef["type"]): unknown {
   if (type === "csv") {
     const parts = trimmed
       .split(/[\n,;|]/)
+      .map((p) => p.trim())
+      .filter(Boolean);
+    return parts.length ? parts : undefined;
+  }
+  // "lines" — one entry per newline. Commas are preserved so labels like
+  // "Assistant Feeding, Eating & Swallowing" and counts like "1,320" survive.
+  if (type === "lines") {
+    const parts = trimmed
+      .split(/\r?\n/)
       .map((p) => p.trim())
       .filter(Boolean);
     return parts.length ? parts : undefined;
@@ -135,58 +119,39 @@ export default function ReviewForm({ submission }: { submission: ReviewSubmissio
   }
   const [parsedVals, setParsedVals] = useState<Record<string, string>>(initialParsed);
 
-  // Editable additional fields — anything from parsedFields.extraFields plus
-  // whatever the user types in via the "Add field" button below the form.
-  type ExtraRow = { label: string; value: string };
-  const initialExtras: ExtraRow[] = Array.isArray(
-    (submission.parsedFields as Record<string, unknown>)?.extraFields
+  // File sections come straight from the parser and mirror the uploaded
+  // document's structure (SEGMENTS, GENDER, SOURCE, AGE, INCOME, …). Rendered
+  // as a read-only preview at the top so admins see exactly what the public
+  // page will show, instead of scanning a long form of empty inputs.
+  type FileSection = {
+    title?: string;
+    rows?: { label?: string; value?: string }[];
+  };
+  const fileSections: FileSection[] = Array.isArray(
+    (submission.parsedFields as Record<string, unknown>)?.fileSections
   )
-    ? ((submission.parsedFields as Record<string, unknown>).extraFields as ExtraRow[]).map(
-        (e) => ({ label: e?.label || "", value: e?.value || "" })
-      )
+    ? ((submission.parsedFields as Record<string, unknown>)
+        .fileSections as FileSection[])
     : [];
-  const [extras, setExtras] = useState<ExtraRow[]>(initialExtras);
 
-  // Editable per-channel minimums (Postal/Phone/Email, Postal, Postal+Phone…)
-  type MinRow = { label: string; count: string };
-  const initialMins: MinRow[] = Array.isArray(
-    (submission.parsedFields as Record<string, unknown>)?.minimums
-  )
-    ? ((submission.parsedFields as Record<string, unknown>).minimums as { label?: string; count?: number }[]).map(
-        (m) => ({ label: m?.label || "", count: m?.count != null ? String(m.count) : "" })
-      )
-    : [];
-  const [minimums, setMinimums] = useState<MinRow[]>(initialMins);
+  // extraFields and minimums used to have their own editable panels here, but
+  // the File Preview above now shows exactly what those sections contain
+  // (ADDITIONAL CHARGES, MINIMUM ORDER, …) taken straight from the uploaded
+  // file. Admins update by re-uploading — no more scattered form state.
 
   async function save(): Promise<boolean> {
     setMsg(null);
     setBusy("save");
-    const parsedBody: Record<string, unknown> = {};
+    // Start from the existing parsedFields so every parser-extracted value —
+    // universe, source, gender, minimum order, delivery fees, dates, segments,
+    // extraFields, minimums, fileSections — survives the save. Then override
+    // ONLY the two form-editable fields (name, category).
+    const submissionParsed = (submission.parsedFields as Record<string, unknown>) || {};
+    const parsedBody: Record<string, unknown> = { ...submissionParsed };
     for (const f of PARSED_FIELDS) {
       const v = fromFormValue(parsedVals[f.key], f.type);
       if (v !== undefined) parsedBody[f.key] = v;
     }
-    // Preserve segments (parser-extracted, not edited here yet) so they aren't
-    // wiped on save.
-    const submissionParsed = submission.parsedFields as Record<string, unknown> | undefined;
-    if (Array.isArray(submissionParsed?.segments)) {
-      parsedBody.segments = submissionParsed!.segments;
-    }
-    // Collect the dynamic extra-fields rows. Drop any with an empty label.
-    const cleanExtras = extras
-      .map((e) => ({ label: (e.label || "").trim(), value: (e.value || "").trim() }))
-      .filter((e) => e.label.length > 0);
-    if (cleanExtras.length) parsedBody.extraFields = cleanExtras;
-
-    // Collect the per-channel minimums. Drop any row missing a label or count.
-    const cleanMins = minimums
-      .map((m) => {
-        const label = (m.label || "").trim();
-        const count = Number((m.count || "").replace(/[, ]/g, ""));
-        return { label, count };
-      })
-      .filter((m) => m.label.length > 0 && Number.isFinite(m.count));
-    if (cleanMins.length) parsedBody.minimums = cleanMins;
     // Also mirror the dataCard's name/description/category/universe to the
     // submission top-level fields so list views stay in sync.
     const topBody = {
@@ -387,14 +352,86 @@ export default function ReviewForm({ submission }: { submission: ReviewSubmissio
         </div>
       )}
 
+      {/* PREVIEW — mirror of the uploaded document. Every section header
+          the parser found gets its own table so admins see the file as-is,
+          not as scattered empty inputs. */}
+      {fileSections.length > 0 && (
+        <section className="bg-white border border-slate-200 rounded-2xl p-6 lg:p-8">
+          <div className="flex items-center justify-between gap-4 flex-wrap mb-1">
+            <h2 className="font-display font-semibold text-lg text-slate-900">
+              File preview
+            </h2>
+            <span className="text-[11px] font-semibold uppercase tracking-wider text-slate-500 bg-slate-100 px-2 py-1 rounded-full">
+              {fileSections.length} section{fileSections.length === 1 ? "" : "s"}
+            </span>
+          </div>
+          <p className="text-sm text-slate-600 mb-5">
+            Everything the parser found in your uploaded file, laid out the way
+            it will appear on the public data card. This is a read-only view —
+            publish exactly as parsed.
+          </p>
+          <div className="space-y-4">
+            {fileSections.map((section, sIdx) => {
+              const rows = section.rows || [];
+              const hasAnyLabel = rows.some(
+                (r) => (r.label || "").trim() !== ""
+              );
+              return (
+                <div
+                  key={`preview-${sIdx}`}
+                  className="border border-slate-200 rounded-xl overflow-hidden"
+                >
+                  <div className="flex items-center px-4 py-2.5 border-b border-slate-100 bg-slate-50">
+                    <h3 className="font-display font-semibold text-[13px] text-slate-700 uppercase tracking-wider flex items-center gap-2">
+                      <FileText className="w-3.5 h-3.5 text-slate-400" />
+                      {section.title || "(untitled)"}
+                    </h3>
+                  </div>
+                  {hasAnyLabel ? (
+                    <dl className="divide-y divide-slate-100 text-sm">
+                      {rows.map((r, rIdx) => (
+                        <div
+                          key={`preview-${sIdx}-${rIdx}`}
+                          className="grid grid-cols-[1fr_1fr] gap-4 px-4 py-2.5"
+                        >
+                          <dt className="text-slate-500 font-medium break-words">
+                            {r.label || ""}
+                          </dt>
+                          <dd className="text-slate-900 font-semibold break-words">
+                            {r.value || ""}
+                          </dd>
+                        </div>
+                      ))}
+                    </dl>
+                  ) : (
+                    <div className="px-4 py-3 space-y-2 text-sm text-slate-700">
+                      {rows.map((r, rIdx) => (
+                        <p
+                          key={`preview-${sIdx}-${rIdx}`}
+                          className="leading-relaxed"
+                        >
+                          {r.value}
+                        </p>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        </section>
+      )}
+
       <section className="bg-white border border-slate-200 rounded-2xl p-6 lg:p-8">
         <h2 className="font-display font-semibold text-lg text-slate-900 mb-1">
-          Data card fields
+          Publish settings
         </h2>
         <p className="text-sm text-slate-600 mb-5">
-          These exact values become the public data card on
-          <code className="text-blue-700"> /data-assets/data-cards</code>. Correct anything
-          wrong, then click <strong>Verify &amp; Publish</strong>.
+          The two fields the file can&apos;t set. Name powers the URL slug and
+          page title; category powers filtering on
+          <code className="text-blue-700"> /data-assets/data-cards</code>.
+          Everything else on the public page comes from the uploaded file
+          above — re-upload to change it.
         </p>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           {PARSED_FIELDS.map((f) => (
@@ -408,121 +445,7 @@ export default function ReviewForm({ submission }: { submission: ReviewSubmissio
         </div>
       </section>
 
-      <section className="bg-white border border-slate-200 rounded-2xl p-6 lg:p-8">
-        <h2 className="font-display font-semibold text-lg text-slate-900 mb-1">
-          Minimums
-        </h2>
-        <p className="text-sm text-slate-600 mb-5">
-          One row per channel or combination. E.g. <em>Postal/Phone/Email = 3,000</em>,
-          <em> Postal = 5,000</em>. Leave blank if a single &ldquo;Minimum order&rdquo;
-          above is enough.
-        </p>
-        <div className="space-y-3">
-          {minimums.length === 0 && (
-            <p className="text-sm text-slate-500 italic">No per-channel minimums yet.</p>
-          )}
-          {minimums.map((row, i) => (
-            <div
-              key={`min-${i}`}
-              className="grid grid-cols-1 md:grid-cols-[1fr_1fr_auto] gap-3 items-start"
-            >
-              <input
-                type="text"
-                placeholder="Label (e.g. Postal/Phone/Email Minimum)"
-                value={row.label}
-                onChange={(e) => {
-                  const v = e.target.value;
-                  setMinimums((arr) => arr.map((r, j) => (j === i ? { ...r, label: v } : r)));
-                }}
-                className="w-full px-3 py-2.5 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:border-blue-500 focus:ring-2 focus:ring-blue-100 outline-none text-slate-900 text-sm"
-              />
-              <input
-                type="text"
-                inputMode="numeric"
-                placeholder="Count (e.g. 3000)"
-                value={row.count}
-                onChange={(e) => {
-                  const v = e.target.value;
-                  setMinimums((arr) => arr.map((r, j) => (j === i ? { ...r, count: v } : r)));
-                }}
-                className="w-full px-3 py-2.5 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:border-blue-500 focus:ring-2 focus:ring-blue-100 outline-none text-slate-900 text-sm"
-              />
-              <button
-                type="button"
-                onClick={() => setMinimums((arr) => arr.filter((_, j) => j !== i))}
-                className="px-3 py-2.5 rounded-xl border border-red-200 text-red-700 hover:bg-red-50 text-xs font-semibold"
-              >
-                Remove
-              </button>
-            </div>
-          ))}
-          <button
-            type="button"
-            onClick={() => setMinimums((arr) => [...arr, { label: "", count: "" }])}
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-xl border border-dashed border-slate-300 text-slate-700 hover:border-blue-400 hover:text-blue-700 text-sm font-semibold transition-colors"
-          >
-            + Add minimum
-          </button>
-        </div>
-      </section>
 
-      <section className="bg-white border border-slate-200 rounded-2xl p-6 lg:p-8">
-        <h2 className="font-display font-semibold text-lg text-slate-900 mb-1">
-          Additional fields
-        </h2>
-        <p className="text-sm text-slate-600 mb-5">
-          Any other labeled data the parser found in your file, plus anything you want to
-          add manually. These render on the public data card&apos;s details section.
-        </p>
-        <div className="space-y-3">
-          {extras.length === 0 && (
-            <p className="text-sm text-slate-500 italic">No additional fields yet.</p>
-          )}
-          {extras.map((row, i) => (
-            <div
-              key={`extra-${i}`}
-              className="grid grid-cols-1 md:grid-cols-[1fr_1fr_auto] gap-3 items-start"
-            >
-              <input
-                type="text"
-                placeholder="Label (e.g. NextMark ID)"
-                value={row.label}
-                onChange={(e) => {
-                  const v = e.target.value;
-                  setExtras((arr) => arr.map((r, j) => (j === i ? { ...r, label: v } : r)));
-                }}
-                className="w-full px-3 py-2.5 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:border-blue-500 focus:ring-2 focus:ring-blue-100 outline-none text-slate-900 text-sm"
-              />
-              <input
-                type="text"
-                placeholder="Value"
-                value={row.value}
-                onChange={(e) => {
-                  const v = e.target.value;
-                  setExtras((arr) => arr.map((r, j) => (j === i ? { ...r, value: v } : r)));
-                }}
-                className="w-full px-3 py-2.5 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:border-blue-500 focus:ring-2 focus:ring-blue-100 outline-none text-slate-900 text-sm"
-              />
-              <button
-                type="button"
-                onClick={() =>
-                  setExtras((arr) => arr.filter((_, j) => j !== i))
-                }
-                className="px-3 py-2.5 rounded-xl border border-red-200 text-red-700 hover:bg-red-50 text-xs font-semibold"
-              >
-                Remove
-              </button>
-            </div>
-          ))}
-          <button
-            type="button"
-            onClick={() => setExtras((arr) => [...arr, { label: "", value: "" }])}
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-xl border border-dashed border-slate-300 text-slate-700 hover:border-blue-400 hover:text-blue-700 text-sm font-semibold transition-colors"
-          >
-            + Add field
-          </button>
-        </div>
-      </section>
 
       <div className="sticky bottom-0 -mx-4 lg:mx-0 bg-white border-t border-slate-200 lg:border lg:rounded-2xl shadow-md px-4 lg:px-6 py-4 flex flex-wrap gap-3 items-center justify-end">
         <button
@@ -598,12 +521,13 @@ function FieldInput({
       <label className="block text-[12px] font-semibold text-slate-700 mb-1.5">
         {field.label}
       </label>
-      {field.type === "textarea" ? (
+      {field.type === "textarea" || field.type === "lines" ? (
         <textarea
           value={value}
           onChange={(e) => onChange(e.target.value)}
-          rows={4}
-          className={`${inputCls} resize-none`}
+          rows={field.type === "lines" ? 6 : 4}
+          placeholder={field.placeholder}
+          className={`${inputCls} resize-y font-mono`}
         />
       ) : field.type === "select" && field.options ? (
         <select
@@ -636,6 +560,11 @@ function FieldInput({
           onChange={(e) => onChange(e.target.value)}
           className={inputCls}
         />
+      )}
+      {field.help && (
+        <p className="mt-1.5 text-[11px] text-slate-500 leading-snug">
+          {field.help}
+        </p>
       )}
     </div>
   );

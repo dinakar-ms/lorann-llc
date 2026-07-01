@@ -44,6 +44,10 @@ type ParsedFields = {
   segments?: { label: string; count?: number; rate?: number }[];
   extraFields?: { label: string; value: string }[];
   minimums?: { label: string; count?: number }[];
+  fileSections?: {
+    title: string;
+    rows: { label: string; value: string }[];
+  }[];
   tags?: string[];
 };
 
@@ -106,6 +110,7 @@ const optionalKeys: (keyof ParsedFields)[] = [
   "segments",
   "extraFields",
   "minimums",
+  "fileSections",
   "tags",
 ];
 
@@ -171,6 +176,24 @@ export async function POST(_req: NextRequest, { params }: { params: { id: string
             _key: (s as { _key?: string })._key || `min-${i}`,
             ...(s as Record<string, unknown>),
           }));
+        } else if (key === "fileSections" && Array.isArray(v)) {
+          // Each section object AND each nested row need a stable `_key`.
+          optionalSet[key] = v.map((s, i) => {
+            const sec = s as {
+              _key?: string;
+              title?: string;
+              rows?: { _key?: string; label?: string; value?: string }[];
+            };
+            return {
+              _key: sec._key || `sec-${i}`,
+              title: sec.title,
+              rows: (sec.rows || []).map((r, j) => ({
+                _key: r._key || `sec-${i}-${j}`,
+                label: r.label,
+                value: r.value,
+              })),
+            };
+          });
         } else {
           optionalSet[key] = v;
         }

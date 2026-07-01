@@ -50,6 +50,10 @@ export interface FullDataCard {
   tags?: string[];
   segments?: { label?: string; count?: number; rate?: number }[];
   extraFields?: { label?: string; value?: string }[];
+  fileSections?: {
+    title?: string;
+    rows?: { label?: string; value?: string }[];
+  }[];
 }
 
 interface RelatedCard {
@@ -258,388 +262,99 @@ export default function DataCardDetail({ card, relatedCards, totalCards }: Props
         </div>
       </section>
 
-      {/* ═══════ MAIN CONTENT — 2 COLUMN ═══════ */}
+      {/* ═══════ MAIN CONTENT — mirrors the uploaded file's structure ═══════
+          Every section header from the source RTF/PDF/XLS renders as its own
+          labeled table. Nothing else is shown here — no form-filled cards,
+          no per-field sidebar — so what appears on this page is exactly what
+          was in the uploaded file. Admins update by re-uploading. */}
       <section className="pt-8 pb-14 lg:pb-16 bg-white border-t border-slate-100">
+        {/* Full page-width — no fixed sidebar. The hero already has "Request
+            This Data Card" and the bottom section has "Ready to activate →
+            Request a Quote", so file sections use the entire container. */}
         <div className="container-custom">
-          <div className="grid lg:grid-cols-[1fr_360px] gap-6 items-start">
-
-            {/* ────── LEFT COLUMN ────── */}
-            <div className="space-y-5 min-w-0">
-
-              {/* SEGMENTS TABLE */}
-              <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden animate-[slideIn_0.4s_ease-out_0.1s_both]">
-                <div className={`flex items-center justify-between px-5 py-3 bg-gradient-to-r ${gradient}`}>
-                  <h2 className="font-display font-bold text-sm text-white uppercase tracking-wider flex items-center gap-2">
-                    <BarChart3 className="w-4 h-4" /> Segments
-                  </h2>
-                </div>
-
-                <table className="w-full text-sm">
-                  <thead>
-                    <tr className="bg-slate-50 border-b border-slate-100">
-                      <th className="text-left py-2.5 px-5 font-semibold text-slate-500 text-xs uppercase tracking-wider">Count</th>
-                      <th className="text-left py-2.5 px-5 font-semibold text-slate-500 text-xs uppercase tracking-wider">Segment</th>
-                      <th className="text-right py-2.5 px-5 font-semibold text-slate-500 text-xs uppercase tracking-wider">CPM</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-slate-100">
-                    {card.segments && card.segments.length > 0 ? (
-                      // DYNAMIC PATH — render exactly what was parsed from the file.
-                      // Every segment from the data card document is shown verbatim,
-                      // whatever its label happens to be.
-                      card.segments.map((s, i) => {
-                        const label = s.label || "—";
-                        const labelLower = label.toLowerCase();
-                        // Pick a sensible icon for the well-known segment types
-                        let Icon: React.ElementType | null = null;
-                        if (labelLower.includes("postal")) Icon = Printer;
-                        else if (labelLower.includes("phone")) Icon = Phone;
-                        else if (labelLower.includes("email")) Icon = Mail;
-                        return (
-                          <tr key={`seg-${i}`} className="hover:bg-blue-50/40 transition-colors">
-                            <td className="py-3 px-5 font-bold text-slate-900 tabular-nums">
-                              {typeof s.count === "number" ? fmt.format(s.count) : "—"}
-                            </td>
-                            <td className="py-3 px-5 text-slate-700">
-                              <span className="flex items-center gap-2">
-                                {Icon && <Icon className="w-3.5 h-3.5 text-slate-400" />}
-                                {label}
-                              </span>
-                            </td>
-                            <td className="py-3 px-5 text-right font-semibold text-slate-800">
-                              {typeof s.rate === "number" ? fmtCurrency(s.rate) + "/M" : "—"}
-                            </td>
-                          </tr>
-                        );
-                      })
-                    ) : (
-                      // FALLBACK — legacy cards without a segments array. Use the
-                      // standalone universe/postal/phone/email fields.
-                      <>
-                        <tr className="hover:bg-blue-50/40 transition-colors">
-                          <td className="py-3 px-5 font-bold text-slate-900 tabular-nums">{fmt.format(card.universe)}</td>
-                          <td className="py-3 px-5 text-slate-700">Total Universe / Base Rate</td>
-                          <td className="py-3 px-5 text-right font-semibold text-slate-800">{card.postalCpm ? fmtCurrency(card.postalCpm) + "/M" : "—"}</td>
-                        </tr>
-                        {card.postalRecords != null && (
-                          <tr className="hover:bg-blue-50/40 transition-colors">
-                            <td className="py-3 px-5 font-bold text-slate-900 tabular-nums">{fmt.format(card.postalRecords)}</td>
-                            <td className="py-3 px-5 text-slate-700 flex items-center gap-2"><Printer className="w-3.5 h-3.5 text-slate-400" />Postal Records</td>
-                            <td className="py-3 px-5 text-right font-semibold text-slate-800">{card.postalCpm ? fmtCurrency(card.postalCpm) + "/M" : "—"}</td>
-                          </tr>
-                        )}
-                        {card.phoneNumbers != null && (
-                          <tr className="hover:bg-blue-50/40 transition-colors">
-                            <td className="py-3 px-5 font-bold text-slate-900 tabular-nums">{fmt.format(card.phoneNumbers)}</td>
-                            <td className="py-3 px-5 text-slate-700 flex items-center gap-2"><Phone className="w-3.5 h-3.5 text-slate-400" />Phone Numbers</td>
-                            <td className="py-3 px-5 text-right font-semibold text-slate-800">{card.phoneCpm ? fmtCurrency(card.phoneCpm) + "/M" : "—"}</td>
-                          </tr>
-                        )}
-                        {card.emailAddresses != null && (
-                          <tr className="hover:bg-blue-50/40 transition-colors">
-                            <td className="py-3 px-5 font-bold text-slate-900 tabular-nums">{fmt.format(card.emailAddresses)}</td>
-                            <td className="py-3 px-5 text-slate-700 flex items-center gap-2"><Mail className="w-3.5 h-3.5 text-slate-400" />Email Addresses</td>
-                            <td className="py-3 px-5 text-right font-semibold text-slate-800">{card.emailCpm ? fmtCurrency(card.emailCpm) + "/M" : "—"}</td>
-                          </tr>
-                        )}
-                      </>
-                    )}
-                  </tbody>
-                </table>
-              </div>
-
-              {/* DESCRIPTION */}
-              {card.description && (
-                <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden animate-[slideIn_0.4s_ease-out_0.15s_both]">
-                  <div className="flex items-center px-5 py-3 border-b border-slate-100 bg-slate-50/60">
-                    <h2 className="font-display font-bold text-sm text-slate-700 uppercase tracking-wider flex items-center gap-2">
-                      <FileText className="w-4 h-4 text-slate-400" /> Description
-                    </h2>
-                  </div>
-                  <div className="px-5 py-4 text-[14px] leading-relaxed text-slate-700 whitespace-pre-line">
-                    {card.description}
-                  </div>
+          <div className="min-w-0">
+              {(!card.fileSections || card.fileSections.length === 0) && (
+                <div className="bg-white rounded-2xl border border-dashed border-slate-300 shadow-sm px-6 py-10 text-center">
+                  <FileText className="w-8 h-8 text-slate-300 mx-auto mb-3" />
+                  <p className="text-sm text-slate-500">
+                    No file preview available yet. Re-upload the source file to
+                    populate this page.
+                  </p>
                 </div>
               )}
-
-              {/* ADDITIONAL DETAILS — split into "Additional Charges" (any row whose
-                  value looks like $X.XX/M) and everything else. The charges get
-                  their own subheading and the redundant "Additional Charge" suffix
-                  is stripped from the label. */}
-              {card.extraFields && card.extraFields.length > 0 && (() => {
-                const valid = card.extraFields.filter((f) => f.label && f.value);
-                // Charge row = either the parser tagged it via the section prefix
-                // ("ADDITIONAL CHARGES · Age") OR the value matches "$X.XX/M".
-                const hasChargePrefix = (l?: string) =>
-                  !!l && /^\s*additional\s*charges?\s*[·:|\-–—]/i.test(l);
-                const isChargeValue = (v?: string) =>
-                  !!v && /^\s*\$?\s*[\d,]+(?:\.\d+)?\s*\/\s*[MF]\s*$/i.test(v);
-                const isCharge = (f: { label?: string; value?: string }) =>
-                  hasChargePrefix(f.label) || isChargeValue(f.value);
-                // Strip the "ADDITIONAL CHARGES · " section prefix and any trailing
-                // "Additional Charge" suffix so labels read cleanly.
-                const cleanLabel = (l?: string) =>
-                  (l || "")
-                    .replace(/^\s*additional\s*charges?\s*[·:|\-–—]\s*/i, "")
-                    .replace(/\s*additional\s*charges?\s*$/i, "")
-                    .trim() || (l || "");
-                const charges = valid.filter(isCharge);
-                const others = valid.filter((f) => !isCharge(f));
-                if (charges.length === 0 && others.length === 0) return null;
-                return (
-                  <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden animate-[slideIn_0.4s_ease-out_0.18s_both]">
-                    <div className="flex items-center px-5 py-3 border-b border-slate-100 bg-slate-50/60">
-                      <h2 className="font-display font-bold text-sm text-slate-700 uppercase tracking-wider flex items-center gap-2">
-                        <FileText className="w-4 h-4 text-slate-400" /> Additional Details
-                      </h2>
-                    </div>
-                    {others.length > 0 && (
-                      <dl className="divide-y divide-slate-100 text-sm">
-                        {others.map((f, i) => (
+              {card.fileSections && card.fileSections.length > 0 && (
+                <div className="md:[column-count:2] md:[column-gap:1.25rem]">
+                  {card.fileSections
+                    .filter((s) => s.title && s.rows && s.rows.length > 0)
+                    .map((section, sIdx) => {
+                      const rows = section.rows || [];
+                      const hasAnyLabel = rows.some(
+                        (r) => (r.label || "").trim() !== ""
+                      );
+                      // Full-width sections (span both columns):
+                      //   - SEGMENTS: the primary pricing block — deserves top
+                      //     billing, and rows have three data points (count /
+                      //     label / rate) that read cleanly full-width.
+                      //   - Any section with a long-prose row > 200 chars
+                      //     (typically DESCRIPTION) — narrow columns would
+                      //     mangle the paragraphs.
+                      // Everything else packs tightly into two masonry columns
+                      // — no wasted vertical gaps between mismatched heights.
+                      const longestValue = rows.reduce(
+                        (max, r) => Math.max(max, (r.value || "").length),
+                        0
+                      );
+                      const titleUpper = (section.title || "")
+                        .toUpperCase()
+                        .trim();
+                      const spanBoth =
+                        longestValue > 200 || titleUpper === "SEGMENTS";
+                      return (
+                        <div
+                          key={`filesec-${sIdx}`}
+                          className={`bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden mb-5 [break-inside:avoid] ${
+                            spanBoth ? "md:[column-span:all]" : ""
+                          }`}
+                        >
                           <div
-                            key={`extra-${i}`}
-                            className="grid grid-cols-[1fr_2fr] gap-4 px-5 py-3"
+                            className={`flex items-center px-5 py-3 bg-gradient-to-r ${gradient}`}
                           >
-                            <dt className="text-slate-500 font-medium">{f.label}</dt>
-                            <dd className="text-slate-800 font-semibold break-words">
-                              {f.value}
-                            </dd>
+                            <h2 className="font-display font-bold text-sm text-white uppercase tracking-wider flex items-center gap-2">
+                              <FileText className="w-4 h-4" /> {section.title}
+                            </h2>
                           </div>
-                        ))}
-                      </dl>
-                    )}
-                    {charges.length > 0 && (
-                      <div className={others.length > 0 ? "border-t border-slate-100" : ""}>
-                        <div className="px-5 py-2.5 bg-slate-50/60 border-b border-slate-100">
-                          <h3 className="font-display font-bold text-[11px] text-slate-500 uppercase tracking-wider">
-                            Additional Charges
-                          </h3>
-                        </div>
-                        <dl className="divide-y divide-slate-100 text-sm">
-                          {charges.map((f, i) => (
-                            <div
-                              key={`charge-${i}`}
-                              className="grid grid-cols-[1fr_2fr] gap-4 px-5 py-3"
-                            >
-                              <dt className="text-slate-500 font-medium">{cleanLabel(f.label)}</dt>
-                              <dd className="text-slate-800 font-semibold break-words">
-                                {f.value}
-                              </dd>
+                          {hasAnyLabel ? (
+                            <dl className="divide-y divide-slate-100 text-sm">
+                              {rows.map((r, rIdx) => (
+                                <div
+                                  key={`filerow-${sIdx}-${rIdx}`}
+                                  className="grid grid-cols-[1fr_1fr] gap-4 px-5 py-3"
+                                >
+                                  <dt className="text-slate-500 font-medium break-words">
+                                    {r.label || ""}
+                                  </dt>
+                                  <dd className="text-slate-900 font-semibold break-words">
+                                    {r.value || ""}
+                                  </dd>
+                                </div>
+                              ))}
+                            </dl>
+                          ) : (
+                            <div className="px-5 py-4 space-y-2 text-[14px] text-slate-700 leading-relaxed">
+                              {rows.map((r, rIdx) => (
+                                <p key={`filerow-${sIdx}-${rIdx}`}>{r.value}</p>
+                              ))}
                             </div>
-                          ))}
-                        </dl>
-                      </div>
-                    )}
-                  </div>
-                );
-              })()}
-
-              {/* ORDERING INSTRUCTIONS */}
-              <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden animate-[slideIn_0.4s_ease-out_0.2s_both]">
-                <div className="flex items-center px-5 py-3 border-b border-slate-100 bg-slate-50/60">
-                  <h2 className="font-display font-bold text-sm text-slate-700 uppercase tracking-wider flex items-center gap-2">
-                    <Package className="w-4 h-4 text-slate-400" /> Ordering Instructions
-                  </h2>
-                </div>
-                <div className="px-5 py-4">
-                  <ul className="space-y-2 text-sm text-slate-600">
-                    {card.minimums && card.minimums.length > 0 ? (
-                      card.minimums
-                        .filter((m) => m.label || m.count != null)
-                        .map((m, idx) => (
-                          <li key={`min-${idx}`} className="flex items-start gap-2">
-                            <span className="w-1.5 h-1.5 rounded-full bg-slate-400 mt-1.5 flex-shrink-0" />
-                            <span>
-                              {m.label && <strong className="text-slate-800">{m.label}</strong>}
-                              {m.label && m.count != null && " — "}
-                              {m.count != null && <>{fmt.format(m.count)} Names</>}
-                            </span>
-                          </li>
-                        ))
-                    ) : (
-                      card.minimumOrder != null && (
-                        <li className="flex items-start gap-2">
-                          <span className="w-1.5 h-1.5 rounded-full bg-slate-400 mt-1.5 flex-shrink-0" />
-                          <span>{fmt.format(card.minimumOrder)} Name Minimum Order{card.minimumPrice != null && <> ${card.minimumPrice.toFixed(2)} Minimum Price</>}</span>
-                        </li>
-                      )
-                    )}
-                    {card.minimums && card.minimums.length > 0 && card.minimumPrice != null && (
-                      <li className="flex items-start gap-2">
-                        <span className="w-1.5 h-1.5 rounded-full bg-slate-400 mt-1.5 flex-shrink-0" />
-                        <span>${card.minimumPrice.toFixed(2)} Minimum Price</span>
-                      </li>
-                    )}
-                    {card.netNamePercent != null && (
-                      <li className="flex items-start gap-2">
-                        <span className="w-1.5 h-1.5 rounded-full bg-slate-400 mt-1.5 flex-shrink-0" />
-                        <span>
-                          {card.netNamePercent}% Net Name available on orders of 50,000 or more
-                          {card.runCharge != null && (
-                            <> (${card.runCharge.toFixed(2)}/M Run Charge)</>
                           )}
-                        </span>
-                      </li>
-                    )}
-                    <li className="flex items-start gap-2">
-                      <span className={`w-1.5 h-1.5 rounded-full mt-1.5 flex-shrink-0 ${card.exchangeAvailable ? "bg-emerald-500" : "bg-red-400"}`} />
-                      <span>Exchange is {card.exchangeAvailable ? "" : "not "}available</span>
-                    </li>
-                    {card.brokerCommission != null && (
-                      <li className="flex items-start gap-2">
-                        <span className="w-1.5 h-1.5 rounded-full bg-slate-400 mt-1.5 flex-shrink-0" />
-                        <span>Broker Commission {card.brokerCommission}% on base</span>
-                      </li>
-                    )}
-                    {card.agencyCommission != null && (
-                      <li className="flex items-start gap-2">
-                        <span className="w-1.5 h-1.5 rounded-full bg-slate-400 mt-1.5 flex-shrink-0" />
-                        <span>Agency Commission {card.agencyCommission}% on base</span>
-                      </li>
-                    )}
-                    <li className="flex items-start gap-2">
-                      <span className={`w-1.5 h-1.5 rounded-full mt-1.5 flex-shrink-0 ${card.reuseAvailable ? "bg-emerald-500" : "bg-red-400"}`} />
-                      <span>Reuse is {card.reuseAvailable ? "" : "not "}available</span>
-                    </li>
-                  </ul>
-                </div>
-              </div>
-
-              {/* ADDRESSING */}
-              {(card.emailDeliveryFee != null || card.ftpDeliveryFee != null) && (
-                <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden animate-[slideIn_0.4s_ease-out_0.25s_both]">
-                  <div className="flex items-center px-5 py-3 border-b border-slate-100 bg-slate-50/60">
-                    <h2 className="font-display font-bold text-sm text-slate-700 uppercase tracking-wider flex items-center gap-2">
-                      <Truck className="w-4 h-4 text-slate-400" /> Addressing
-                    </h2>
-                  </div>
-                  <div className="divide-y divide-slate-100">
-                    {card.emailDeliveryFee != null && (
-                      <div className="flex items-center justify-between px-5 py-3 text-sm">
-                        <span className="text-slate-600 flex items-center gap-2"><Mail className="w-3.5 h-3.5 text-blue-500" />Email</span>
-                        <span className="font-bold text-slate-800">${card.emailDeliveryFee.toFixed(2)}/F</span>
-                      </div>
-                    )}
-                    {card.ftpDeliveryFee != null && (
-                      <div className="flex items-center justify-between px-5 py-3 text-sm">
-                        <span className="text-slate-600 flex items-center gap-2"><Settings className="w-3.5 h-3.5 text-indigo-500" />FTP</span>
-                        <span className="font-bold text-slate-800">${card.ftpDeliveryFee.toFixed(2)}/F</span>
-                      </div>
-                    )}
-                  </div>
+                        </div>
+                      );
+                    })}
                 </div>
               )}
-            </div>
-
-            {/* ────── RIGHT COLUMN (SIDEBAR) ────── */}
-            <div className="space-y-5 lg:sticky lg:top-24 animate-[slideIn_0.5s_ease-out_0.15s_both]">
-
-              {/* CARD INFO */}
-              <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
-                <div className="divide-y divide-slate-100 text-sm">
-                  {card.market && (
-                    <div className="flex items-center justify-between px-5 py-2.5">
-                      <span className="text-slate-500 font-medium">Market</span>
-                      <span className="font-bold text-slate-800">{card.market}</span>
-                    </div>
-                  )}
-                  <div className="flex items-center justify-between px-5 py-2.5">
-                    <span className="text-slate-500 font-medium">Category</span>
-                    <span className="inline-flex items-center gap-1.5 font-bold text-slate-800">
-                      <span className={`w-2.5 h-2.5 rounded-full ${catColor}`} />
-                      {card.category}
-                    </span>
-                  </div>
-                  {card.dataType && (
-                    <div className="flex items-center justify-between px-5 py-2.5">
-                      <span className="text-slate-500 font-medium">Type</span>
-                      <span className="font-bold text-slate-800 text-right max-w-[180px]">{card.dataType}</span>
-                    </div>
-                  )}
-                  {card.source && (
-                    <div className="flex items-center justify-between px-5 py-2.5 gap-4">
-                      <span className="text-slate-500 font-medium flex-shrink-0">Source</span>
-                      <span className="font-bold text-slate-800 text-right text-xs leading-snug">{card.source}</span>
-                    </div>
-                  )}
-                  {card.geo && (
-                    <div className="flex items-center justify-between px-5 py-2.5">
-                      <span className="text-slate-500 font-medium">Geo</span>
-                      <span className="font-bold text-slate-800">{card.geo}</span>
-                    </div>
-                  )}
-                  {(card.genderMale != null && card.genderFemale != null) && (
-                    <div className="flex items-center justify-between px-5 py-2.5">
-                      <span className="text-slate-500 font-medium">Gender</span>
-                      <span className="font-bold text-slate-800">{card.genderFemale}% Female {card.genderMale}% Male</span>
-                    </div>
-                  )}
-                  <div className="flex items-center justify-between px-5 py-2.5">
-                    <span className="text-slate-500 font-medium">Status</span>
-                    <span className="inline-flex items-center gap-1.5 font-bold text-emerald-600 text-xs">
-                      <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-                      ACTIVE
-                    </span>
-                  </div>
-                </div>
-
-                {/* CTA button */}
-                <div className="p-4 border-t border-slate-100">
-                  <Link href="/contact" className={`flex items-center justify-center gap-2 w-full py-3 rounded-xl bg-gradient-to-r ${gradient} text-white font-bold text-sm shadow-md hover:shadow-lg hover:scale-[1.01] transition-all duration-300`}>
-                    Get Count <Zap className="w-4 h-4" />
-                  </Link>
-                </div>
-              </div>
-
-              {/* SELECTS */}
-              {card.selects && card.selects.length > 0 && (
-                <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
-                  <div className="flex items-center justify-between px-5 py-3 border-b border-slate-100 bg-slate-50/60">
-                    <h2 className="font-display font-bold text-sm text-slate-700 uppercase tracking-wider flex items-center gap-2">
-                      <Layers className="w-4 h-4 text-slate-400" /> Selects
-                    </h2>
-                    <span className="text-xs font-bold text-blue-600 bg-blue-50 px-2 py-0.5 rounded-full">{card.selects.length}</span>
-                  </div>
-                  <div className="px-5 py-3">
-                    <div className="flex flex-wrap gap-1.5">
-                      {card.selects.map((s) => (
-                        <span key={s} className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-slate-50 border border-slate-100 text-xs font-medium text-slate-700 hover:bg-blue-50 hover:border-blue-200 hover:text-blue-700 transition-colors cursor-default">
-                          <CheckCircle2 className="w-3 h-3 text-blue-400" />
-                          {s}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              {/* CARD METADATA */}
-              <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
-                <div className="flex items-center px-5 py-3 border-b border-slate-100 bg-slate-50/60">
-                  <h2 className="font-display font-bold text-sm text-slate-700 uppercase tracking-wider flex items-center gap-2">
-                    <Clock className="w-4 h-4 text-slate-400" /> Card Metadata
-                  </h2>
-                </div>
-                <div className="divide-y divide-slate-100 text-sm">
-                  {card.marketEntryDate && (
-                    <div className="flex items-center justify-between px-5 py-2.5">
-                      <span className="text-slate-500 font-medium">Market Entry</span>
-                      <span className="font-bold text-slate-800">{card.marketEntryDate}</span>
-                    </div>
-                  )}
-                  {card.frequency && (
-                    <div className="flex items-center justify-between px-5 py-2.5">
-                      <span className="text-slate-500 font-medium">Frequency</span>
-                      <span className="font-bold text-emerald-600">{card.frequency}</span>
-                    </div>
-                  )}
-                </div>
-              </div>
-
-            </div>
           </div>
         </div>
       </section>
+
 
       {/* ═══════ RELATED ═══════ */}
       {relatedCards.length > 0 && (
