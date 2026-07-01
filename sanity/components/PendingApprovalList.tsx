@@ -74,7 +74,21 @@ export default function PendingApprovalList() {
     // editor opens the canonical document (which carries the draft as its
     // working state).
     const canonical = row._id.replace(/^drafts\./, "");
-    router.navigateIntent("edit", { id: canonical, type: row._type });
+    // Navigate to the pane URL directly instead of using navigateIntent.
+    // navigateIntent lets Sanity's resolver pick whichever structure pane
+    // "matches" the document type/slug first — for a `page` doc with slug
+    // /about/… that lands on the About section, not Pending Approval, which
+    // is confusing when the admin is reviewing a queue. Setting the URL
+    // to `pendingApproval;<docId>` keeps the reviewer's context.
+    //
+    // Path shape: `router.navigateUrl` auto-prepends BOTH the `/studio`
+    // basePath AND the current tool segment (`structure`), so we pass only
+    // the pane portion. Include neither the leading slash (that dropped
+    // basePath → "Workspace not found") nor the `structure/` prefix (that
+    // gave us `/studio/structure/structure/…`, doubled up).
+    router.navigateUrl({
+      path: `pendingApproval;${encodeURIComponent(canonical)}`,
+    });
   }
 
   if (rows === null) {

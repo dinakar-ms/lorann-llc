@@ -56,6 +56,28 @@ export const structure: StructureResolver = (S) =>
           S.component(PendingApprovalList)
             .title("Pending Approval")
             .id("pendingApprovalView")
+            // When the custom component pushes a `pendingApproval;<docId>`
+            // URL, Sanity needs a child renderer to know what to display.
+            // documentList would look up the doc's type from the schema; for
+            // an arbitrary doc pushed by our component we fetch the type
+            // ourselves and return a document pane. The `drafts.` prefix is
+            // stripped in openDoc, so we look for both id shapes here.
+            .child(async (documentId, { structureContext }) => {
+              const client = structureContext.getClient({
+                apiVersion: "2024-10-01",
+              });
+              const doc = await client.fetch<{ _type: string } | null>(
+                `*[_id == $id || _id == "drafts." + $id][0]{ _type }`,
+                { id: documentId }
+              );
+              // Fallback to "page" when the lookup misses — every pending
+              // approval item is a page today, so this recovers the pane
+              // instead of returning null (which the child resolver type
+              // doesn't allow).
+              return S.document()
+                .documentId(documentId)
+                .schemaType(doc?._type || "page");
+            })
         ),
       S.divider(),
 
