@@ -60,18 +60,6 @@ export const healthcareComplianceSectionType = defineType({
   type: "object",
   fields: [
     defineField({
-      name: "photoUrl",
-      title: "Section Photo URL",
-      type: "url",
-      description: "Unsplash or CDN URL for the compliance section photo.",
-    }),
-    defineField({
-      name: "intro",
-      title: "Intro Text (legacy)",
-      type: "text",
-      hidden: true,
-    }),
-    defineField({
       name: "introRich",
       title: "Intro Text",
       type: "richText",

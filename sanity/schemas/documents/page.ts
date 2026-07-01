@@ -215,6 +215,28 @@ export const pageType = defineType({
       description: "Intro paragraph blocks with Bold, Italic, Underline, and Link formatting.",
     }),
 
+    defineField({
+      name: "introContent",
+      title: "Intro Content (deprecated)",
+      description: "Legacy field — content has been migrated to Intro Paragraphs. Safe to remove.",
+      type: "array",
+      of: [
+        {
+          type: "block",
+          styles: [{ title: "Normal", value: "normal" }],
+          lists: [],
+          marks: {
+            decorators: [
+              { title: "Bold", value: "strong" },
+              { title: "Italic", value: "em" },
+            ],
+          },
+        },
+      ],
+      fieldset: "intro",
+      readOnly: true,
+    }),
+
     // ─── Leaf Page Fields ────────────────────────────────
     defineField({
       name: "stats",

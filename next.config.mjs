@@ -38,18 +38,22 @@ const securityHeaders = [
     key: "Content-Security-Policy",
     value: [
       "default-src 'self'",
-      // Scripts: self + GTM / GA + Sanity visual editing
-      "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.googletagmanager.com https://www.google-analytics.com https://*.sanity.io",
+      // Scripts: self + GTM / GA + Sanity visual editing + Google reCAPTCHA
+      "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.googletagmanager.com https://www.google-analytics.com https://*.sanity.io https://www.google.com/recaptcha/ https://www.gstatic.com/recaptcha/",
       // Styles: self + inline (Tailwind)
       "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
       // Fonts
       "font-src 'self' https://fonts.gstatic.com",
-      // Images: self + CDN + GA pixel + Sanity image CDN
-      "img-src 'self' data: blob: https://cdn.sanity.io https://images.unsplash.com https://plus.unsplash.com https://www.google-analytics.com https://www.googletagmanager.com",
-      // Fetch / XHR: self + Sanity API + GA
-      "connect-src 'self' https://*.sanity.io https://www.google-analytics.com https://www.googletagmanager.com https://analytics.google.com",
-      // Frames: only Sanity Presentation tool embeds this site
-      "frame-ancestors 'self' https://*.sanity.io",
+      // Images: self + CDN + GA pixel + Sanity image CDN + reCAPTCHA assets
+      "img-src 'self' data: blob: https://cdn.sanity.io https://images.unsplash.com https://plus.unsplash.com https://www.google-analytics.com https://www.googletagmanager.com https://www.gstatic.com/recaptcha/",
+      // Fetch / XHR: self + Sanity API + GA + reCAPTCHA verification
+      "connect-src 'self' https://*.sanity.io https://www.google-analytics.com https://www.googletagmanager.com https://analytics.google.com https://www.google.com/recaptcha/",
+      // Frames the page may embed: self (Sanity Presentation draft-mode iframe)
+      // + reCAPTCHA challenge iframe
+      "frame-src 'self' https://www.google.com/recaptcha/",
+      // Frames: Sanity Presentation tool + apex domain (so Studio loaded
+      // at lorannllc.com/studio can still embed the www-origin preview pages)
+      "frame-ancestors 'self' https://lorannllc.com https://*.sanity.io",
       // No plugins (Flash etc.)
       "object-src 'none'",
       // Force all requests to HTTPS

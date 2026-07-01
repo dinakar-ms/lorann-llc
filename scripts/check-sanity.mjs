@@ -1,0 +1,10 @@
+import { createClient } from "@sanity/client";
+import { readFileSync } from "fs";
+import { resolve, dirname } from "path";
+import { fileURLToPath } from "url";
+const __dirname = dirname(fileURLToPath(import.meta.url));
+const env = readFileSync(resolve(__dirname, "../.env.local"), "utf8");
+env.split("\n").forEach(l => { const m = l.match(/^([^#=]+)=(.*)/); if(m) process.env[m[1].trim()] = m[2].trim(); });
+const client = createClient({ projectId: "a694bsry", dataset: "production", apiVersion: "2024-10-01", token: process.env.SANITY_API_READ_TOKEN, useCdn: false });
+const r = await client.fetch(`*[_type=="page" && slug.current in ["data-assets/b2b-database/healthcare/physicians-advanced-practice/physicians-doctors","data-assets/b2b-database/healthcare/physicians-advanced-practice/podiatrists"]]{slug,"items":healthcareComplianceSection.items[]{badge,title},"intro":healthcareComplianceSection.introRich[0].children[0].text}`);
+console.log(JSON.stringify(r, null, 2));
