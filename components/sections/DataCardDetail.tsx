@@ -187,8 +187,8 @@ export default function DataCardDetail({ card, relatedCards, totalCards }: Props
   const [mounted, setMounted] = useState(false);
   useEffect(() => setMounted(true), []);
 
-  const gradient = CAT_GRADIENT[card.category] || "from-blue-500 to-blue-700";
-  const catColor = CAT_COLOR[card.category] || "bg-blue-500";
+  const gradient = "from-blue-500 to-indigo-600";
+  const catColor = "bg-blue-500";
   const universeCounter = useCountUp(card.universe, 1800);
 
   if (!mounted) {

@@ -119,39 +119,41 @@ const PHOTOS: Record<string, { src: string; alt: string; hasPeople?: boolean }> 
     alt: "Business data analytics technology displayed on creative desktop setup",
   },
   "achiever-crm-users-lists": {
-    src: "https://plus.unsplash.com/premium_photo-1658506646178-e4ef5810361b",
-    alt: "CRM agent smiling with headset managing customer relationships at computer",
+    src: "https://images.unsplash.com/photo-1552664730-d307ca884978",
+    alt: "Sales manager reviewing Achiever CRM customer account performance metrics and relationship pipeline on laptop",
     hasPeople: true,
   },
   "acqueon-crm-users-lists": {
-    src: "https://plus.unsplash.com/premium_photo-1661299251279-117a49a32548",
-    alt: "Contact center team with headsets working on CRM customer outreach",
+    src: "https://images.unsplash.com/photo-1521791136064-7986c2920216",
+    alt: "Enterprise outbound contact center team using Acqueon predictive dialing CRM and AI-powered sales engagement platform",
     hasPeople: true,
   },
   "crm-solutions-users-email-lists": {
-    src: "https://plus.unsplash.com/premium_photo-1681487767138-ddf2d67b35c1",
-    alt: "Futuristic CRM analytics with blue-violet digital bar charts on dark background",
+    src: "https://images.unsplash.com/photo-1596526131083-e8c633c948d2",
+    alt: "Sales team reviewing CRM solution customer pipeline with contact management and deal-stage tracking dashboard",
   },
   "crm-users-mailing-data-detail": {
-    src: "https://plus.unsplash.com/premium_photo-1720287601300-cf423c3d6760",
-    alt: "Detailed CRM and business data visualized on computer monitor screen",
+    src: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64",
+    alt: "Data specialist analyzing detailed CRM contact records, mailing segmentation lists, and buyer profile data on dual screens",
   },
   "microsoft-dynamics-crm-users-mailing-list": {
-    src: "https://plus.unsplash.com/premium_photo-1733306493254-52b143296396",
-    alt: "Cloud computing concept with data streams on circuit board for Microsoft CRM",
+    src: "https://images.unsplash.com/photo-1551434678-e076c223a692",
+    alt: "Enterprise sales team reviewing Microsoft Dynamics CRM customer data and pipeline analytics on dual monitors",
+    hasPeople: true,
   },
   "salesforce-crm-email-list": {
-    src: "https://plus.unsplash.com/premium_photo-1733328013343-e5ee77acaf05",
-    alt: "CRM customer relationship management concept with global business network and data connections visualization",
+    src: "https://images.unsplash.com/photo-1522202176988-66273c2fd55f",
+    alt: "Enterprise sales team collaborating on Salesforce CRM strategy with customer pipeline analytics and deal-stage review at whiteboard",
+    hasPeople: true,
   },
   "oncontact-crm-customers-email-list": {
-    src: "https://images.unsplash.com/photo-1579389083046-e3df9c2b3325",
-    alt: "Two business professionals collaborating on customer CRM data with laptops",
+    src: "https://images.unsplash.com/photo-1600880292089-90a7e086ee0c",
+    alt: "B2B account manager reviewing OnContact CRM customer database and sales opportunity pipeline with client on laptop",
     hasPeople: true,
   },
   "siebel-crm-users-list": {
-    src: "https://images.unsplash.com/photo-1686061593213-98dad7c599b9",
-    alt: "Enterprise CRM analytics and sales performance dashboard on screen",
+    src: "https://images.unsplash.com/photo-1542744094-3a31f272c490",
+    alt: "Large-enterprise Oracle Siebel CRM operations center with multi-screen customer data analytics and sales management dashboards",
   },
 
   /* ── Software Email Lists ────────────────────────────────────────────── */
@@ -230,12 +232,12 @@ const PHOTOS: Record<string, { src: string; alt: string; hasPeople?: boolean }> 
     alt: "Apple iPhone held open-palm representing iOS app development ecosystem",
   },
   "database-users-mailing-lists": {
-    src: "https://images.unsplash.com/photo-1705484229341-4f7f7519b718",
-    alt: "Scrabble tiles spelling DATA representing structured database management",
+    src: "https://images.unsplash.com/photo-1544197150-b99a580bb7a8",
+    alt: "Enterprise server rack infrastructure hosting Oracle, SQL Server, MySQL, and PostgreSQL database systems",
   },
   "google-app-engine-users-email-list": {
-    src: "https://images.unsplash.com/photo-1690627931320-16ac56eb2588",
-    alt: "Cloud computing concept screen representing Google App Engine deployment",
+    src: "https://images.unsplash.com/photo-1451187580459-43490279c0fa",
+    alt: "Satellite view of Earth from orbit representing Google App Engine global cloud platform and scalable application infrastructure",
   },
 
   /* ── Groupware Email Lists ───────────────────────────────────────────── */
