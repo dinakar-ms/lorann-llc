@@ -45,8 +45,8 @@ const PHOTOS: Record<string, { src: string; alt: string; hasPeople?: boolean }> 
 
   /* ── Leaf pages ─────────────────────────────────────────────────────── */
   "it-decision-makers-mailing-list": {
-    src: "https://images.unsplash.com/photo-1573164713988-8665fc963095",
-    alt: "IT decision maker working on Surface laptop for strategic technology decisions",
+    src: "https://images.unsplash.com/photo-1507238691740-187a5b1d37b8",
+    alt: "CIO and senior IT executive leading enterprise technology strategy in modern corporate setting representing IT decision-makers and technology leadership",
     hasPeople: true,
   },
   "construction-industry-email-list": {
@@ -59,20 +59,20 @@ const PHOTOS: Record<string, { src: string; alt: string; hasPeople?: boolean }> 
     alt: "Green corn and maize crops on expansive agricultural farming field",
   },
   "sports-industry-email-lists": {
-    src: "https://images.unsplash.com/photo-1629217855633-79a6925d6c47",
-    alt: "Packed soccer stadium at kickoff representing the professional sports industry",
+    src: "https://images.unsplash.com/photo-1461896836934-ffe607ba8211",
+    alt: "Elite professional athlete competing at peak performance representing the global sports industry business and events ecosystem",
   },
   "banking-finance-email-lists": {
-    src: "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab",
-    alt: "Financial district city skyscrapers representing banking and finance sector",
+    src: "https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3",
+    alt: "Financial analyst reviewing live stock market trading data and banking analytics on multiple screens",
   },
   "hotels-email-lists": {
-    src: "https://images.unsplash.com/photo-1621293954908-907159247fc8",
-    alt: "Modern luxury hotel lobby with designer furniture and premium wood walls",
+    src: "https://images.unsplash.com/photo-1566073771259-6a8506099945",
+    alt: "Pristine luxury hotel infinity pool overlooking tropical landscape representing premium hotel and hospitality industry professionals",
   },
   "insurance-contact-lists": {
-    src: "https://plus.unsplash.com/premium_photo-1661776260388-f5d1b14ce8a2",
-    alt: "Estate agent handing over house model representing property insurance protection",
+    src: "https://images.unsplash.com/photo-1450101499163-c8848c66ca85",
+    alt: "Insurance professional reviewing policyholder coverage documents representing insurance agents, brokers, and underwriters",
     hasPeople: true,
   },
   "travel-data-lists": {
@@ -81,8 +81,8 @@ const PHOTOS: Record<string, { src: string; alt: string; hasPeople?: boolean }> 
     hasPeople: true,
   },
   "real-estate-data-list": {
-    src: "https://images.unsplash.com/photo-1582407947304-fd86f028f716",
-    alt: "Glass-walled modern high-rise commercial real estate building exterior",
+    src: "https://images.unsplash.com/photo-1568605114967-8130f3a36994",
+    alt: "Premium residential property with manicured landscaping representing real estate agents, brokers, and property professionals contact data",
   },
   "manufacturing-industry-email-lists": {
     src: "https://plus.unsplash.com/premium_photo-1682144748274-add3d8ed04ea",

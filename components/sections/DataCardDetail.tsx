@@ -133,7 +133,8 @@ export default function DataCardDetail({ card, relatedCards, totalCards }: Props
   const [mounted, setMounted] = useState(false);
   useEffect(() => setMounted(true), []);
 
-  const gradient = BRAND_GRADIENT;
+  const gradient = "from-blue-500 to-indigo-600";
+  const catColor = "bg-blue-500";
   const universeCounter = useCountUp(card.universe, 1800);
 
   // "Request This Data Card" opens the visitor's mail client pre-filled:
