@@ -3,6 +3,7 @@
 import { useState, FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import { Upload, Check, FileSpreadsheet } from "lucide-react";
+import { DATA_CARD_CATEGORIES, DEFAULT_CATEGORY } from "@/lib/dataCardCategories";
 
 const ACCEPTED = ".xlsx,.xls,.csv,.docx,.doc,.pdf,.rtf";
 const MAX_BYTES = 25 * 1024 * 1024;
@@ -95,13 +96,14 @@ export default function UploadForm() {
           <label className="block text-[13px] font-semibold text-slate-700 mb-2">Category</label>
           <select
             name="category"
-            defaultValue="other"
+            defaultValue={DEFAULT_CATEGORY}
             className="w-full px-4 py-3 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:border-blue-500 focus:ring-2 focus:ring-blue-100 outline-none transition-all text-slate-900"
           >
-            <option value="b2b">B2B Database</option>
-            <option value="b2c">B2C Database</option>
-            <option value="signal-exchange">Signal eXchange™</option>
-            <option value="other">Other</option>
+            {DATA_CARD_CATEGORIES.map((c) => (
+              <option key={c} value={c}>
+                {c}
+              </option>
+            ))}
           </select>
         </div>
         <div>

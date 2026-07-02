@@ -13,6 +13,7 @@ import {
   FileText,
 } from "lucide-react";
 import type { ReviewSubmission } from "./page";
+import { DATA_CARD_CATEGORIES } from "@/lib/dataCardCategories";
 
 type FieldDef = {
   key: string;
@@ -36,12 +37,7 @@ const PARSED_FIELDS: FieldDef[] = [
     key: "category",
     label: "Public category",
     type: "select",
-    options: [
-      "Technology", "Healthcare", "Business", "Consumer", "Financial",
-      "Education", "Marketing", "Insurance", "Automotive", "Construction",
-      "Hospitality", "Real Estate", "Legal", "Energy", "Government",
-      "Manufacturing", "Non-Profit", "Retail", "Travel", "Agriculture",
-    ],
+    options: [...DATA_CARD_CATEGORIES],
   },
 ];
 

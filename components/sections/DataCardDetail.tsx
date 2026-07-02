@@ -54,6 +54,8 @@ export interface FullDataCard {
     title?: string;
     rows?: { label?: string; value?: string }[];
   }[];
+  uploaderName?: string;
+  uploaderEmail?: string;
 }
 
 interface RelatedCard {
@@ -118,52 +120,11 @@ function useCountUp(target: number, duration = 1600) {
   return { count, ref };
 }
 
-/* ── Gradient by category ──────────────────────────────── */
-const CAT_GRADIENT: Record<string, string> = {
-  Technology: "from-blue-500 to-indigo-600",
-  Healthcare: "from-emerald-500 to-teal-600",
-  Business: "from-slate-600 to-slate-800",
-  Consumer: "from-violet-500 to-purple-600",
-  Financial: "from-amber-500 to-orange-600",
-  Education: "from-cyan-500 to-blue-600",
-  Marketing: "from-pink-500 to-rose-600",
-  Insurance: "from-indigo-500 to-blue-700",
-  Automotive: "from-red-500 to-rose-600",
-  Construction: "from-orange-500 to-amber-600",
-  Hospitality: "from-teal-500 to-cyan-600",
-  "Real Estate": "from-sky-500 to-blue-600",
-  Legal: "from-gray-600 to-slate-700",
-  Energy: "from-yellow-500 to-orange-500",
-  Government: "from-blue-600 to-blue-800",
-  Manufacturing: "from-zinc-500 to-zinc-700",
-  "Non-Profit": "from-green-500 to-emerald-600",
-  Retail: "from-fuchsia-500 to-pink-600",
-  Travel: "from-sky-400 to-indigo-500",
-  Agriculture: "from-lime-500 to-green-600",
-};
-
-const CAT_COLOR: Record<string, string> = {
-  Technology: "bg-blue-500",
-  Healthcare: "bg-emerald-500",
-  Business: "bg-slate-600",
-  Consumer: "bg-violet-500",
-  Financial: "bg-amber-500",
-  Education: "bg-cyan-500",
-  Marketing: "bg-pink-500",
-  Insurance: "bg-indigo-500",
-  Automotive: "bg-red-500",
-  Construction: "bg-orange-500",
-  Hospitality: "bg-teal-500",
-  "Real Estate": "bg-sky-500",
-  Legal: "bg-gray-600",
-  Energy: "bg-yellow-500",
-  Government: "bg-blue-600",
-  Manufacturing: "bg-zinc-500",
-  "Non-Profit": "bg-green-500",
-  Retail: "bg-fuchsia-500",
-  Travel: "bg-sky-400",
-  Agriculture: "bg-lime-500",
-};
+/* ── Brand gradient — used for the hero CTA and every section header.
+      Previously varied by category (Healthcare = green, Financial = orange,
+      Real Estate = sky, etc.). Locked to the brand blue so every data card
+      page has the same look regardless of category. */
+const BRAND_GRADIENT = "from-blue-500 to-blue-700";
 
 /* ════════════════════════════════════════════════════════
    COMPONENT
@@ -172,9 +133,25 @@ export default function DataCardDetail({ card, relatedCards, totalCards }: Props
   const [mounted, setMounted] = useState(false);
   useEffect(() => setMounted(true), []);
 
-  const gradient = CAT_GRADIENT[card.category] || "from-blue-500 to-blue-700";
-  const catColor = CAT_COLOR[card.category] || "bg-blue-500";
+  const gradient = BRAND_GRADIENT;
   const universeCounter = useCountUp(card.universe, 1800);
+
+  // "Request This Data Card" opens the visitor's mail client pre-filled:
+  //   To:      the uploader's email (they own this card — quickest reply)
+  //   Cc:      info@lorannllc.com (ops sees every inquiry too)
+  //   Subject: "Inquiry for <card name>" (matches Meet the Team pattern;
+  //            when uploader name is known, appends " (via <name>)" so the
+  //            uploader can immediately match the request to their upload).
+  // If the uploader email isn't set (older manually-entered cards), we
+  // fall back to info@ as the primary recipient with no Cc.
+  const inquirySubject = `Inquiry for ${card.name}${
+    card.uploaderName ? ` (via ${card.uploaderName})` : ""
+  }`;
+  const inquiryMailto = card.uploaderEmail
+    ? `mailto:${encodeURIComponent(card.uploaderEmail)}?cc=${encodeURIComponent(
+        "info@lorannllc.com"
+      )}&subject=${encodeURIComponent(inquirySubject)}`
+    : `mailto:info@lorannllc.com?subject=${encodeURIComponent(inquirySubject)}`;
 
   if (!mounted) {
     return (
@@ -252,9 +229,9 @@ export default function DataCardDetail({ card, relatedCards, totalCards }: Props
 
               {/* CTA Buttons */}
               <div className="flex flex-wrap gap-3 animate-[slideIn_0.5s_ease-out_0.2s_both]">
-                <Link href="/contact" className={`inline-flex items-center gap-2 px-7 py-3.5 rounded-xl bg-gradient-to-r ${gradient} text-white font-bold text-sm shadow-lg hover:shadow-xl hover:-translate-y-0.5 hover:scale-[1.02] transition-all duration-300`}>
+                <a href={inquiryMailto} className={`inline-flex items-center gap-2 px-7 py-3.5 rounded-xl bg-gradient-to-r ${gradient} text-white font-bold text-sm shadow-lg hover:shadow-xl hover:-translate-y-0.5 hover:scale-[1.02] transition-all duration-300`}>
                   <Send className="w-4 h-4" /> Request This Data Card
-                </Link>
+                </a>
               </div>
             </div>
 
@@ -403,9 +380,9 @@ export default function DataCardDetail({ card, relatedCards, totalCards }: Props
                 Get a custom quote, request a sample count, or speak with our data team about building your ideal audience segment.
               </p>
               <div className="flex flex-wrap items-center justify-center gap-3">
-                <Link href="/contact" className="inline-flex items-center gap-2 px-7 py-3.5 rounded-xl bg-white text-blue-900 font-bold text-sm hover:bg-blue-50 hover:shadow-xl hover:scale-[1.02] transition-all duration-300">
+                <a href={inquiryMailto} className="inline-flex items-center gap-2 px-7 py-3.5 rounded-xl bg-white text-blue-900 font-bold text-sm hover:bg-blue-50 hover:shadow-xl hover:scale-[1.02] transition-all duration-300">
                   <Send className="w-4 h-4" /> Request a Quote
-                </Link>
+                </a>
                 <Link href="/data-assets/data-cards" className="inline-flex items-center gap-2 px-7 py-3.5 rounded-xl border border-white/20 text-white font-bold text-sm hover:bg-white/10 transition-all duration-300">
                   Browse All Data Cards <ArrowRight className="w-4 h-4" />
                 </Link>

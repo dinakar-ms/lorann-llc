@@ -73,7 +73,12 @@ const submissionQuery = `*[_type == "dataCardSubmission" && _id == $id][0]{
   parsedFields
 }`;
 
-const categoryMap: Record<string, string> = {
+// Historical translation table for old-format categories (b2b, b2c,
+// signal-exchange, other). New uploads use the shared list directly
+// (see lib/dataCardCategories.ts), so category values arrive in their
+// public form. This map is kept only to migrate legacy submissions on
+// re-publish; can be removed once no legacy submissions remain.
+const legacyCategoryMap: Record<string, string> = {
   b2b: "Business",
   b2c: "Consumer",
   "signal-exchange": "Marketing",
@@ -146,8 +151,14 @@ export async function POST(_req: NextRequest, { params }: { params: { id: string
       name: parsed.name ?? submission.title ?? "Untitled Data Card",
       description: parsed.description ?? submission.description ?? "",
       universe: parsed.universe ?? submission.universe ?? 0,
+      // New uploads store the public category directly (Technology,
+      // Healthcare, Business, …). Legacy submissions used codes (b2b, b2c,
+      // signal-exchange, other) — those get translated on re-publish.
       category:
-        parsed.category ?? categoryMap[submission.category || "other"] ?? "Business",
+        parsed.category ??
+        legacyCategoryMap[submission.category || ""] ??
+        submission.category ??
+        "Business",
       lastUpdated: parsed.lastUpdated ?? todayDate,
       frequency: parsed.frequency ?? "Monthly",
       geo: parsed.geo ?? "USA",
