@@ -19,11 +19,9 @@ const CookieConsent = dynamic(() => import("@/components/CookieConsent"), {
   ssr: false,
 });
 
-/* LeadPopup — on hold, uncomment to re-enable
 const LeadPopup = dynamic(() => import("@/components/LeadPopup"), {
   ssr: false,
 });
-*/
 
 const spaceGrotesk = Space_Grotesk({
   subsets: ["latin"],
@@ -224,7 +222,7 @@ export default function RootLayout({
             (ssr: false) so it doesn't block first paint. */}
         <VisualEditing />
         <CookieConsent />
-        {/* <LeadPopup /> */}
+        <LeadPopup />
         {/* WebMCP — expose key site actions to in-browser AI agents */}
         <script
           dangerouslySetInnerHTML={{
