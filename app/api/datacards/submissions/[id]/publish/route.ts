@@ -29,6 +29,7 @@ type ParsedFields = {
   minimumOrder?: number;
   minimumPrice?: number;
   netNamePercent?: number;
+  runCharge?: number;
   brokerCommission?: number;
   agencyCommission?: number;
   exchangeAvailable?: boolean;
@@ -42,6 +43,11 @@ type ParsedFields = {
   selects?: string[];
   segments?: { label: string; count?: number; rate?: number }[];
   extraFields?: { label: string; value: string }[];
+  minimums?: { label: string; count?: number }[];
+  fileSections?: {
+    title: string;
+    rows: { label: string; value: string }[];
+  }[];
   tags?: string[];
 };
 
@@ -52,15 +58,27 @@ type Submission = {
   category?: string;
   universe?: number;
   uploader?: { _ref: string };
+  uploaderEmail?: string;
+  uploaderName?: string;
   publishedDataCard?: { _ref: string };
   parsedFields?: ParsedFields;
 };
 
 const submissionQuery = `*[_type == "dataCardSubmission" && _id == $id][0]{
-  _id, title, description, category, universe, uploader, publishedDataCard, parsedFields
+  _id, title, description, category, universe,
+  uploader,
+  uploaderEmail,
+  "uploaderName": uploader->name,
+  publishedDataCard,
+  parsedFields
 }`;
 
-const categoryMap: Record<string, string> = {
+// Historical translation table for old-format categories (b2b, b2c,
+// signal-exchange, other). New uploads use the shared list directly
+// (see lib/dataCardCategories.ts), so category values arrive in their
+// public form. This map is kept only to migrate legacy submissions on
+// re-publish; can be removed once no legacy submissions remain.
+const legacyCategoryMap: Record<string, string> = {
   b2b: "Business",
   b2c: "Consumer",
   "signal-exchange": "Marketing",
@@ -84,6 +102,7 @@ const optionalKeys: (keyof ParsedFields)[] = [
   "minimumOrder",
   "minimumPrice",
   "netNamePercent",
+  "runCharge",
   "brokerCommission",
   "agencyCommission",
   "exchangeAvailable",
@@ -95,6 +114,8 @@ const optionalKeys: (keyof ParsedFields)[] = [
   "selects",
   "segments",
   "extraFields",
+  "minimums",
+  "fileSections",
   "tags",
 ];
 
@@ -130,11 +151,19 @@ export async function POST(_req: NextRequest, { params }: { params: { id: string
       name: parsed.name ?? submission.title ?? "Untitled Data Card",
       description: parsed.description ?? submission.description ?? "",
       universe: parsed.universe ?? submission.universe ?? 0,
+      // New uploads store the public category directly (Technology,
+      // Healthcare, Business, …). Legacy submissions used codes (b2b, b2c,
+      // signal-exchange, other) — those get translated on re-publish.
       category:
-        parsed.category ?? categoryMap[submission.category || "other"] ?? "Business",
+        parsed.category ??
+        legacyCategoryMap[submission.category || ""] ??
+        submission.category ??
+        "Business",
       lastUpdated: parsed.lastUpdated ?? todayDate,
       frequency: parsed.frequency ?? "Monthly",
       geo: parsed.geo ?? "USA",
+      uploaderName: submission.uploaderName ?? session.user.name ?? "",
+      uploaderEmail: submission.uploaderEmail ?? session.user.email ?? "",
     };
     const optionalSet: Record<string, unknown> = {};
     const optionalUnset: string[] = [];
@@ -153,6 +182,29 @@ export async function POST(_req: NextRequest, { params }: { params: { id: string
             _key: (s as { _key?: string })._key || `ef-${i}`,
             ...(s as Record<string, unknown>),
           }));
+        } else if (key === "minimums" && Array.isArray(v)) {
+          optionalSet[key] = v.map((s, i) => ({
+            _key: (s as { _key?: string })._key || `min-${i}`,
+            ...(s as Record<string, unknown>),
+          }));
+        } else if (key === "fileSections" && Array.isArray(v)) {
+          // Each section object AND each nested row need a stable `_key`.
+          optionalSet[key] = v.map((s, i) => {
+            const sec = s as {
+              _key?: string;
+              title?: string;
+              rows?: { _key?: string; label?: string; value?: string }[];
+            };
+            return {
+              _key: sec._key || `sec-${i}`,
+              title: sec.title,
+              rows: (sec.rows || []).map((r, j) => ({
+                _key: r._key || `sec-${i}-${j}`,
+                label: r.label,
+                value: r.value,
+              })),
+            };
+          });
         } else {
           optionalSet[key] = v;
         }

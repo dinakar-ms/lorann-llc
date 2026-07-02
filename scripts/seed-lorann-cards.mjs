@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Seed 15 Lorann-branded data cards into Sanity
  * Deletes ALL existing dataCard documents first
  *
@@ -9,7 +9,7 @@ import { createClient } from "@sanity/client";
 
 const client = createClient({
   projectId: "a694bsry",
-  dataset: "production",
+  dataset: process.env.NEXT_PUBLIC_SANITY_DATASET || "production",
   apiVersion: "2024-01-01",
   useCdn: false,
   token:

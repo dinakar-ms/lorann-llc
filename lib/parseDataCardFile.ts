@@ -1,6 +1,6 @@
 // Parser version sentinel — bump this to force Vercel to rebuild this module
 // instead of serving a cached compilation. Visible in logs via PARSER_VERSION.
-export const PARSER_VERSION = "v2-segments-extras-rtf-fix";
+export const PARSER_VERSION = "v4-file-sections";
 
 import * as XLSX from "xlsx";
 
@@ -30,10 +30,19 @@ export type ParsedDataCard = {
   selects?: string[];
   segments?: { label: string; count?: number; rate?: number }[];
   extraFields?: { label: string; value: string }[];
+  /**
+   * Every section header found in the uploaded file, with its rows verbatim
+   * (label + value, commas intact). Used to render the public data-card page
+   * as a faithful mirror of the file's original structure, in addition to the
+   * typed fields above.
+   */
+  fileSections?: { title: string; rows: { label: string; value: string }[] }[];
   tags?: string[];
+  minimums?: { label: string; count?: number }[];
   minimumOrder?: number;
   minimumPrice?: number;
   netNamePercent?: number;
+  runCharge?: number;
   brokerCommission?: number;
   agencyCommission?: number;
   exchangeAvailable?: boolean;
@@ -213,6 +222,8 @@ const FIELD_ALIASES: Record<string, keyof ParsedDataCard> = {
   "minimum price": "minimumPrice",
   "net name percentage": "netNamePercent",
   "net name percent": "netNamePercent",
+  "run charge": "runCharge",
+  "running charge": "runCharge",
   "broker commission": "brokerCommission",
   "agency commission": "agencyCommission",
   "exchange available": "exchangeAvailable",
@@ -242,6 +253,7 @@ const NUMBER_FIELDS = new Set<keyof ParsedDataCard>([
   "minimumOrder",
   "minimumPrice",
   "netNamePercent",
+  "runCharge",
   "brokerCommission",
   "agencyCommission",
   "emailDeliveryFee",
@@ -455,14 +467,29 @@ function parseNextMark(rows: unknown[][]): { fields: ParsedDataCard; warnings: s
     }
   }
 
-  /* SELECTS — every col-A value until next section */
+  /* SELECTS — keep only category labels (Age, Income, Gender, Geography…),
+     drop the per-bucket count rows ("18 to 29  25,622"). Any line containing
+     a digit is treated as a count row and skipped. Trailing colons and stray
+     punctuation are stripped, and the result is Title-cased so the public
+     page reads cleanly regardless of how the source file capitalized it. */
   const selects = find("SELECTS");
   if (selects) {
     const list: string[] = [];
+    const seen = new Set<string>();
     for (let i = selects.start; i < selects.end; i++) {
       if (isSectionHeader(rows[i])) break;
-      const v = getCell(rows[i], 0);
-      if (v) list.push(v);
+      const raw = getCell(rows[i], 0);
+      if (!raw) continue;
+      const cleaned = raw.replace(/[:\-–—]+\s*$/, "").trim();
+      if (!cleaned) continue;
+      if (/\d/.test(cleaned)) continue;
+      const titled = cleaned
+        .toLowerCase()
+        .replace(/\b\w/g, (c) => c.toUpperCase());
+      const key = titled.toLowerCase();
+      if (seen.has(key)) continue;
+      seen.add(key);
+      list.push(titled);
     }
     if (list.length) fields.selects = list;
   }
@@ -517,27 +544,47 @@ function parseNextMark(rows: unknown[][]): { fields: ParsedDataCard; warnings: s
     }
   }
 
-  /* MINIMUM ORDER — supports:
+  /* MINIMUM ORDER — supports several layouts:
      - "Minimum Quantity | 5000" (Excel col-A label, col-B value)
+     - "Minimum Price | $250" (col-B value)
+     - "Postal/Phone/Email Minimum | 3,000" (labeled per-channel minimum)
+     - "Postal Minimum | 5,000"
      - Bare "10,000" line under the section (use first number found)
+     Labeled per-channel minimums collect into `fields.minimums` so the public
+     page can render them as separate rows. The legacy `minimumOrder` is also
+     filled with the first labeled count so older cards still display.
   */
   const minOrder = find("MINIMUM ORDER");
   if (minOrder) {
+    const collectedMins: { label: string; count: number }[] = [];
     for (let i = minOrder.start; i < minOrder.end; i++) {
       if (isSectionHeader(rows[i])) break;
-      const colA = getCell(rows[i], 0);
+      const colA = getCell(rows[i], 0).trim();
+      const colB = getCellRaw(rows[i], 1);
       const label = normalizeLabel(colA);
-      const val = getCellRaw(rows[i], 1);
       if (label === "minimum quantity") {
-        const n = parseNumber(val);
+        const n = parseNumber(colB);
         if (n !== undefined) fields.minimumOrder = n;
       } else if (label === "minimum price") {
-        const n = parseNumber(val);
+        const n = parseNumber(colB);
         if (n !== undefined) fields.minimumPrice = n;
+      } else if (/minimum/i.test(colA) && colB) {
+        // Labeled per-channel minimum, e.g. "Postal/Phone/Email Minimum | 3,000"
+        const n = parseNumber(colB);
+        if (n !== undefined) {
+          const cleanLabel = colA.replace(/\s*minimum\s*:?\s*$/i, "").trim() || colA;
+          collectedMins.push({ label: cleanLabel, count: n });
+        }
       } else if (fields.minimumOrder === undefined && /^[\d,]+$/.test(colA)) {
         // Bare number row — first one is the minimum order qty
         const n = parseNumber(colA);
         if (n !== undefined) fields.minimumOrder = n;
+      }
+    }
+    if (collectedMins.length) {
+      fields.minimums = collectedMins;
+      if (fields.minimumOrder === undefined) {
+        fields.minimumOrder = collectedMins[0].count;
       }
     }
   }
@@ -629,7 +676,8 @@ function parseNextMark(rows: unknown[][]): { fields: ParsedDataCard; warnings: s
     }
   }
 
-  /* NET NAME ARRANGEMENTS — "Floor" → netNamePercent (e.g. "85%") */
+  /* NET NAME ARRANGEMENTS — "Floor" → netNamePercent (e.g. "85%"),
+     "Run Charge" → runCharge (e.g. "$5.00/M"). */
   const netName = find("NET NAME ARRANGEMENTS");
   if (netName) {
     for (let i = netName.start; i < netName.end; i++) {
@@ -639,6 +687,9 @@ function parseNextMark(rows: unknown[][]): { fields: ParsedDataCard; warnings: s
       if (label === "floor") {
         const n = parseRateOrPercent(val);
         if (n !== undefined) fields.netNamePercent = n;
+      } else if (label === "run charge" || label === "running charge") {
+        const n = parseRateOrPercent(val);
+        if (n !== undefined) fields.runCharge = n;
       }
     }
   }
@@ -869,16 +920,28 @@ async function extractTextFromDocx(buf: Buffer): Promise<string> {
 }
 
 /** Find the matching `}` for the `{` at position `start`, accounting for
- *  escaped braces (`\{` / `\}`) and nested groups. Returns the index after
- *  the closing `}`, or s.length if unbalanced. */
+ *  escaped braces (`\{` / `\}`), nested groups, and `\binN ...` blobs whose
+ *  N raw bytes must not participate in brace counting. Returns the index
+ *  after the closing `}`, or s.length if unbalanced. */
 function findGroupEnd(s: string, start: number): number {
   let depth = 0;
   const len = s.length;
   for (let i = start; i < len; i++) {
     const code = s.charCodeAt(i);
-    // Backslash — skip the next char so escaped braces don't affect depth
+    // Backslash — either an escaped brace, a `\binN` binary blob, or a
+    // control word we can skip past a single char at a time.
     if (code === 0x5c /* \ */) {
-      i += 1;
+      // `\bin<N>` — the next N bytes are raw binary (pictures, embedded
+      // objects, etc.). Any {/} inside them are data, not RTF grouping.
+      // Skip the control word and its N following bytes.
+      const rest = s.slice(i, i + 24);
+      const binMatch = /^\\bin(\d+) ?/.exec(rest);
+      if (binMatch) {
+        const n = parseInt(binMatch[1], 10);
+        i += binMatch[0].length + n - 1; // -1 because the loop increments
+        continue;
+      }
+      i += 1; // skip next char (handles `\{`, `\}`, and control chars)
       continue;
     }
     if (code === 0x7b /* { */) {
@@ -893,7 +956,12 @@ function findGroupEnd(s: string, start: number): number {
 
 /** Strip RTF control codes to plain text (no library — RTF is well-defined enough). */
 export function extractTextFromRtf(buf: Buffer): string {
-  let s = buf.toString("utf8");
+  // Read as latin1 so 1 char == 1 byte. This is required for `\binN` byte
+  // counts to line up with string positions; UTF-8 decoding would mangle
+  // the embedded binary blob (invalid sequences → replacement chars) and
+  // desync the skip. Real text characters arrive via `\uNNNN` and `\'HH`
+  // escapes which we decode below, so the RTF ANSI codepage is fine here.
+  let s = buf.toString("latin1");
 
   // 1) Remove destination groups that contain non-textual data (pictures, font
   // tables, styles, embedded objects, etc.). Uses a global regex with indexOf-
@@ -1072,6 +1140,92 @@ function textToRows(text: string): unknown[][] {
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────
+ * fileSections — capture every section header + its rows verbatim so the
+ * public page can mirror the uploaded file's structure (AGE tables, INCOME
+ * breakdowns, etc.), not just the typed schema fields.
+ * ────────────────────────────────────────────────────────────────────────── */
+
+type FileSection = { title: string; rows: { label: string; value: string }[] };
+
+function extractFileSections(rows: unknown[][]): FileSection[] {
+  const sections: FileSection[] = [];
+  let current: FileSection | null = null;
+
+  const cell = (r: unknown[], i: number): string =>
+    r[i] != null ? String(r[i]).trim() : "";
+
+  // A "section header" row is a standalone uppercase line in col A with cols
+  // B-D empty. Accepts trailing colon (e.g. "AGE:") and both known and unknown
+  // headers (SEGMENTS, DATE, AGE, INCOME, PROFILE, HOUSEHOLD, etc.).
+  //
+  // Digits are disallowed on purpose — otherwise data rows like
+  // "UPDATED 06/30/2026" or address lines like "PMB 463398" would pass as
+  // headers and clobber the real section they belong under.
+  const isHeaderLine = (r: unknown[]): string | null => {
+    let a = cell(r, 0);
+    if (!a) return null;
+    if (cell(r, 1) || cell(r, 2) || cell(r, 3)) return null;
+    a = a.replace(/:$/, "").trim();
+    if (a.length < 2 || a.length > 60) return null;
+    if (!/[A-Z]/.test(a)) return null;
+    if (a !== a.toUpperCase()) return null;
+    // Letters + spaces + a few connectors only. No digits, no commas, no dots.
+    if (!/^[A-Z][A-Z &/\-]*$/.test(a)) return null;
+    // Reject "PAGE"/"NM…" noise even if letters-only.
+    if (/^PAGE\b/.test(a)) return null;
+    return a;
+  };
+
+  const rowToLabelValue = (
+    r: unknown[]
+  ): { label: string; value: string } | null => {
+    const a = cell(r, 0);
+    const b = cell(r, 1);
+    const count = cell(r, 4);
+    const rate = cell(r, 5);
+    // Pricing row from tripleCountFirst: [label, "", "", "", count, rate]
+    if (a && (count || rate)) {
+      const value = [count, rate].filter(Boolean).join("  ");
+      return { label: a, value };
+    }
+    if (a && b) return { label: a, value: b };
+    // Single-cell row — try one more split so tab-collapsed NextMark rows come
+    // out as label/value instead of a single blob:
+    //   "Age $5.00/M"     → label="Age",       value="$5.00/M"
+    //   "EMAIL $50.00/F"  → label="EMAIL",     value="$50.00/F"
+    //   "18 to 29 25,622" → label="18 to 29",  value="25,622"
+    if (a) {
+      const dollarSplit = a.match(/^(.+?)\s+(\$[\d,.]+\s*\/\s*[A-Za-z]\S*)\s*$/);
+      if (dollarSplit) {
+        return { label: dollarSplit[1].trim(), value: dollarSplit[2].trim() };
+      }
+      const countSplit = a.match(
+        /^([A-Za-z][A-Za-z0-9 &/\-()]{1,58}?)\s+(\d{1,3}(?:,\d{3})+|\d+)\s*$/
+      );
+      if (countSplit) {
+        return { label: countSplit[1].trim(), value: countSplit[2].trim() };
+      }
+      return { label: "", value: a }; // prose (description paragraphs)
+    }
+    return null;
+  };
+
+  for (const r of rows) {
+    const header = isHeaderLine(r);
+    if (header) {
+      if (current && current.rows.length > 0) sections.push(current);
+      current = { title: header, rows: [] };
+      continue;
+    }
+    if (!current) continue; // rows before first section header — ignored
+    const kv = rowToLabelValue(r);
+    if (kv) current.rows.push(kv);
+  }
+  if (current && current.rows.length > 0) sections.push(current);
+  return sections;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
  * Main entry point — async because PDF/DOCX need async libraries
  * ────────────────────────────────────────────────────────────────────────── */
 
@@ -1119,6 +1273,8 @@ export async function parseDataCardFile(
       const kv = parseSimpleKV(rows);
       Object.assign(fields, kv);
     }
+    const sections = extractFileSections(rows);
+    if (sections.length) fields.fileSections = sections;
   }
   // PDF / DOCX / RTF — extract text, convert to pseudo-rows, run same parsers
   else if (["pdf", "docx", "rtf"].includes(ext)) {
@@ -1199,6 +1355,8 @@ export async function parseDataCardFile(
       const kv = parseSimpleKV(rows);
       Object.assign(fields, { ...kv, name: fields.name || kv.name });
     }
+    const sections = extractFileSections(rows);
+    if (sections.length) fields.fileSections = sections;
   }
   // .doc (legacy binary Word) — not parseable; just acknowledge upload
   else {

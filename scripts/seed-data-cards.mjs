@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Seed Data Cards into Sanity CMS
  * ────────────────────────────────
  * Run: node scripts/seed-data-cards.mjs
@@ -10,7 +10,7 @@ import { createClient } from "@sanity/client";
 
 const client = createClient({
   projectId: "a694bsry",
-  dataset: "production",
+  dataset: process.env.NEXT_PUBLIC_SANITY_DATASET || "production",
   apiVersion: "2024-10-01",
   useCdn: false,
   token:

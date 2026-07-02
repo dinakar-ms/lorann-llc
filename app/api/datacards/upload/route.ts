@@ -144,6 +144,17 @@ export async function POST(req: NextRequest) {
       _key: `ef-${i}`,
       ...f,
     }));
+    const minimumsWithKeys = parsed.fields.minimums?.map((m, i) => ({
+      _key: `min-${i}`,
+      ...m,
+    }));
+    // Every fileSection is an object in an array; every row inside it is also
+    // an object in an array — both layers need a unique `_key` for Sanity.
+    const fileSectionsWithKeys = parsed.fields.fileSections?.map((s, i) => ({
+      _key: `sec-${i}`,
+      ...s,
+      rows: s.rows?.map((r, j) => ({ _key: `sec-${i}-${j}`, ...r })),
+    }));
 
     // Sync the effective values into parsedFields so the publish step (which
     // reads from parsedFields) produces the dataCard the user actually expects.
@@ -154,6 +165,8 @@ export async function POST(req: NextRequest) {
       ...(finalUniverse !== undefined ? { universe: finalUniverse } : {}),
       ...(segmentsWithKeys ? { segments: segmentsWithKeys } : {}),
       ...(extraFieldsWithKeys ? { extraFields: extraFieldsWithKeys } : {}),
+      ...(minimumsWithKeys ? { minimums: minimumsWithKeys } : {}),
+      ...(fileSectionsWithKeys ? { fileSections: fileSectionsWithKeys } : {}),
       ...(tags.length > 0 ? { tags } : {}),
     };
 

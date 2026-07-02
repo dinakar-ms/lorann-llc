@@ -22,12 +22,30 @@ export const dataCardSubmissionType = defineType({
       name: "category",
       title: "Category",
       type: "string",
+      description:
+        "Public data-card category. Kept in sync with lib/dataCardCategories.ts — the Upload form and Review & Publish form use the same list.",
       options: {
         list: [
-          { title: "B2B Database", value: "b2b" },
-          { title: "B2C Database", value: "b2c" },
-          { title: "Signal eXchange™", value: "signal-exchange" },
-          { title: "Other", value: "other" },
+          "Technology",
+          "Healthcare",
+          "Business",
+          "Consumer",
+          "Financial",
+          "Education",
+          "Marketing",
+          "Insurance",
+          "Automotive",
+          "Construction",
+          "Hospitality",
+          "Real Estate",
+          "Legal",
+          "Energy",
+          "Government",
+          "Manufacturing",
+          "Non-Profit",
+          "Retail",
+          "Travel",
+          "Agriculture",
         ],
       },
     }),
@@ -168,6 +186,35 @@ export const dataCardSubmissionType = defineType({
               fields: [
                 { name: "label", title: "Label", type: "string" },
                 { name: "value", title: "Value", type: "string" },
+              ],
+            },
+          ],
+        },
+        {
+          name: "fileSections",
+          title: "Original File Sections",
+          description:
+            "Every section header the parser found in the uploaded file, with its rows verbatim. Rendered on the public data-card page so it mirrors the source document.",
+          type: "array",
+          of: [
+            {
+              type: "object",
+              fields: [
+                { name: "title", title: "Section Title", type: "string" },
+                {
+                  name: "rows",
+                  title: "Rows",
+                  type: "array",
+                  of: [
+                    {
+                      type: "object",
+                      fields: [
+                        { name: "label", title: "Label", type: "string" },
+                        { name: "value", title: "Value", type: "string" },
+                      ],
+                    },
+                  ],
+                },
               ],
             },
           ],

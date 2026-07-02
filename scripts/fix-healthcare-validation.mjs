@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Fix ALL Sanity validation errors across every healthcare page (hub + leaf):
  *
  *  1. hubAttributesSectionDescription  string → richText array
@@ -19,7 +19,7 @@ const DRY_RUN = process.argv.includes("--dry-run");
 
 const client = createClient({
   projectId: "a694bsry",
-  dataset: "production",
+  dataset: process.env.NEXT_PUBLIC_SANITY_DATASET || "production",
   apiVersion: "2024-01-01",
   token: "skSSRwRIB9hhK9GBYtQpEpyP4LAq7LEpHuGmoxQ51tn1puS9HTD8PLF2qmz9wdFuSARPyDYyvoBrfJkcAOIcY2n1mptvra97217aT7fllBwRU8mRKYShNzJuWqMDpcBn7eEXqFZZWvOBfZgY6olCwO3AJkxUQ2yj13w1d7MNhqSvdEIcZ4gx",
   useCdn: false,

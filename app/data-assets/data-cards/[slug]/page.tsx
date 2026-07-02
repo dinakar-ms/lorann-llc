@@ -22,14 +22,17 @@ const allFieldsQuery = groq`*[_type == "dataCard"] | order(name asc) {
   popularity, cardQuality, market, dataType, source,
   geo, genderMale, genderFemale,
   selects,
-  minimumOrder, minimumPrice, netNamePercent,
+  minimumOrder, minimumPrice, netNamePercent, runCharge,
   brokerCommission, agencyCommission,
   exchangeAvailable, reuseAvailable,
   emailDeliveryFee, ftpDeliveryFee,
   marketEntryDate, nextUpdateDate, frequency,
   tags,
   segments,
-  extraFields
+  extraFields,
+  minimums,
+  fileSections,
+  uploaderName, uploaderEmail
 }`;
 
 /* ── Static params ─────────────────────────────────────── */

@@ -3,10 +3,10 @@
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import {
-  ChevronRight, Database, Calendar, Tag, TrendingUp, Users, Globe, Mail,
-  FileText, Download, ArrowRight, Shield,
+  ChevronRight, Database, Tag, Users, Mail,
+  FileText, Download, ArrowRight,
   CheckCircle2, BarChart3, Layers, Building2,
-  DollarSign, Clock, RefreshCw, Award, Send, Star,
+  DollarSign, Clock, RefreshCw, Send,
   Phone, Printer, Hash, PercentIcon, XCircle, Check,
   Truck, Settings, UserCheck, Package, MapPin, Zap,
 } from "lucide-react";
@@ -33,9 +33,11 @@ export interface FullDataCard {
   genderMale?: number;
   genderFemale?: number;
   selects?: string[];
+  minimums?: { label?: string; count?: number }[];
   minimumOrder?: number;
   minimumPrice?: number;
   netNamePercent?: number;
+  runCharge?: number;
   brokerCommission?: number;
   agencyCommission?: number;
   exchangeAvailable?: boolean;
@@ -48,6 +50,12 @@ export interface FullDataCard {
   tags?: string[];
   segments?: { label?: string; count?: number; rate?: number }[];
   extraFields?: { label?: string; value?: string }[];
+  fileSections?: {
+    title?: string;
+    rows?: { label?: string; value?: string }[];
+  }[];
+  uploaderName?: string;
+  uploaderEmail?: string;
 }
 
 interface RelatedCard {
@@ -112,73 +120,11 @@ function useCountUp(target: number, duration = 1600) {
   return { count, ref };
 }
 
-/* ── Quality Badge Color ───────────────────────────────── */
-function qualityColor(q?: string) {
-  if (!q) return "bg-slate-100 text-slate-600";
-  if (q.startsWith("A")) return "bg-emerald-50 text-emerald-700 border-emerald-200";
-  if (q.startsWith("B")) return "bg-amber-50 text-amber-700 border-amber-200";
-  return "bg-slate-50 text-slate-600 border-slate-200";
-}
-
-/* ── Gradient by category ──────────────────────────────── */
-const CAT_GRADIENT: Record<string, string> = {
-  Technology: "from-blue-500 to-indigo-600",
-  Healthcare: "from-emerald-500 to-teal-600",
-  Business: "from-slate-600 to-slate-800",
-  Consumer: "from-violet-500 to-purple-600",
-  Financial: "from-amber-500 to-orange-600",
-  Education: "from-cyan-500 to-blue-600",
-  Marketing: "from-pink-500 to-rose-600",
-  Insurance: "from-indigo-500 to-blue-700",
-  Automotive: "from-red-500 to-rose-600",
-  Construction: "from-orange-500 to-amber-600",
-  Hospitality: "from-teal-500 to-cyan-600",
-  "Real Estate": "from-sky-500 to-blue-600",
-  Legal: "from-gray-600 to-slate-700",
-  Energy: "from-yellow-500 to-orange-500",
-  Government: "from-blue-600 to-blue-800",
-  Manufacturing: "from-zinc-500 to-zinc-700",
-  "Non-Profit": "from-green-500 to-emerald-600",
-  Retail: "from-fuchsia-500 to-pink-600",
-  Travel: "from-sky-400 to-indigo-500",
-  Agriculture: "from-lime-500 to-green-600",
-};
-
-const CAT_COLOR: Record<string, string> = {
-  Technology: "bg-blue-500",
-  Healthcare: "bg-emerald-500",
-  Business: "bg-slate-600",
-  Consumer: "bg-violet-500",
-  Financial: "bg-amber-500",
-  Education: "bg-cyan-500",
-  Marketing: "bg-pink-500",
-  Insurance: "bg-indigo-500",
-  Automotive: "bg-red-500",
-  Construction: "bg-orange-500",
-  Hospitality: "bg-teal-500",
-  "Real Estate": "bg-sky-500",
-  Legal: "bg-gray-600",
-  Energy: "bg-yellow-500",
-  Government: "bg-blue-600",
-  Manufacturing: "bg-zinc-500",
-  "Non-Profit": "bg-green-500",
-  Retail: "bg-fuchsia-500",
-  Travel: "bg-sky-400",
-  Agriculture: "bg-lime-500",
-};
-
-/* ── Popularity dots ──────────────────────────────────── */
-function PopularityDots({ score }: { score: number }) {
-  const filled = Math.round(score / 20);
-  return (
-    <span className="inline-flex items-center gap-0.5">
-      {[...Array(5)].map((_, i) => (
-        <span key={i} className={`w-2 h-2 rounded-full ${i < filled ? "bg-blue-500" : "bg-slate-200"}`} />
-      ))}
-      <span className="ml-1.5 font-bold">{score}</span>
-    </span>
-  );
-}
+/* ── Brand gradient — used for the hero CTA and every section header.
+      Previously varied by category (Healthcare = green, Financial = orange,
+      Real Estate = sky, etc.). Locked to the brand blue so every data card
+      page has the same look regardless of category. */
+const BRAND_GRADIENT = "from-blue-500 to-blue-700";
 
 /* ════════════════════════════════════════════════════════
    COMPONENT
@@ -190,6 +136,23 @@ export default function DataCardDetail({ card, relatedCards, totalCards }: Props
   const gradient = "from-blue-500 to-indigo-600";
   const catColor = "bg-blue-500";
   const universeCounter = useCountUp(card.universe, 1800);
+
+  // "Request This Data Card" opens the visitor's mail client pre-filled:
+  //   To:      the uploader's email (they own this card — quickest reply)
+  //   Cc:      info@lorannllc.com (ops sees every inquiry too)
+  //   Subject: "Inquiry for <card name>" (matches Meet the Team pattern;
+  //            when uploader name is known, appends " (via <name>)" so the
+  //            uploader can immediately match the request to their upload).
+  // If the uploader email isn't set (older manually-entered cards), we
+  // fall back to info@ as the primary recipient with no Cc.
+  const inquirySubject = `Inquiry for ${card.name}${
+    card.uploaderName ? ` (via ${card.uploaderName})` : ""
+  }`;
+  const inquiryMailto = card.uploaderEmail
+    ? `mailto:${encodeURIComponent(card.uploaderEmail)}?cc=${encodeURIComponent(
+        "info@lorannllc.com"
+      )}&subject=${encodeURIComponent(inquirySubject)}`
+    : `mailto:info@lorannllc.com?subject=${encodeURIComponent(inquirySubject)}`;
 
   if (!mounted) {
     return (
@@ -239,16 +202,6 @@ export default function DataCardDetail({ card, relatedCards, totalCards }: Props
                 <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/80 backdrop-blur-sm border border-slate-200/60 text-xs font-bold uppercase tracking-wider text-slate-600">
                   <Tag className="w-3.5 h-3.5 text-blue-500" /> {card.category}
                 </span>
-                {card.cardQuality && (
-                  <span className={`inline-flex items-center gap-1 px-3 py-1 rounded-full border text-xs font-bold ${qualityColor(card.cardQuality)}`}>
-                    <Star className="w-3 h-3" /> Quality: {card.cardQuality}
-                  </span>
-                )}
-                {card.popularity && (
-                  <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-amber-50 border border-amber-200 text-xs font-bold text-amber-700">
-                    <TrendingUp className="w-3 h-3" /> Popularity: {card.popularity}/100
-                  </span>
-                )}
               </div>
 
               <h1 className="font-display font-bold text-3xl md:text-4xl lg:text-[2.6rem] leading-[1.1] tracking-[-0.028em] text-slate-900 mb-3 animate-[slideIn_0.5s_ease-out_0.1s_both]">
@@ -277,9 +230,9 @@ export default function DataCardDetail({ card, relatedCards, totalCards }: Props
 
               {/* CTA Buttons */}
               <div className="flex flex-wrap gap-3 animate-[slideIn_0.5s_ease-out_0.2s_both]">
-                <Link href="/contact" className={`inline-flex items-center gap-2 px-7 py-3.5 rounded-xl bg-gradient-to-r ${gradient} text-white font-bold text-sm shadow-lg hover:shadow-xl hover:-translate-y-0.5 hover:scale-[1.02] transition-all duration-300`}>
+                <a href={inquiryMailto} className={`inline-flex items-center gap-2 px-7 py-3.5 rounded-xl bg-gradient-to-r ${gradient} text-white font-bold text-sm shadow-lg hover:shadow-xl hover:-translate-y-0.5 hover:scale-[1.02] transition-all duration-300`}>
                   <Send className="w-4 h-4" /> Request This Data Card
-                </Link>
+                </a>
               </div>
             </div>
 
@@ -287,357 +240,99 @@ export default function DataCardDetail({ card, relatedCards, totalCards }: Props
         </div>
       </section>
 
-      {/* ═══════ MAIN CONTENT — 2 COLUMN ═══════ */}
+      {/* ═══════ MAIN CONTENT — mirrors the uploaded file's structure ═══════
+          Every section header from the source RTF/PDF/XLS renders as its own
+          labeled table. Nothing else is shown here — no form-filled cards,
+          no per-field sidebar — so what appears on this page is exactly what
+          was in the uploaded file. Admins update by re-uploading. */}
       <section className="pt-8 pb-14 lg:pb-16 bg-white border-t border-slate-100">
+        {/* Full page-width — no fixed sidebar. The hero already has "Request
+            This Data Card" and the bottom section has "Ready to activate →
+            Request a Quote", so file sections use the entire container. */}
         <div className="container-custom">
-          <div className="grid lg:grid-cols-[1fr_360px] gap-6 items-start">
-
-            {/* ────── LEFT COLUMN ────── */}
-            <div className="space-y-5 min-w-0">
-
-              {/* SEGMENTS TABLE */}
-              <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden animate-[slideIn_0.4s_ease-out_0.1s_both]">
-                <div className={`flex items-center justify-between px-5 py-3 bg-gradient-to-r ${gradient}`}>
-                  <h2 className="font-display font-bold text-sm text-white uppercase tracking-wider flex items-center gap-2">
-                    <BarChart3 className="w-4 h-4" /> Segments
-                  </h2>
-                  <span className="text-xs text-white/80 font-medium">COUNTS THROUGH {card.lastUpdated}</span>
-                </div>
-
-                <table className="w-full text-sm">
-                  <thead>
-                    <tr className="bg-slate-50 border-b border-slate-100">
-                      <th className="text-left py-2.5 px-5 font-semibold text-slate-500 text-xs uppercase tracking-wider">Count</th>
-                      <th className="text-left py-2.5 px-5 font-semibold text-slate-500 text-xs uppercase tracking-wider">Segment</th>
-                      <th className="text-right py-2.5 px-5 font-semibold text-slate-500 text-xs uppercase tracking-wider">CPM</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-slate-100">
-                    {card.segments && card.segments.length > 0 ? (
-                      // DYNAMIC PATH — render exactly what was parsed from the file.
-                      // Every segment from the data card document is shown verbatim,
-                      // whatever its label happens to be.
-                      card.segments.map((s, i) => {
-                        const label = s.label || "—";
-                        const labelLower = label.toLowerCase();
-                        // Pick a sensible icon for the well-known segment types
-                        let Icon: React.ElementType | null = null;
-                        if (labelLower.includes("postal")) Icon = Printer;
-                        else if (labelLower.includes("phone")) Icon = Phone;
-                        else if (labelLower.includes("email")) Icon = Mail;
-                        return (
-                          <tr key={`seg-${i}`} className="hover:bg-blue-50/40 transition-colors">
-                            <td className="py-3 px-5 font-bold text-slate-900 tabular-nums">
-                              {typeof s.count === "number" ? fmt.format(s.count) : "—"}
-                            </td>
-                            <td className="py-3 px-5 text-slate-700">
-                              <span className="flex items-center gap-2">
-                                {Icon && <Icon className="w-3.5 h-3.5 text-slate-400" />}
-                                {label}
-                              </span>
-                            </td>
-                            <td className="py-3 px-5 text-right font-semibold text-slate-800">
-                              {typeof s.rate === "number" ? fmtCurrency(s.rate) + "/M" : "—"}
-                            </td>
-                          </tr>
-                        );
-                      })
-                    ) : (
-                      // FALLBACK — legacy cards without a segments array. Use the
-                      // standalone universe/postal/phone/email fields.
-                      <>
-                        <tr className="hover:bg-blue-50/40 transition-colors">
-                          <td className="py-3 px-5 font-bold text-slate-900 tabular-nums">{fmt.format(card.universe)}</td>
-                          <td className="py-3 px-5 text-slate-700">Total Universe / Base Rate</td>
-                          <td className="py-3 px-5 text-right font-semibold text-slate-800">{card.postalCpm ? fmtCurrency(card.postalCpm) + "/M" : "—"}</td>
-                        </tr>
-                        {card.postalRecords != null && (
-                          <tr className="hover:bg-blue-50/40 transition-colors">
-                            <td className="py-3 px-5 font-bold text-slate-900 tabular-nums">{fmt.format(card.postalRecords)}</td>
-                            <td className="py-3 px-5 text-slate-700 flex items-center gap-2"><Printer className="w-3.5 h-3.5 text-slate-400" />Postal Records</td>
-                            <td className="py-3 px-5 text-right font-semibold text-slate-800">{card.postalCpm ? fmtCurrency(card.postalCpm) + "/M" : "—"}</td>
-                          </tr>
-                        )}
-                        {card.phoneNumbers != null && (
-                          <tr className="hover:bg-blue-50/40 transition-colors">
-                            <td className="py-3 px-5 font-bold text-slate-900 tabular-nums">{fmt.format(card.phoneNumbers)}</td>
-                            <td className="py-3 px-5 text-slate-700 flex items-center gap-2"><Phone className="w-3.5 h-3.5 text-slate-400" />Phone Numbers</td>
-                            <td className="py-3 px-5 text-right font-semibold text-slate-800">{card.phoneCpm ? fmtCurrency(card.phoneCpm) + "/M" : "—"}</td>
-                          </tr>
-                        )}
-                        {card.emailAddresses != null && (
-                          <tr className="hover:bg-blue-50/40 transition-colors">
-                            <td className="py-3 px-5 font-bold text-slate-900 tabular-nums">{fmt.format(card.emailAddresses)}</td>
-                            <td className="py-3 px-5 text-slate-700 flex items-center gap-2"><Mail className="w-3.5 h-3.5 text-slate-400" />Email Addresses</td>
-                            <td className="py-3 px-5 text-right font-semibold text-slate-800">{card.emailCpm ? fmtCurrency(card.emailCpm) + "/M" : "—"}</td>
-                          </tr>
-                        )}
-                      </>
-                    )}
-                  </tbody>
-                </table>
-              </div>
-
-              {/* DESCRIPTION */}
-              {card.description && (
-                <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden animate-[slideIn_0.4s_ease-out_0.15s_both]">
-                  <div className="flex items-center px-5 py-3 border-b border-slate-100 bg-slate-50/60">
-                    <h2 className="font-display font-bold text-sm text-slate-700 uppercase tracking-wider flex items-center gap-2">
-                      <FileText className="w-4 h-4 text-slate-400" /> Description
-                    </h2>
-                  </div>
-                  <div className="px-5 py-4 text-[14px] leading-relaxed text-slate-700 whitespace-pre-line">
-                    {card.description}
-                  </div>
+          <div className="min-w-0">
+              {(!card.fileSections || card.fileSections.length === 0) && (
+                <div className="bg-white rounded-2xl border border-dashed border-slate-300 shadow-sm px-6 py-10 text-center">
+                  <FileText className="w-8 h-8 text-slate-300 mx-auto mb-3" />
+                  <p className="text-sm text-slate-500">
+                    No file preview available yet. Re-upload the source file to
+                    populate this page.
+                  </p>
                 </div>
               )}
-
-              {/* ADDITIONAL DETAILS — fully dynamic key/value list */}
-              {card.extraFields && card.extraFields.length > 0 && (
-                <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden animate-[slideIn_0.4s_ease-out_0.18s_both]">
-                  <div className="flex items-center px-5 py-3 border-b border-slate-100 bg-slate-50/60">
-                    <h2 className="font-display font-bold text-sm text-slate-700 uppercase tracking-wider flex items-center gap-2">
-                      <FileText className="w-4 h-4 text-slate-400" /> Additional Details
-                    </h2>
-                  </div>
-                  <dl className="divide-y divide-slate-100 text-sm">
-                    {card.extraFields
-                      .filter((f) => f.label && f.value)
-                      .map((f, i) => (
+              {card.fileSections && card.fileSections.length > 0 && (
+                <div className="md:[column-count:2] md:[column-gap:1.25rem]">
+                  {card.fileSections
+                    .filter((s) => s.title && s.rows && s.rows.length > 0)
+                    .map((section, sIdx) => {
+                      const rows = section.rows || [];
+                      const hasAnyLabel = rows.some(
+                        (r) => (r.label || "").trim() !== ""
+                      );
+                      // Full-width sections (span both columns):
+                      //   - SEGMENTS: the primary pricing block — deserves top
+                      //     billing, and rows have three data points (count /
+                      //     label / rate) that read cleanly full-width.
+                      //   - Any section with a long-prose row > 200 chars
+                      //     (typically DESCRIPTION) — narrow columns would
+                      //     mangle the paragraphs.
+                      // Everything else packs tightly into two masonry columns
+                      // — no wasted vertical gaps between mismatched heights.
+                      const longestValue = rows.reduce(
+                        (max, r) => Math.max(max, (r.value || "").length),
+                        0
+                      );
+                      const titleUpper = (section.title || "")
+                        .toUpperCase()
+                        .trim();
+                      const spanBoth =
+                        longestValue > 200 || titleUpper === "SEGMENTS";
+                      return (
                         <div
-                          key={`extra-${i}`}
-                          className="grid grid-cols-[1fr_2fr] gap-4 px-5 py-3"
+                          key={`filesec-${sIdx}`}
+                          className={`bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden mb-5 [break-inside:avoid] ${
+                            spanBoth ? "md:[column-span:all]" : ""
+                          }`}
                         >
-                          <dt className="text-slate-500 font-medium">{f.label}</dt>
-                          <dd className="text-slate-800 font-semibold break-words">
-                            {f.value}
-                          </dd>
+                          <div
+                            className={`flex items-center px-5 py-3 bg-gradient-to-r ${gradient}`}
+                          >
+                            <h2 className="font-display font-bold text-sm text-white uppercase tracking-wider flex items-center gap-2">
+                              <FileText className="w-4 h-4" /> {section.title}
+                            </h2>
+                          </div>
+                          {hasAnyLabel ? (
+                            <dl className="divide-y divide-slate-100 text-sm">
+                              {rows.map((r, rIdx) => (
+                                <div
+                                  key={`filerow-${sIdx}-${rIdx}`}
+                                  className="grid grid-cols-[1fr_1fr] gap-4 px-5 py-3"
+                                >
+                                  <dt className="text-slate-500 font-medium break-words">
+                                    {r.label || ""}
+                                  </dt>
+                                  <dd className="text-slate-900 font-semibold break-words">
+                                    {r.value || ""}
+                                  </dd>
+                                </div>
+                              ))}
+                            </dl>
+                          ) : (
+                            <div className="px-5 py-4 space-y-2 text-[14px] text-slate-700 leading-relaxed">
+                              {rows.map((r, rIdx) => (
+                                <p key={`filerow-${sIdx}-${rIdx}`}>{r.value}</p>
+                              ))}
+                            </div>
+                          )}
                         </div>
-                      ))}
-                  </dl>
+                      );
+                    })}
                 </div>
               )}
-
-              {/* ORDERING INSTRUCTIONS */}
-              <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden animate-[slideIn_0.4s_ease-out_0.2s_both]">
-                <div className="flex items-center px-5 py-3 border-b border-slate-100 bg-slate-50/60">
-                  <h2 className="font-display font-bold text-sm text-slate-700 uppercase tracking-wider flex items-center gap-2">
-                    <Package className="w-4 h-4 text-slate-400" /> Ordering Instructions
-                  </h2>
-                </div>
-                <div className="px-5 py-4">
-                  <ul className="space-y-2 text-sm text-slate-600">
-                    {card.minimumOrder != null && (
-                      <li className="flex items-start gap-2">
-                        <span className="w-1.5 h-1.5 rounded-full bg-slate-400 mt-1.5 flex-shrink-0" />
-                        <span>{fmt.format(card.minimumOrder)} Name Minimum Order{card.minimumPrice != null && <> ${card.minimumPrice.toFixed(2)} Minimum Price</>}</span>
-                      </li>
-                    )}
-                    {card.netNamePercent != null && (
-                      <li className="flex items-start gap-2">
-                        <span className="w-1.5 h-1.5 rounded-full bg-slate-400 mt-1.5 flex-shrink-0" />
-                        <span>{card.netNamePercent}% Net Name available on orders of 50,000 or more ($10.00/M Run Charge)</span>
-                      </li>
-                    )}
-                    <li className="flex items-start gap-2">
-                      <span className={`w-1.5 h-1.5 rounded-full mt-1.5 flex-shrink-0 ${card.exchangeAvailable ? "bg-emerald-500" : "bg-red-400"}`} />
-                      <span>Exchange is {card.exchangeAvailable ? "" : "not "}available</span>
-                    </li>
-                    {card.brokerCommission != null && (
-                      <li className="flex items-start gap-2">
-                        <span className="w-1.5 h-1.5 rounded-full bg-slate-400 mt-1.5 flex-shrink-0" />
-                        <span>Broker Commission {card.brokerCommission}% on base</span>
-                      </li>
-                    )}
-                    {card.agencyCommission != null && (
-                      <li className="flex items-start gap-2">
-                        <span className="w-1.5 h-1.5 rounded-full bg-slate-400 mt-1.5 flex-shrink-0" />
-                        <span>Agency Commission {card.agencyCommission}% on base</span>
-                      </li>
-                    )}
-                    <li className="flex items-start gap-2">
-                      <span className={`w-1.5 h-1.5 rounded-full mt-1.5 flex-shrink-0 ${card.reuseAvailable ? "bg-emerald-500" : "bg-red-400"}`} />
-                      <span>Reuse is {card.reuseAvailable ? "" : "not "}available</span>
-                    </li>
-                  </ul>
-                </div>
-              </div>
-
-              {/* ADDRESSING */}
-              {(card.emailDeliveryFee != null || card.ftpDeliveryFee != null) && (
-                <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden animate-[slideIn_0.4s_ease-out_0.25s_both]">
-                  <div className="flex items-center px-5 py-3 border-b border-slate-100 bg-slate-50/60">
-                    <h2 className="font-display font-bold text-sm text-slate-700 uppercase tracking-wider flex items-center gap-2">
-                      <Truck className="w-4 h-4 text-slate-400" /> Addressing
-                    </h2>
-                  </div>
-                  <div className="divide-y divide-slate-100">
-                    {card.emailDeliveryFee != null && (
-                      <div className="flex items-center justify-between px-5 py-3 text-sm">
-                        <span className="text-slate-600 flex items-center gap-2"><Mail className="w-3.5 h-3.5 text-blue-500" />Email</span>
-                        <span className="font-bold text-slate-800">${card.emailDeliveryFee.toFixed(2)}/F</span>
-                      </div>
-                    )}
-                    {card.ftpDeliveryFee != null && (
-                      <div className="flex items-center justify-between px-5 py-3 text-sm">
-                        <span className="text-slate-600 flex items-center gap-2"><Settings className="w-3.5 h-3.5 text-indigo-500" />FTP</span>
-                        <span className="font-bold text-slate-800">${card.ftpDeliveryFee.toFixed(2)}/F</span>
-                      </div>
-                    )}
-                  </div>
-                </div>
-              )}
-            </div>
-
-            {/* ────── RIGHT COLUMN (SIDEBAR) ────── */}
-            <div className="space-y-5 lg:sticky lg:top-24 animate-[slideIn_0.5s_ease-out_0.15s_both]">
-
-              {/* CARD INFO */}
-              <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
-                {/* Popularity row */}
-                {card.popularity != null && (
-                  <div className="flex items-center justify-between px-5 py-3 border-b border-slate-100 bg-gradient-to-r from-blue-50/80 to-indigo-50/60">
-                    <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">Popularity</span>
-                    <PopularityDots score={card.popularity} />
-                  </div>
-                )}
-
-                <div className="divide-y divide-slate-100 text-sm">
-                  {card.cardQuality && (
-                    <div className="flex items-center justify-between px-5 py-2.5">
-                      <span className="text-slate-500 font-medium">Card Quality</span>
-                      <span className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full border text-xs font-bold ${qualityColor(card.cardQuality)}`}>
-                        <Star className="w-3 h-3" /> {card.cardQuality}
-                      </span>
-                    </div>
-                  )}
-                  {card.market && (
-                    <div className="flex items-center justify-between px-5 py-2.5">
-                      <span className="text-slate-500 font-medium">Market</span>
-                      <span className="font-bold text-slate-800">{card.market}</span>
-                    </div>
-                  )}
-                  <div className="flex items-center justify-between px-5 py-2.5">
-                    <span className="text-slate-500 font-medium">Category</span>
-                    <span className="inline-flex items-center gap-1.5 font-bold text-slate-800">
-                      <span className={`w-2.5 h-2.5 rounded-full ${catColor}`} />
-                      {card.category}
-                    </span>
-                  </div>
-                  {card.dataType && (
-                    <div className="flex items-center justify-between px-5 py-2.5">
-                      <span className="text-slate-500 font-medium">Type</span>
-                      <span className="font-bold text-slate-800 text-right max-w-[180px]">{card.dataType}</span>
-                    </div>
-                  )}
-                  {card.source && (
-                    <div className="flex items-center justify-between px-5 py-2.5 gap-4">
-                      <span className="text-slate-500 font-medium flex-shrink-0">Source</span>
-                      <span className="font-bold text-slate-800 text-right text-xs leading-snug">{card.source}</span>
-                    </div>
-                  )}
-                  {card.geo && (
-                    <div className="flex items-center justify-between px-5 py-2.5">
-                      <span className="text-slate-500 font-medium">Geo</span>
-                      <span className="font-bold text-slate-800">{card.geo}</span>
-                    </div>
-                  )}
-                  {(card.genderMale != null && card.genderFemale != null) && (
-                    <div className="flex items-center justify-between px-5 py-2.5">
-                      <span className="text-slate-500 font-medium">Gender</span>
-                      <span className="font-bold text-slate-800">{card.genderFemale}% Female {card.genderMale}% Male</span>
-                    </div>
-                  )}
-                  <div className="flex items-center justify-between px-5 py-2.5">
-                    <span className="text-slate-500 font-medium">Status</span>
-                    <span className="inline-flex items-center gap-1.5 font-bold text-emerald-600 text-xs">
-                      <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-                      ACTIVE
-                    </span>
-                  </div>
-                </div>
-
-                {/* CTA button */}
-                <div className="p-4 border-t border-slate-100">
-                  <Link href="/contact" className={`flex items-center justify-center gap-2 w-full py-3 rounded-xl bg-gradient-to-r ${gradient} text-white font-bold text-sm shadow-md hover:shadow-lg hover:scale-[1.01] transition-all duration-300`}>
-                    Get Count <Zap className="w-4 h-4" />
-                  </Link>
-                </div>
-              </div>
-
-              {/* SELECTS */}
-              {card.selects && card.selects.length > 0 && (
-                <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
-                  <div className="flex items-center justify-between px-5 py-3 border-b border-slate-100 bg-slate-50/60">
-                    <h2 className="font-display font-bold text-sm text-slate-700 uppercase tracking-wider flex items-center gap-2">
-                      <Layers className="w-4 h-4 text-slate-400" /> Selects
-                    </h2>
-                    <span className="text-xs font-bold text-blue-600 bg-blue-50 px-2 py-0.5 rounded-full">{card.selects.length}</span>
-                  </div>
-                  <div className="px-5 py-3">
-                    <div className="flex flex-wrap gap-1.5">
-                      {card.selects.map((s) => (
-                        <span key={s} className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-slate-50 border border-slate-100 text-xs font-medium text-slate-700 hover:bg-blue-50 hover:border-blue-200 hover:text-blue-700 transition-colors cursor-default">
-                          <CheckCircle2 className="w-3 h-3 text-blue-400" />
-                          {s}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              {/* CARD METADATA */}
-              <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
-                <div className="flex items-center px-5 py-3 border-b border-slate-100 bg-slate-50/60">
-                  <h2 className="font-display font-bold text-sm text-slate-700 uppercase tracking-wider flex items-center gap-2">
-                    <Clock className="w-4 h-4 text-slate-400" /> Card Metadata
-                  </h2>
-                </div>
-                <div className="divide-y divide-slate-100 text-sm">
-                  {card.marketEntryDate && (
-                    <div className="flex items-center justify-between px-5 py-2.5">
-                      <span className="text-slate-500 font-medium">Market Entry</span>
-                      <span className="font-bold text-slate-800">{card.marketEntryDate}</span>
-                    </div>
-                  )}
-                  <div className="flex items-center justify-between px-5 py-2.5">
-                    <span className="text-slate-500 font-medium">Last Updated</span>
-                    <span className="font-bold text-slate-800">{card.lastUpdated}</span>
-                  </div>
-                  {card.nextUpdateDate && (
-                    <div className="flex items-center justify-between px-5 py-2.5">
-                      <span className="text-slate-500 font-medium">Next Update</span>
-                      <span className="font-bold text-slate-800">{card.nextUpdateDate}</span>
-                    </div>
-                  )}
-                  {card.frequency && (
-                    <div className="flex items-center justify-between px-5 py-2.5">
-                      <span className="text-slate-500 font-medium">Frequency</span>
-                      <span className="font-bold text-emerald-600">{card.frequency}</span>
-                    </div>
-                  )}
-                </div>
-              </div>
-
-              {/* COMPLIANCE */}
-              <div className="grid grid-cols-2 gap-2">
-                {[
-                  { label: "CCPA", icon: Shield },
-                  { label: "CAN-SPAM", icon: CheckCircle2 },
-                  { label: "GDPR Ready", icon: Globe },
-                  { label: "SOC 2", icon: Award },
-                ].map(({ label, icon: CIcon }) => (
-                  <div key={label} className="flex items-center gap-2 px-3 py-2.5 rounded-xl bg-emerald-50/80 border border-emerald-100">
-                    <CIcon className="w-3.5 h-3.5 text-emerald-600 flex-shrink-0" />
-                    <span className="text-xs font-semibold text-emerald-800">{label}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
           </div>
         </div>
       </section>
+
 
       {/* ═══════ RELATED ═══════ */}
       {relatedCards.length > 0 && (
@@ -664,7 +359,6 @@ export default function DataCardDetail({ card, relatedCards, totalCards }: Props
                   <h3 className="font-display font-bold text-sm text-slate-900 group-hover:text-blue-700 transition-colors mb-1.5 line-clamp-2">{rc.name}</h3>
                   <div className="flex items-center gap-3 text-xs text-slate-500">
                     <span className="flex items-center gap-1"><Database className="w-3 h-3" />{formatUniverse(rc.universe)}</span>
-                    <span className="flex items-center gap-1"><Calendar className="w-3 h-3" />{rc.lastUpdated}</span>
                   </div>
                 </Link>
               ))}
@@ -687,9 +381,9 @@ export default function DataCardDetail({ card, relatedCards, totalCards }: Props
                 Get a custom quote, request a sample count, or speak with our data team about building your ideal audience segment.
               </p>
               <div className="flex flex-wrap items-center justify-center gap-3">
-                <Link href="/contact" className="inline-flex items-center gap-2 px-7 py-3.5 rounded-xl bg-white text-blue-900 font-bold text-sm hover:bg-blue-50 hover:shadow-xl hover:scale-[1.02] transition-all duration-300">
+                <a href={inquiryMailto} className="inline-flex items-center gap-2 px-7 py-3.5 rounded-xl bg-white text-blue-900 font-bold text-sm hover:bg-blue-50 hover:shadow-xl hover:scale-[1.02] transition-all duration-300">
                   <Send className="w-4 h-4" /> Request a Quote
-                </Link>
+                </a>
                 <Link href="/data-assets/data-cards" className="inline-flex items-center gap-2 px-7 py-3.5 rounded-xl border border-white/20 text-white font-bold text-sm hover:bg-white/10 transition-all duration-300">
                   Browse All Data Cards <ArrowRight className="w-4 h-4" />
                 </Link>

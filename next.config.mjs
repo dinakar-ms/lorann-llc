@@ -98,7 +98,6 @@ const nextConfig = {
     if (process.env.NODE_ENV !== "production") return [];
     return [
       {
-        // Apply security headers to every route
         source: "/(.*)",
         headers: [
           ...securityHeaders,
