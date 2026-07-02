@@ -104,6 +104,7 @@ function Globe() {
   );
 }
 
+
 /* ─── Count-up ──────────────────────────────────────────────────── */
 function useCountUp(to: number, ms = 1800, go = false) {
   const [v, setV] = useState(0);

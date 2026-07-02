@@ -7,6 +7,7 @@ import "./globals.css";
 import LayoutChrome from "@/components/LayoutChrome";
 import AuthProvider from "@/components/AuthProvider";
 
+
 // Only load in draft mode — zero cost in production
 const VisualEditing = dynamic(
   () => import("next-sanity").then((m) => m.VisualEditing),
