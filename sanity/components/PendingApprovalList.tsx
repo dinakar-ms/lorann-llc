@@ -1,9 +1,21 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { useClient, useSchema } from "sanity";
+import { useCallback, useEffect, useState } from "react";
+import { useClient, useCurrentUser, useSchema } from "sanity";
 import { useRouter } from "sanity/router";
-import { Box, Card, Flex, Spinner, Stack, Text } from "@sanity/ui";
+import { Box, Button, Card, Flex, Spinner, Stack, Text } from "@sanity/ui";
+
+// Same email allowlist that gates Publish/Unpublish in sanity.config.ts.
+// Kept in sync with NEXT_PUBLIC_SANITY_PUBLISHERS so this bulk-publish
+// button is only shown to the same users who can publish individually
+// from the Studio document editor. Anyone else sees the queue but not
+// the button.
+const PUBLISHER_ALLOWLIST: string[] = (
+  process.env.NEXT_PUBLIC_SANITY_PUBLISHERS || ""
+)
+  .split(",")
+  .map((e) => e.trim().toLowerCase())
+  .filter(Boolean);
 
 type DraftRow = {
   _id: string;
@@ -18,23 +30,32 @@ type DraftRow = {
 //   Sanity-system bookkeeping docs auto-created by Studio (e.g. preview tokens)
 const HIDDEN_TYPES = ["dataCardSubmission"];
 
-// Only show drafts edited since midnight today (admin's local time). Older
-// drafts — seed-script leftovers, abandoned edits from previous days — are
-// hidden from this queue so the list reflects only fresh editorial activity.
-// They still exist in the dataset; admins can find them via Structure on the
-// individual page (orange "Draft" indicator).
+// Fetch every draft + every published id in one round-trip, then filter
+// client-side. Doing the "does the canonical exist?" join in GROQ
+// requires string slicing (`_id[7..]`) that doesn't work reliably across
+// GROQ versions — client-side filtering is unambiguous.
+//
+// Sanity-system docs and the dashboard-only dataCardSubmission type are
+// excluded server-side to keep the payload small.
 
-const DRAFTS_QUERY = `*[
-  _id in path("drafts.**")
-  && !(_type in $hidden)
-  && !(_type match "sanity.*")
-  && !(_type match "system.*")
-  && _updatedAt > $since
-] | order(_updatedAt desc) {
-  _id,
-  _type,
-  _updatedAt,
-  "title": coalesce(title, h1, name, heroH1Line1, heroTitleStart, _id)
+const DRAFTS_AND_PUBLISHED_QUERY = `{
+  "drafts": *[
+    _id in path("drafts.**")
+    && !(_type in $hidden)
+    && !(_type match "sanity.*")
+    && !(_type match "system.*")
+  ] | order(_updatedAt desc) {
+    _id,
+    _type,
+    _updatedAt,
+    "title": coalesce(title, h1, name, heroH1Line1, heroTitleStart, _id)
+  },
+  "publishedIds": *[
+    !(_id in path("drafts.**"))
+    && !(_type in $hidden)
+    && !(_type match "sanity.*")
+    && !(_type match "system.*")
+  ]._id
 }`;
 
 /**
@@ -49,25 +70,121 @@ export default function PendingApprovalList() {
   const client = useClient({ apiVersion: "2024-10-01" });
   const schema = useSchema();
   const router = useRouter();
+  const currentUser = useCurrentUser();
   const [rows, setRows] = useState<DraftRow[] | null>(null);
+  const [busy, setBusy] = useState(false);
+  const [message, setMessage] = useState<
+    { tone: "positive" | "critical"; text: string } | null
+  >(null);
+
+  const isPublisher =
+    !!currentUser?.email &&
+    PUBLISHER_ALLOWLIST.includes(currentUser.email.toLowerCase());
+
+  const loadRows = useCallback(
+    async (alive?: { current: boolean }) => {
+      try {
+        const { drafts, publishedIds } = await client.fetch<{
+          drafts: DraftRow[];
+          publishedIds: string[];
+        }>(DRAFTS_AND_PUBLISHED_QUERY, { hidden: HIDDEN_TYPES });
+        if (alive && !alive.current) return;
+        const publishedSet = new Set(publishedIds || []);
+        // Keep only drafts whose canonical (drafts._id minus the
+        // "drafts." prefix — 7 chars) exists as a published document.
+        // Orphaned drafts — brand-new pages, or leftovers whose canonical
+        // was deleted — go to the separate Orphaned Drafts tab and never
+        // enter this queue. Opening them here would blow up with the
+        // "editOpsOf does not expect a draft id" Studio error.
+        const withCanonical = (drafts || []).filter((row) => {
+          const canonical = row._id.replace(/^drafts\./, "");
+          return publishedSet.has(canonical);
+        });
+        setRows(withCanonical);
+      } catch {
+        if (!alive || alive.current) setRows([]);
+      }
+    },
+    [client]
+  );
 
   useEffect(() => {
-    let alive = true;
-    const startOfToday = new Date();
-    startOfToday.setHours(0, 0, 0, 0);
-    const since = startOfToday.toISOString();
-    client
-      .fetch<DraftRow[]>(DRAFTS_QUERY, { hidden: HIDDEN_TYPES, since })
-      .then((result) => {
-        if (alive) setRows(result || []);
-      })
-      .catch(() => {
-        if (alive) setRows([]);
-      });
+    const alive = { current: true };
+    loadRows(alive);
     return () => {
-      alive = false;
+      alive.current = false;
     };
-  }, [client]);
+  }, [loadRows]);
+
+  // Bulk-publish every visible pending draft:
+  //   for each draft, `createOrReplace` the canonical with the draft's
+  //   content and delete the draft in a single transaction. That's the
+  //   same primitive Sanity Studio's per-doc Publish action uses. Each
+  //   draft gets its own transaction so a single failure doesn't block
+  //   the rest — successes and failures are counted separately and
+  //   reported at the end.
+  async function publishAll() {
+    if (!rows || rows.length === 0 || busy) return;
+    if (
+      !window.confirm(
+        `Publish all ${rows.length} pending draft${
+          rows.length === 1 ? "" : "s"
+        }? This promotes every draft to live in one shot.`
+      )
+    ) {
+      return;
+    }
+    setBusy(true);
+    setMessage(null);
+    let succeeded = 0;
+    const failures: DraftRow[] = [];
+    for (const row of rows) {
+      try {
+        const draft = await client.getDocument(row._id);
+        if (!draft) {
+          failures.push(row);
+          continue;
+        }
+        const canonicalId = row._id.replace(/^drafts\./, "");
+        // Strip system fields that shouldn't be copied verbatim onto
+        // the new/updated canonical. Sanity assigns fresh _rev,
+        // _createdAt, _updatedAt on write.
+        const {
+          _id: _draftId,
+          _rev: _draftRev,
+          _createdAt: _draftCreatedAt,
+          _updatedAt: _draftUpdatedAt,
+          ...rest
+        } = draft;
+        void _draftId;
+        void _draftRev;
+        void _draftCreatedAt;
+        void _draftUpdatedAt;
+        await client
+          .transaction()
+          .createOrReplace({ ...rest, _id: canonicalId })
+          .delete(row._id)
+          .commit();
+        succeeded++;
+      } catch {
+        failures.push(row);
+      }
+    }
+    setBusy(false);
+    if (failures.length === 0) {
+      setMessage({
+        tone: "positive",
+        text: `Published ${succeeded} draft${succeeded === 1 ? "" : "s"}.`,
+      });
+    } else {
+      setMessage({
+        tone: "critical",
+        text: `Published ${succeeded}, ${failures.length} failed. Open the failing docs to see why.`,
+      });
+    }
+    // Refresh so the freshly-published rows disappear from the queue.
+    await loadRows();
+  }
 
   function openDoc(row: DraftRow) {
     // Drafts have IDs like "drafts.<canonical-id>". Strip the prefix so the
@@ -102,21 +219,48 @@ export default function PendingApprovalList() {
   if (rows.length === 0) {
     return (
       <Box padding={5}>
-        <Stack space={3}>
-          <Text muted align="center">
-            Nothing edited today.
-          </Text>
-          <Text muted align="center" size={1}>
-            Older drafts (e.g. seed leftovers) aren&apos;t shown here. Open the
-            source doc directly to publish or discard them.
-          </Text>
-        </Stack>
+        <Text muted align="center">
+          No drafts awaiting approval.
+        </Text>
       </Box>
     );
   }
 
   return (
     <Stack space={1} padding={2}>
+      {(isPublisher || message) && (
+        <Box padding={2}>
+          <Stack space={3}>
+            {isPublisher && (
+              <Flex align="center" justify="space-between" gap={3}>
+                <Text muted size={1}>
+                  {rows.length} draft{rows.length === 1 ? "" : "s"} awaiting
+                  approval
+                </Text>
+                <Button
+                  fontSize={1}
+                  mode="default"
+                  padding={3}
+                  tone="positive"
+                  text={busy ? "Publishing…" : `Publish all (${rows.length})`}
+                  onClick={publishAll}
+                  disabled={busy}
+                />
+              </Flex>
+            )}
+            {message && (
+              <Card
+                tone={message.tone}
+                padding={3}
+                radius={2}
+                border
+              >
+                <Text size={1}>{message.text}</Text>
+              </Card>
+            )}
+          </Stack>
+        </Box>
+      )}
       {rows.map((row) => {
         const schemaType = schema.get(row._type);
         const typeTitle = schemaType?.title || row._type;

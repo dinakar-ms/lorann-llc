@@ -1,5 +1,6 @@
 import type { StructureResolver } from "sanity/structure";
 import PendingApprovalList from "./components/PendingApprovalList";
+import OrphanedDraftsList from "./components/OrphanedDraftsList";
 
 const SINGLETONS = [
   "homepage",
@@ -78,6 +79,22 @@ export const structure: StructureResolver = (S) =>
                 .documentId(documentId)
                 .schemaType(doc?._type || "page");
             })
+        ),
+
+      // ---- Orphaned Drafts — same custom-component pattern but the query
+      // is inverted: only drafts whose canonical is MISSING. Two sources:
+      //   1. Brand-new pages awaiting their first publish.
+      //   2. Leftovers whose canonical was deleted/renamed — opening these
+      //      from a custom pane URL blows up with "editOpsOf does not
+      //      expect a draft id", so the click handler uses navigateIntent
+      //      to let Sanity's default resolver take over.
+      S.listItem()
+        .title("🗂️ Orphaned Drafts")
+        .id("orphanedDrafts")
+        .child(
+          S.component(OrphanedDraftsList)
+            .title("Orphaned Drafts")
+            .id("orphanedDraftsView")
         ),
       S.divider(),
 
