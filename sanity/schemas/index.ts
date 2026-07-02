@@ -29,6 +29,7 @@ import { insightsPageType } from "./documents/insightsPage";
 import { signalExchangePageType } from "./documents/signalExchangePage";
 import { resourcesPageType } from "./documents/resourcesPage";
 import { contactSubmissionType } from "./documents/contactSubmission";
+import { popupLeadSubmissionType } from "./documents/popupLeadSubmission";
 import { userType } from "./documents/user";
 import { dataCardSubmissionType } from "./documents/dataCardSubmission";
 import { dataCardType } from "./documents/dataCard";
@@ -61,6 +62,7 @@ export const schema: { types: SchemaTypeDefinition[] } = {
     signalExchangePageType,
     resourcesPageType,
     contactSubmissionType,
+    popupLeadSubmissionType,
     dataCardType,
     userType,
     dataCardSubmissionType,

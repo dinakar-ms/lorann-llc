@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { usePathname } from "next/navigation";
 
 const STORAGE_KEY = "lorann_popup_v3";
 const SHOW_DELAY  = 12000;
@@ -66,12 +67,10 @@ function Globe() {
   return (
     <div className="relative mx-auto flex items-center justify-center"
       style={{ width: 120, height: 120 }}>
-      {/* Core glow */}
       <div className="absolute rounded-full"
         style={{ width: 36, height: 36,
           background: "radial-gradient(circle,rgba(56,189,248,.4) 0%,transparent 70%)",
           animation: "lp-core 2.8s ease-in-out infinite" }} />
-      {/* Rings */}
       {[
         { s: 68,  c: "rgba(56,189,248,.75)", d: "3.4s", rx: "70deg", rz: "0deg"   },
         { s: 90,  c: "rgba(139,92,246,.65)", d: "5.8s", rx: "65deg", rz: "58deg"  },
@@ -82,14 +81,12 @@ function Globe() {
             animation: `lp-ring-${i + 1} ${d} linear infinite`,
             transform: `rotateX(${rx}) rotateZ(${rz})` }} />
       ))}
-      {/* Orbiting dots */}
       <div className="absolute h-2 w-2 rounded-full"
         style={{ background: "#38bdf8", boxShadow: "0 0 10px 3px rgba(56,189,248,.7)",
           animation: "lp-dot1 3.4s linear infinite", transformOrigin: "0 34px" }} />
       <div className="absolute h-1.5 w-1.5 rounded-full"
         style={{ background: "#c084fc", boxShadow: "0 0 8px 2px rgba(192,132,252,.7)",
           animation: "lp-dot2 5.8s linear infinite", transformOrigin: "0 45px" }} />
-      {/* Center label */}
       <div className="relative z-10 text-center select-none">
         <div style={{
           fontFamily: "var(--font-space-grotesk)", fontSize: 17, fontWeight: 900, lineHeight: 1,
@@ -130,6 +127,474 @@ const SEGS = [
   { icon: "🏢", val: "500+ Verticals", label: "Industries Covered"      },
 ];
 
+/* ─── Page-specific popup contexts ─────────────────────────────── */
+const PAGE_CONTEXTS: Record<string, {
+  badge: string; icon: string;
+  count: number; suffix: string; countLabel: string; countSub: string;
+  segVal: string; segLabel: string;
+  headline: string; desc: string;
+}> = {
+  /* ── Solutions ── */
+  "audience-targeting": {
+    badge:"Audience Targeting Platform", icon:"🎯",
+    count:500, suffix:"M+", countLabel:"Targetable Profiles", countSub:"Verified · Segmented · Actionable",
+    segVal:"500M+", segLabel:"Targetable Audience Profiles",
+    headline:"Get a Free Audience Targeting Data Sample",
+    desc:"Precision audience segments across 500+ demographic, behavioral, and intent attributes — built for multi-channel activation.",
+  },
+  "data-enrichment": {
+    badge:"Data Enrichment Service", icon:"🔬",
+    count:95, suffix:"M+", countLabel:"Enrichable Records", countSub:"Append · Verify · Refresh",
+    segVal:"95M+", segLabel:"Enrichable B2B Records",
+    headline:"Get a Free Data Enrichment Sample",
+    desc:"Append missing fields, verify accuracy, and refresh stale records across your CRM or contact database.",
+  },
+  "data-activation": {
+    badge:"Data Activation Platform", icon:"⚡",
+    count:95, suffix:"M+", countLabel:"Activatable Contacts", countSub:"Multi-Channel · Intent-Ready",
+    segVal:"95M+", segLabel:"Activatable Contacts",
+    headline:"Get a Free Data Activation Sample",
+    desc:"Push verified contacts directly into your ad platforms, CRMs, and marketing automation tools for instant activation.",
+  },
+  "cost-per-lead": {
+    badge:"Cost-Per-Lead Program", icon:"💰",
+    count:5000, suffix:"+", countLabel:"Qualified Leads Delivered", countSub:"Verified · Intent-Based",
+    segVal:"5,000+", segLabel:"Qualified Leads Delivered",
+    headline:"Get a Free Cost-Per-Lead Data Sample",
+    desc:"Pay only for verified, intent-qualified leads delivered directly to your sales team — no wasted spend.",
+  },
+  "signal-exchange": {
+    badge:"Signal eXchange™ Platform", icon:"📡",
+    count:1, suffix:"B+", countLabel:"Intent Signals Tracked", countSub:"Real-Time · Cross-Channel",
+    segVal:"1B+", segLabel:"Intent Signals Tracked",
+    headline:"Get a Free Signal eXchange™ Data Sample",
+    desc:"Real-time purchase intent signals from 1B+ behavioral touchpoints — identify in-market buyers before your competitors.",
+  },
+
+  /* ── Healthcare specialties (most-specific first, before b2b-database) ── */
+  "physician-assistant": {
+    badge:"Physician Assistant Database", icon:"🩺",
+    count:140, suffix:"K+", countLabel:"Certified PAs", countSub:"NPI-Verified · Specialty-Matched",
+    segVal:"140K+", segLabel:"Certified Physician Assistants",
+    headline:"Get a Free Verified Physician Assistant Data Sample",
+    desc:"NPI-verified physician assistant contacts segmented by specialty, practice setting, and geography.",
+  },
+  "nurse-practitioner": {
+    badge:"Nurse Practitioner Database", icon:"👩‍⚕️",
+    count:355, suffix:"K+", countLabel:"Licensed NPs", countSub:"NPI-Verified · Specialty-Matched",
+    segVal:"355K+", segLabel:"Licensed Nurse Practitioners",
+    headline:"Get a Free Verified Nurse Practitioner Data Sample",
+    desc:"NPI-verified nurse practitioner contacts segmented by specialty, prescribing authority, and practice setting.",
+  },
+  "registered-nurse": {
+    badge:"Registered Nurse Database", icon:"🏥",
+    count:4, suffix:"M+", countLabel:"Registered Nurses", countSub:"License-Verified · Unit-Matched",
+    segVal:"4M+", segLabel:"Registered Nurses",
+    headline:"Get a Free Verified Registered Nurse Data Sample",
+    desc:"License-verified RN contacts segmented by specialty unit, facility type, and state of licensure.",
+  },
+  "physical-therapist": {
+    badge:"Physical Therapist Database", icon:"🦵",
+    count:250, suffix:"K+", countLabel:"Licensed PTs", countSub:"License-Verified · Setting-Matched",
+    segVal:"250K+", segLabel:"Licensed Physical Therapists",
+    headline:"Get a Free Verified Physical Therapist Data Sample",
+    desc:"License-verified PT contacts segmented by specialty, practice setting, and patient population.",
+  },
+  "occupational-therapist": {
+    badge:"Occupational Therapist Database", icon:"🖐️",
+    count:130, suffix:"K+", countLabel:"Licensed OTs", countSub:"License-Verified · Setting-Matched",
+    segVal:"130K+", segLabel:"Licensed Occupational Therapists",
+    headline:"Get a Free Verified Occupational Therapist Data Sample",
+    desc:"License-verified OT contacts segmented by specialty area, facility type, and patient population.",
+  },
+  "certified-nursing": {
+    badge:"Certified Nursing Assistant Database", icon:"🏥",
+    count:1, suffix:"M+", countLabel:"Certified CNAs", countSub:"License-Verified · Facility-Matched",
+    segVal:"1M+", segLabel:"Certified Nursing Assistants",
+    headline:"Get a Free Verified CNA Data Sample",
+    desc:"License-verified CNA contacts segmented by facility type, state, and care setting.",
+  },
+  "mental-health": {
+    badge:"Mental Health Professional Database", icon:"🧠",
+    count:500, suffix:"K+", countLabel:"Mental Health Professionals", countSub:"License-Verified · Specialty-Matched",
+    segVal:"500K+", segLabel:"Mental Health Professionals",
+    headline:"Get a Free Verified Mental Health Professional Data Sample",
+    desc:"License-verified mental health professional contacts including psychologists, therapists, and counselors.",
+  },
+  "psychiatr": {
+    badge:"Psychiatrist Database", icon:"🧠",
+    count:45, suffix:"K+", countLabel:"Verified Psychiatrists", countSub:"NPI-Verified · Board-Certified",
+    segVal:"45K+", segLabel:"Verified Psychiatrists",
+    headline:"Get a Free Verified Psychiatrist Data Sample",
+    desc:"NPI-verified psychiatrist contacts segmented by subspecialty, practice setting, and prescribing authority.",
+  },
+  "physician": {
+    badge:"Physician Database", icon:"🩺",
+    count:870, suffix:"K+", countLabel:"Verified Physicians", countSub:"NPI-Verified · Specialty-Matched",
+    segVal:"870K+", segLabel:"Physicians & Doctors",
+    headline:"Get a Free Verified Physician & Doctor Data Sample",
+    desc:"NPI-verified physician contacts segmented by specialty, practice setting, prescribing authority, and geography.",
+  },
+  "doctor": {
+    badge:"Doctor Database", icon:"🩺",
+    count:870, suffix:"K+", countLabel:"Verified Doctors", countSub:"NPI-Verified · Specialty-Matched",
+    segVal:"870K+", segLabel:"Verified Physicians & Doctors",
+    headline:"Get a Free Verified Doctor Data Sample",
+    desc:"NPI-verified doctor contacts segmented by specialty, practice setting, and geography.",
+  },
+  "dentist": {
+    badge:"Dentist Database", icon:"🦷",
+    count:200, suffix:"K+", countLabel:"Verified Dentists", countSub:"NPI-Verified · Specialty-Matched",
+    segVal:"200K+", segLabel:"Verified Dentists",
+    headline:"Get a Free Verified Dentist Data Sample",
+    desc:"NPI-verified dentist contacts segmented by specialty, practice type, and geography.",
+  },
+  "dental": {
+    badge:"Dental Professional Database", icon:"🦷",
+    count:250, suffix:"K+", countLabel:"Dental Professionals", countSub:"NPI-Verified · Role-Matched",
+    segVal:"250K+", segLabel:"Dental Professionals",
+    headline:"Get a Free Verified Dental Professional Data Sample",
+    desc:"NPI-verified dental professional contacts including dentists, hygienists, and office managers.",
+  },
+  "pharmacist": {
+    badge:"Pharmacist Database", icon:"💊",
+    count:340, suffix:"K+", countLabel:"Verified Pharmacists", countSub:"License-Verified · Setting-Matched",
+    segVal:"340K+", segLabel:"Verified Pharmacists",
+    headline:"Get a Free Verified Pharmacist Data Sample",
+    desc:"License-verified pharmacist contacts segmented by practice setting, specialty, and dispensing authority.",
+  },
+  "pharmacy": {
+    badge:"Pharmacy Database", icon:"💊",
+    count:65, suffix:"K+", countLabel:"Verified Pharmacies", countSub:"Location-Verified · Chain-Matched",
+    segVal:"65K+", segLabel:"Verified Pharmacy Locations",
+    headline:"Get a Free Verified Pharmacy Data Sample",
+    desc:"Verified pharmacy location contacts including decision-makers, buyers, and clinical staff.",
+  },
+  "chiropractor": {
+    badge:"Chiropractor Database", icon:"🦴",
+    count:70, suffix:"K+", countLabel:"Verified Chiropractors", countSub:"License-Verified · Practice-Matched",
+    segVal:"70K+", segLabel:"Verified Chiropractors",
+    headline:"Get a Free Verified Chiropractor Data Sample",
+    desc:"License-verified chiropractor contacts segmented by practice type, technique specialty, and geography.",
+  },
+  "optometrist": {
+    badge:"Optometrist Database", icon:"👁️",
+    count:40, suffix:"K+", countLabel:"Verified Optometrists", countSub:"NPI-Verified · Practice-Matched",
+    segVal:"40K+", segLabel:"Verified Optometrists",
+    headline:"Get a Free Verified Optometrist Data Sample",
+    desc:"NPI-verified optometrist contacts segmented by practice setting, specialty, and geography.",
+  },
+  "veterinarian": {
+    badge:"Veterinarian Database", icon:"🐾",
+    count:95, suffix:"K+", countLabel:"Verified Veterinarians", countSub:"License-Verified · Specialty-Matched",
+    segVal:"95K+", segLabel:"Verified Veterinarians",
+    headline:"Get a Free Verified Veterinarian Data Sample",
+    desc:"License-verified veterinarian contacts segmented by specialty, practice type, and geography.",
+  },
+  "speech": {
+    badge:"Speech-Language Pathologist Database", icon:"🗣️",
+    count:185, suffix:"K+", countLabel:"Certified SLPs", countSub:"License-Verified · Setting-Matched",
+    segVal:"185K+", segLabel:"Certified Speech-Language Pathologists",
+    headline:"Get a Free Verified Speech-Language Pathologist Data Sample",
+    desc:"License-verified SLP contacts segmented by specialty, practice setting, and patient population.",
+  },
+  "podiatrist": {
+    badge:"Podiatrist Database", icon:"🦶",
+    count:15, suffix:"K+", countLabel:"Verified Podiatrists", countSub:"NPI-Verified · Practice-Matched",
+    segVal:"15K+", segLabel:"Verified Podiatrists",
+    headline:"Get a Free Verified Podiatrist Data Sample",
+    desc:"NPI-verified podiatrist contacts segmented by subspecialty, practice setting, and geography.",
+  },
+  "lpn": {
+    badge:"Licensed Practical Nurse Database", icon:"🏥",
+    count:800, suffix:"K+", countLabel:"Licensed LPNs", countSub:"License-Verified · Facility-Matched",
+    segVal:"800K+", segLabel:"Licensed Practical Nurses",
+    headline:"Get a Free Verified LPN Data Sample",
+    desc:"License-verified LPN contacts segmented by facility type, specialty unit, and state of licensure.",
+  },
+  "hospital": {
+    badge:"Hospital & Health System Database", icon:"🏨",
+    count:65, suffix:"K+", countLabel:"Hospital Decision-Makers", countSub:"Admin · Clinical · Executive",
+    segVal:"65K+", segLabel:"Hospital Decision-Makers",
+    headline:"Get a Free Verified Hospital & Health System Data Sample",
+    desc:"Hospital administrator, executive, and clinical decision-maker contacts segmented by role, department, bed count, and health system affiliation.",
+  },
+
+  /* ── Industry verticals (before b2b-database) ── */
+  "industries-served": {
+    badge:"Industries Served Database", icon:"🏢",
+    count:500, suffix:"+", countLabel:"Industries Covered", countSub:"Verified · Segmented · Current",
+    segVal:"500+", segLabel:"Industries Covered",
+    headline:"Get a Free Industry-Specific Data Sample",
+    desc:"Verified B2B contact databases across 500+ industries — segmented by role, company size, and geography.",
+  },
+  "real-estate": {
+    badge:"Real Estate Professional Database", icon:"🏠",
+    count:2, suffix:"M+", countLabel:"Real Estate Professionals", countSub:"Licensed · Active · Verified",
+    segVal:"2M+", segLabel:"Real Estate Professionals",
+    headline:"Get a Free Real Estate Professional Data Sample",
+    desc:"Licensed real estate agent, broker, and investor contacts segmented by market, transaction volume, and specialty.",
+  },
+  "financial": {
+    badge:"Financial Services Database", icon:"💳",
+    count:8, suffix:"M+", countLabel:"Financial Professionals", countSub:"RIA · CPA · CFP · Banker",
+    segVal:"8M+", segLabel:"Financial Professionals",
+    headline:"Get a Free Financial Services Data Sample",
+    desc:"Financial advisor, banker, CPA, and insurance professional contacts segmented by AUM, firm type, and specialty.",
+  },
+  "insurance": {
+    badge:"Insurance Professional Database", icon:"🛡️",
+    count:3, suffix:"M+", countLabel:"Insurance Professionals", countSub:"Agent · Broker · Underwriter",
+    segVal:"3M+", segLabel:"Insurance Professionals",
+    headline:"Get a Free Insurance Professional Data Sample",
+    desc:"Insurance agent, broker, and underwriter contacts segmented by line of business, carrier, and territory.",
+  },
+  "automotive": {
+    badge:"Automotive Industry Database", icon:"🚗",
+    count:500, suffix:"K+", countLabel:"Automotive Professionals", countSub:"Dealer · OEM · Supplier",
+    segVal:"500K+", segLabel:"Automotive Professionals",
+    headline:"Get a Free Automotive Industry Data Sample",
+    desc:"Automotive dealer, OEM, and supplier contacts segmented by role, brand, and geography.",
+  },
+  "technology": {
+    badge:"Technology Sector Database", icon:"💻",
+    count:12, suffix:"M+", countLabel:"Tech Decision-Makers", countSub:"CTO · IT · Developer · SaaS Buyers",
+    segVal:"12M+", segLabel:"Tech Decision-Makers",
+    headline:"Get a Free Technology Sector Data Sample",
+    desc:"CTO, IT manager, developer, and SaaS buyer contacts segmented by company size, tech stack, and purchase intent.",
+  },
+  "education": {
+    badge:"Education Sector Database", icon:"🎓",
+    count:4, suffix:"M+", countLabel:"Education Professionals", countSub:"K-12 · Higher Ed · Admin",
+    segVal:"4M+", segLabel:"Education Professionals",
+    headline:"Get a Free Education Sector Data Sample",
+    desc:"Teacher, administrator, and higher-education professional contacts segmented by institution type, grade level, and role.",
+  },
+  "legal": {
+    badge:"Legal Professional Database", icon:"⚖️",
+    count:1, suffix:"M+", countLabel:"Legal Professionals", countSub:"Attorney · Paralegal · Judge",
+    segVal:"1M+", segLabel:"Legal Professionals",
+    headline:"Get a Free Legal Professional Data Sample",
+    desc:"Attorney, paralegal, and legal professional contacts segmented by practice area, firm size, and geography.",
+  },
+  "retail": {
+    badge:"Retail Industry Database", icon:"🛒",
+    count:3, suffix:"M+", countLabel:"Retail Decision-Makers", countSub:"Buyer · Manager · Owner",
+    segVal:"3M+", segLabel:"Retail Decision-Makers",
+    headline:"Get a Free Retail Industry Data Sample",
+    desc:"Retail buyer, store manager, and owner contacts segmented by category, store count, and revenue.",
+  },
+  "construction": {
+    badge:"Construction Industry Database", icon:"🏗️",
+    count:2, suffix:"M+", countLabel:"Construction Professionals", countSub:"Contractor · Engineer · PM",
+    segVal:"2M+", segLabel:"Construction Professionals",
+    headline:"Get a Free Construction Industry Data Sample",
+    desc:"General contractor, engineer, and project manager contacts segmented by project type, revenue, and geography.",
+  },
+  "manufacturing": {
+    badge:"Manufacturing Industry Database", icon:"🏭",
+    count:5, suffix:"M+", countLabel:"Manufacturing Professionals", countSub:"Ops · Procurement · Engineering",
+    segVal:"5M+", segLabel:"Manufacturing Professionals",
+    headline:"Get a Free Manufacturing Industry Data Sample",
+    desc:"Operations, procurement, and engineering professional contacts segmented by sector, company size, and role.",
+  },
+  "industries": {
+    badge:"Industries Database", icon:"🏢",
+    count:500, suffix:"+", countLabel:"Industries Covered", countSub:"Verified · Segmented · Current",
+    segVal:"500+", segLabel:"Industries Covered",
+    headline:"Get a Free Industry-Specific Data Sample",
+    desc:"Verified B2B contact databases across 500+ industries — segmented by role, company size, and geography.",
+  },
+
+  /* ── Healthcare data + generic data assets (healthcare-data before healthcare) ── */
+  "healthcare-data": {
+    badge:"Healthcare Data Assets", icon:"🏥",
+    count:20, suffix:"M+", countLabel:"Healthcare Records", countSub:"HIPAA-Compliant · NPI-Verified",
+    segVal:"20M+", segLabel:"Healthcare Records",
+    headline:"Get a Free Healthcare Data Sample",
+    desc:"HIPAA-compliant healthcare professional and facility contact data segmented by specialty, role, and geography.",
+  },
+  "healthcare": {
+    badge:"Healthcare Professional Database", icon:"🏥",
+    count:20, suffix:"M+", countLabel:"Healthcare Professionals", countSub:"NPI-Verified · HIPAA-Compliant",
+    segVal:"20M+", segLabel:"Healthcare Professionals",
+    headline:"Get a Free Healthcare Professional Data Sample",
+    desc:"NPI-verified healthcare professional contacts across all specialties — HIPAA-compliant and regularly refreshed.",
+  },
+  "b2b-database": {
+    badge:"B2B Contact Database", icon:"💼",
+    count:95, suffix:"M+", countLabel:"Verified B2B Contacts", countSub:"Scrubbed · Compliant · Ready",
+    segVal:"95M+", segLabel:"Verified B2B Contacts",
+    headline:"Get a Free B2B Contact Database Sample",
+    desc:"95M+ verified B2B contacts across industries — segmented by role, company size, revenue, and geography.",
+  },
+  "b2b-data": {
+    badge:"B2B Data Solutions", icon:"💼",
+    count:95, suffix:"M+", countLabel:"B2B Records Available", countSub:"Verified · Segmented · Fresh",
+    segVal:"95M+", segLabel:"B2B Records Available",
+    headline:"Get a Free B2B Data Sample",
+    desc:"Verified B2B contact data segmented by industry, role, company size, and intent signals.",
+  },
+  "b2c-database": {
+    badge:"B2C Consumer Database", icon:"👥",
+    count:250, suffix:"M+", countLabel:"Consumer Records", countSub:"Opt-In · Verified · Segmented",
+    segVal:"250M+", segLabel:"Consumer Records",
+    headline:"Get a Free B2C Consumer Data Sample",
+    desc:"250M+ opt-in consumer records segmented by demographics, lifestyle, purchase behavior, and geography.",
+  },
+  "consumer-data": {
+    badge:"Consumer Data Solutions", icon:"👥",
+    count:250, suffix:"M+", countLabel:"Consumer Records", countSub:"Opt-In · Verified · Segmented",
+    segVal:"250M+", segLabel:"Consumer Records",
+    headline:"Get a Free Consumer Data Sample",
+    desc:"Verified consumer contact data segmented by demographics, interests, purchase history, and location.",
+  },
+  "data-cards": {
+    badge:"Data Cards Catalog", icon:"🗂️",
+    count:500, suffix:"+", countLabel:"Data Cards Available", countSub:"Industry · Role · Geography",
+    segVal:"500+", segLabel:"Data Cards Available",
+    headline:"Get a Free Data Card Sample",
+    desc:"Browse 500+ pre-built data cards covering every industry, role, and geography — ready for immediate activation.",
+  },
+
+  /* ── About ── */
+  "company-overview": {
+    badge:"About Lorann LLC", icon:"🏛️",
+    count:5000, suffix:"+", countLabel:"Businesses Served", countSub:"Since 1996 · Trusted · Proven",
+    segVal:"5,000+", segLabel:"Businesses Served",
+    headline:"Get a Free Data Sample from Lorann",
+    desc:"Lorann LLC has delivered trusted B2B data solutions since 1996 — see why 5,000+ businesses choose us.",
+  },
+  "meet-the-team": {
+    badge:"Meet the Lorann Team", icon:"👥",
+    count:5000, suffix:"+", countLabel:"Businesses Served", countSub:"Expert Team · 25+ Years",
+    segVal:"5,000+", segLabel:"Businesses Served",
+    headline:"Get a Free Data Sample from Our Team",
+    desc:"Our data experts have spent 25+ years building the most accurate and compliant B2B databases in the industry.",
+  },
+  "our-approach": {
+    badge:"Our Data Approach", icon:"🔍",
+    count:98, suffix:"%", countLabel:"Accuracy Rate", countSub:"Multi-Source Verified",
+    segVal:"98%", segLabel:"Verified Accuracy Rate",
+    headline:"Get a Free Sample of Our Verified Data",
+    desc:"Our multi-source verification approach ensures 98%+ accuracy across every record we deliver.",
+  },
+  "about": {
+    badge:"About Lorann LLC", icon:"🏛️",
+    count:5000, suffix:"+", countLabel:"Businesses Served", countSub:"Since 1996 · Trusted · Proven",
+    segVal:"5,000+", segLabel:"Businesses Served",
+    headline:"Get a Free Data Sample from Lorann",
+    desc:"Lorann LLC has delivered trusted B2B data solutions since 1996 — see why 5,000+ businesses choose us.",
+  },
+
+  /* ── Insights ── */
+  "industry-trends": {
+    badge:"Industry Trends & Insights", icon:"📈",
+    count:95, suffix:"M+", countLabel:"Verified B2B Contacts", countSub:"Data-Backed Intelligence",
+    segVal:"95M+", segLabel:"Verified B2B Contacts",
+    headline:"Get a Free Data Sample to Power Your Strategy",
+    desc:"Put Lorann's verified B2B data behind your go-to-market strategy — accurate, compliant, and ready to activate.",
+  },
+  "case-studies": {
+    badge:"Customer Case Studies", icon:"📋",
+    count:5000, suffix:"+", countLabel:"Businesses Served", countSub:"Proven Results · Real ROI",
+    segVal:"5,000+", segLabel:"Businesses Served",
+    headline:"Get a Free Data Sample Like Our Customers Use",
+    desc:"Join 5,000+ businesses that have grown their pipeline with Lorann's verified B2B data.",
+  },
+  "insights": {
+    badge:"Data Intelligence Insights", icon:"📊",
+    count:95, suffix:"M+", countLabel:"Verified B2B Contacts", countSub:"Data-Backed Intelligence",
+    segVal:"95M+", segLabel:"Verified B2B Contacts",
+    headline:"Get a Free Data Sample to Power Your Strategy",
+    desc:"Put Lorann's verified B2B data behind your go-to-market strategy — accurate, compliant, and ready to activate.",
+  },
+
+  /* ── Solutions hub + static pages ── */
+  "solutions": {
+    badge:"Data Solutions Platform", icon:"🚀",
+    count:95, suffix:"M+", countLabel:"Verified Contacts Available", countSub:"All Industries · All Roles",
+    segVal:"95M+", segLabel:"Verified Contacts Available",
+    headline:"Get a Free Data Solutions Sample",
+    desc:"Explore Lorann's full suite of B2B data solutions — audience targeting, enrichment, activation, and intent signals.",
+  },
+  "how-it-works": {
+    badge:"How Lorann Works", icon:"⚙️",
+    count:98, suffix:"%", countLabel:"Delivery Accuracy", countSub:"Verified · Compliant · Fast",
+    segVal:"98%", segLabel:"Verified Delivery Accuracy",
+    headline:"See How It Works — Get a Free Sample",
+    desc:"Lorann's 3-step process: define your audience, verify your data, activate across channels — in under 24 hours.",
+  },
+  "resources": {
+    badge:"Data Resources & Tools", icon:"📚",
+    count:95, suffix:"M+", countLabel:"Verified B2B Contacts", countSub:"Ready to Activate",
+    segVal:"95M+", segLabel:"Verified B2B Contacts",
+    headline:"Get a Free Data Sample from Lorann",
+    desc:"Access guides, templates, and tools — plus a free verified data sample to get started.",
+  },
+  "contact": {
+    badge:"Talk to Our Data Team", icon:"📞",
+    count:5000, suffix:"+", countLabel:"Businesses Served", countSub:"Expert Team · Fast Response",
+    segVal:"5,000+", segLabel:"Businesses Served",
+    headline:"Get a Free Data Sample Today",
+    desc:"Our data specialists are ready to build the perfect audience for your campaign — request a free sample now.",
+  },
+  "data-assets": {
+    badge:"Data Assets Catalog", icon:"🗄️",
+    count:500, suffix:"+", countLabel:"Data Assets Available", countSub:"Industry · Role · Geography",
+    segVal:"500+", segLabel:"Data Assets Available",
+    headline:"Get a Free Data Asset Sample",
+    desc:"Browse Lorann's full catalog of B2B data assets — ready-to-deploy lists for every industry and audience.",
+  },
+};
+
+/* ─── Slug → human title ────────────────────────────────────────── */
+const SLUG_ACRONYMS = new Set([
+  "plm","crm","erp","sap","api","b2b","b2c","hr","ehr","emr","ai","ml","iot",
+  "it","smb","cfo","cto","cmo","ceo","vp","md","rn","np","pa","lpn","cna",
+  "mba","cpa","ria","etf","vc","pe","pos","kpi","roi","seo","sem","ppc",
+  "ui","ux","sql","aws","gcp","saas","paas","iaas","npi","dme","pbm","dnc",
+]);
+
+function slugToTitle(slug: string): string {
+  return slug
+    .split("-")
+    .map(w => SLUG_ACRONYMS.has(w) ? w.toUpperCase() : w.charAt(0).toUpperCase() + w.slice(1))
+    .join(" ");
+}
+
+/* ─── Page context hook ─────────────────────────────────────────── */
+function usePageContext() {
+  const pathname = usePathname();
+  return useMemo(() => {
+    const path = (pathname ?? "").toLowerCase();
+    const segments = path.split("/").filter(Boolean);
+
+    let matchedSegIdx = -1;
+    let baseCtx: (typeof PAGE_CONTEXTS)[string] | null = null;
+
+    for (const [key, ctx] of Object.entries(PAGE_CONTEXTS)) {
+      if (path.includes(key)) {
+        matchedSegIdx = segments.findIndex(s => s.includes(key));
+        baseCtx = ctx;
+        break;
+      }
+    }
+
+    if (!baseCtx) return null;
+
+    const remaining = matchedSegIdx >= 0 ? segments.slice(matchedSegIdx + 1) : [];
+    if (remaining.length > 0) {
+      const leaf = remaining[remaining.length - 1];
+      if (leaf && leaf.length > 2) {
+        return { ...baseCtx, headline: `Get a Free ${slugToTitle(leaf)} Data Sample` };
+      }
+    }
+
+    return baseCtx;
+  }, [pathname]);
+}
+
 /* ══════════════════════════════════════════════════════════════════
    LEAD POPUP
 ══════════════════════════════════════════════════════════════════ */
@@ -141,9 +606,14 @@ export default function LeadPopup() {
   const [tidx,       setTidx]       = useState(0);
   const [tin,        setTin]        = useState(true);
   const [form,       setForm]       = useState({ name: "", email: "", company: "" });
-  const countVal = useCountUp(95, 2200, phase === "visible");
+
+  const pathname = usePathname();
+  const pageCtx = usePageContext();
+  const countVal = useCountUp(pageCtx?.count ?? 95, 2200, phase === "visible");
 
   useEffect(() => {
+    if ((pathname ?? "").startsWith("/studio")) return;
+    if (window.self !== window.top) return; // inside Sanity Studio iframe preview
     if (localStorage.getItem(STORAGE_KEY)) return;
     const t = setTimeout(() => {
       setPhase("entering");
@@ -227,7 +697,7 @@ export default function LeadPopup() {
             transition: "transform .3s cubic-bezier(.34,1.56,.64,1)",
           }}
         >
-          <span style={{ fontSize: 17, lineHeight: 1 }}>⭐</span>
+          <span style={{ fontSize: 17, lineHeight: 1 }}>{pageCtx?.icon ?? "⭐"}</span>
           <span style={{
             writingMode: "vertical-rl",
             transform: "rotate(180deg)",
@@ -246,7 +716,10 @@ export default function LeadPopup() {
     );
   }
 
-  const seg = SEGS[tidx];
+  /* Pin segment to page-specific data; cycle generic SEGS on generic pages */
+  const seg = pageCtx
+    ? { icon: pageCtx.icon, val: pageCtx.segVal, label: pageCtx.segLabel }
+    : SEGS[tidx];
 
   return (
     <>
@@ -432,10 +905,10 @@ export default function LeadPopup() {
                     WebkitBackgroundClip:"text", WebkitTextFillColor:"transparent", backgroundClip:"text",
                     animation:"lp-glow-text 2.5s ease-in-out infinite",
                   }}>
-                    {countVal}M+
+                    {countVal}{pageCtx?.suffix ?? "M+"}
                   </div>
-                  <div className="text-xs font-bold text-white/70">Verified B2B Contacts</div>
-                  <div className="mt-0.5 text-[9px] text-slate-600">Scrubbed · Compliant · Ready</div>
+                  <div className="text-xs font-bold text-white/70">{pageCtx?.countLabel ?? "Verified B2B Contacts"}</div>
+                  <div className="mt-0.5 text-[9px] text-slate-600">{pageCtx?.countSub ?? "Scrubbed · Compliant · Ready"}</div>
                 </div>
 
                 {/* Segment ticker card */}
@@ -496,7 +969,7 @@ export default function LeadPopup() {
               <div className="relative flex flex-col justify-center overflow-hidden bg-white md:w-[58%]"
                 style={{ padding:"24px 26px" }}>
 
-                {/* Decorative corner orbs — subtle */}
+                {/* Decorative corner orbs */}
                 <div className="pointer-events-none absolute -right-16 -top-16 h-48 w-48 rounded-full"
                   style={{ background:"radial-gradient(circle,rgba(99,102,241,.18) 0%,transparent 70%)",
                     animation:"lp-right-glow 3s ease-in-out infinite" }} />
@@ -528,11 +1001,12 @@ export default function LeadPopup() {
                 ) : (
                   <div className="relative z-10">
 
-                    {/* Tagline */}
+                    {/* Tagline / badge */}
                     <div className="mb-2 text-center"
                       style={{ animation:"lp-fade-up .42s ease .12s both" }}>
                       <span style={{ fontSize:12, fontWeight:700, color:"#7c3aed", letterSpacing:".01em" }}>
-                        ⭐ Better Data. Better Decisions. Better Growth.
+                        <span style={{ fontSize:13 }}>{pageCtx?.icon ?? "⭐"}</span>{" "}
+                        {pageCtx?.badge ?? "Better Data. Better Decisions. Better Growth."}
                       </span>
                     </div>
 
@@ -540,22 +1014,28 @@ export default function LeadPopup() {
                     <div style={{ animation:"lp-fade-up .42s ease .18s both", marginBottom:10 }}>
                       <h2 style={{ fontFamily:"var(--font-space-grotesk)", fontSize:"clamp(20px,2.4vw,26px)",
                         fontWeight:900, color:"#0f172a", lineHeight:1.25 }}>
-                        Get a High-Quality Data Sample That{" "}
-                        <span style={{
-                          background:"linear-gradient(120deg,#1D45D9 0%,#00A7EF 100%)",
-                          WebkitBackgroundClip:"text", WebkitTextFillColor:"transparent", backgroundClip:"text",
-                        }}>
-                          Drives Real Results.
-                        </span>
+                        {pageCtx ? pageCtx.headline : (
+                          <>Get a High-Quality Data Sample That{" "}
+                            <span style={{
+                              background:"linear-gradient(120deg,#1D45D9 0%,#00A7EF 100%)",
+                              WebkitBackgroundClip:"text", WebkitTextFillColor:"transparent", backgroundClip:"text",
+                            }}>
+                              Drives Real Results.
+                            </span>
+                          </>
+                        )}
                       </h2>
                     </div>
 
                     <p className="mb-3 text-sm leading-relaxed text-slate-500"
                       style={{ animation:"lp-fade-up .42s ease .25s both" }}>
-                      Preview accurate and compliant data from{" "}
-                      <strong style={{ color:"#1D45D9" }}>Lorann</strong>
-                      {" "}and experience the quality that helps businesses connect,{" "}
-                      <strong className="text-slate-700">engage, and grow.</strong>
+                      {pageCtx ? pageCtx.desc : (
+                        <>Preview accurate and compliant data from{" "}
+                          <strong style={{ color:"#1D45D9" }}>Lorann</strong>
+                          {" "}and experience the quality that helps businesses connect,{" "}
+                          <strong className="text-slate-700">engage, and grow.</strong>
+                        </>
+                      )}
                     </p>
 
                     {/* Trust badges */}

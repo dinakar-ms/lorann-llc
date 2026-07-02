@@ -1,8 +1,28 @@
 import { NextRequest, NextResponse } from "next/server";
 import nodemailer from "nodemailer";
+import { createClient } from "next-sanity";
+import { apiVersion, dataset, projectId } from "@/sanity/env";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
+
+// Same pattern as the /api/contact route — mirror every submission into
+// Sanity so admins can review popup leads in Studio alongside contact
+// form entries. Falls back gracefully if SANITY_API_WRITE_TOKEN isn't set
+// (emails still send; save just logs a warning).
+const sanityWriteClient = createClient({
+  projectId,
+  dataset,
+  apiVersion,
+  token: process.env.SANITY_API_WRITE_TOKEN,
+  useCdn: false,
+});
+
+function getClientIp(req: NextRequest): string {
+  const fwd = req.headers.get("x-forwarded-for");
+  if (fwd) return fwd.split(",")[0].trim();
+  return req.headers.get("x-real-ip") || "UNKNOWN";
+}
 
 function escapeHtml(s: string) {
   return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
@@ -87,6 +107,37 @@ export async function POST(req: NextRequest) {
 
   if (!name || name.length < 2)   return NextResponse.json({ success: false, message: "Please enter your name." }, { status: 400 });
   if (!email || !isValidEmail(email)) return NextResponse.json({ success: false, message: "Please enter a valid email." }, { status: 400 });
+
+  const now = new Date();
+  const pad = (n: number) => String(n).padStart(2, "0");
+  const referenceId = `LORANN-POPUP-${now.getFullYear()}${pad(now.getMonth() + 1)}${pad(now.getDate())}${pad(now.getHours())}${pad(now.getMinutes())}${pad(now.getSeconds())}-${Math.floor(100 + Math.random() * 900)}`;
+  const referer = req.headers.get("referer") || "";
+  const userAgent = req.headers.get("user-agent") || "";
+  const ipAddress = getClientIp(req);
+
+  // Persist to Sanity — best-effort. If the write fails, still send
+  // emails and return success so the user doesn't see a broken form.
+  try {
+    if (process.env.SANITY_API_WRITE_TOKEN) {
+      await sanityWriteClient.create({
+        _type: "popupLeadSubmission",
+        referenceId,
+        name,
+        email,
+        company,
+        sourceUrl: referer,
+        referer,
+        ipAddress,
+        userAgent,
+        status: "unread",
+        submittedAt: now.toISOString(),
+      });
+    } else {
+      console.warn("SANITY_API_WRITE_TOKEN not set — skipping popup lead persist");
+    }
+  } catch (err) {
+    console.error("Popup lead Sanity save error:", err);
+  }
 
   const host = process.env.SMTP_HOST;
   const port = parseInt(process.env.SMTP_PORT || "465", 10);

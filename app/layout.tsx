@@ -7,6 +7,7 @@ import "./globals.css";
 import LayoutChrome from "@/components/LayoutChrome";
 import AuthProvider from "@/components/AuthProvider";
 
+
 // Only load in draft mode — zero cost in production
 const VisualEditing = dynamic(
   () => import("next-sanity").then((m) => m.VisualEditing),
@@ -18,11 +19,9 @@ const CookieConsent = dynamic(() => import("@/components/CookieConsent"), {
   ssr: false,
 });
 
-/* LeadPopup — on hold, uncomment to re-enable
 const LeadPopup = dynamic(() => import("@/components/LeadPopup"), {
   ssr: false,
 });
-*/
 
 const spaceGrotesk = Space_Grotesk({
   subsets: ["latin"],
@@ -223,7 +222,7 @@ export default function RootLayout({
             (ssr: false) so it doesn't block first paint. */}
         <VisualEditing />
         <CookieConsent />
-        {/* <LeadPopup /> */}
+        <LeadPopup />
         {/* WebMCP — expose key site actions to in-browser AI agents */}
         <script
           dangerouslySetInnerHTML={{
